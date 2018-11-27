@@ -44,7 +44,7 @@ begin
     zip_file.each do |entry|
       puts "Extracting #{entry.name}"
     end
-    dmidecode_file = zip_file.glob('dmidecode').first
-    lshw_file = zip_file.glob('lshw').first
+    lshw_xml_file = zip_file.glob('lshw-xml').first
+    lsbik_file = zip_file.glob('lsbik').first
   end
 end
