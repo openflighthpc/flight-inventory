@@ -3,6 +3,8 @@ require 'optparse'
 class MainParser
   def self.parse(args)
   options = {}
+  options['pri_group'] = nil
+  options['sec_groups'] = []
 
   opt_parser = OptionParser.new do |opt|
     opt.banner = "Usage inventoryware NODE DATA [GROUPS]"
