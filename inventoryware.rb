@@ -21,3 +21,9 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
+require './cli'
+
+begin
+  # Parse arguments
+  options = MainParser.parse(ARGV)
+end
