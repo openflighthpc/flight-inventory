@@ -22,8 +22,29 @@
 #==============================================================================
 
 require './cli'
+require 'zip'
+
+def check_data_source?(data_source)
+  !(File.file?(data_source) && data_source.end_with?(".zip"))
+end
 
 begin
   # Parse arguments
   options = MainParser.parse(ARGV)
+
+  data_source = options['data_source']
+
+  if check_data_source?(data_source)
+    puts "Error with data source #{data_source}"\
+         "- must be zip file"
+    exit
+  end
+
+  Zip::File.open(data_source) do |zip_file|
+    zip_file.each do |entry|
+      puts "Extracting #{entry.name}"
+    end
+    dmidecode_file = zip_file.glob('dmidecode').first
+    lshw_file = zip_file.glob('lshw').first
+  end
 end
