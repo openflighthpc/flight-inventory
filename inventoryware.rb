@@ -25,7 +25,7 @@ require './cli'
 require 'zip'
 
 def check_data_source?(data_source)
-  !(File.file?(data_source) && data_source.end_with?(".zip"))
+  !(File.file?(data_source) && File.extname(data_source) == ".zip")
 end
 
 begin
