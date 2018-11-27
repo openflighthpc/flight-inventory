@@ -20,8 +20,8 @@ class MainParser
       options['pri_group'] = pri_g 
     end
 
-    opt.on("-s", "--secondary-groups SECONDARY-GROUPS",
-           "Assign the node groups SECONDARY-GROUPS") do |sec_g|
+    opt.on("-s", "--secondary-groups LIST,OF,GROUPS", Array,
+           "Assign the node groups LIST, OF and GROUPS") do |sec_g|
       options['sec_groups'] = sec_g 
     end
 
