@@ -35,8 +35,8 @@ else
 end
 
 require_relative 'cli'
-require_relative 'extensions/lshw'
 require_relative 'lsblk_parser'
+require 'lshw'
 require 'tmpdir'
 require 'zip'
 
@@ -92,7 +92,7 @@ begin
   end
 
   total_memory = 0
-  lshw.all_memory.each do |mem|
+  lshw.memory_nodes.each do |mem|
     mem.banks.each do |bank|
       total_memory += bank.size
     end
@@ -100,7 +100,7 @@ begin
   hash[node]['Total Memory'] = total_memory
 
   hash[node]['Interfaces'] = {}
-  lshw.all_networks.each do |net|
+  lshw.all_network_interfaces.each do |net|
     hash[node]['Interfaces'][net.logical_name] = {"Serial"=>net.mac}
   end
 
