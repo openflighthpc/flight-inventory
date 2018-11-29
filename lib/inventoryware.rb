@@ -36,6 +36,7 @@ end
 
 require_relative 'cli'
 require_relative 'extensions/lshw'
+require_relative 'lsblk_parser'
 require 'zip'
 require 'tmpdir'
 
@@ -46,6 +47,7 @@ end
 begin
   dir = Dir.mktmpdir('inv_ware_')
   tmp_lshw_xml = File.join(dir, 'lshw_xml')
+  tmp_lsblk = File.join(dir, 'lsblk')
 
   # Parse arguments
   options = MainParser.parse(ARGV)
@@ -66,7 +68,7 @@ begin
       puts "Extracting #{entry.name}"
     end
     zip_file.glob('lshw-xml.txt').first.extract(tmp_lshw_xml)
-    #lsbik_file = zip_file.glob('lsbik.txt').first
+    zip_file.glob('lsblk-a-P.txt').first.extract(tmp_lsblk)
   end
 
   #TODO sort error conditions here
@@ -96,6 +98,16 @@ begin
   lshw.all_networks.each do |net|
     hash[node][net.logical_name] = {"serial"=>net.mac}
   end
+
+  lsblk = LsblkParser.new(tmp_lsblk)
+
+  hash[node]['disks'] = {}
+  lsblk.rows.each do |row|
+    if row.type == 'disk'
+      hash[node]['disks'][row.name] = row.size
+    end
+  end
+
   puts hash
 ensure
   FileUtils.remove_entry dir
