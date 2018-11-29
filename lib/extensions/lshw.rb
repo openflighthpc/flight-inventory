@@ -26,6 +26,9 @@ module Extensions
       def slot
         @node.search('./slot').text
       end
+      def version
+        @node.search('./version').text
+      end
     end
     module NetworkInterface
       def logical_name

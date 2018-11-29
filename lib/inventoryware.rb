@@ -37,8 +37,8 @@ end
 require_relative 'cli'
 require_relative 'extensions/lshw'
 require_relative 'lsblk_parser'
-require 'zip'
 require 'tmpdir'
+require 'zip'
 
 def check_data_source?(data_source)
   !(File.file?(data_source) && File.extname(data_source) == ".zip")
@@ -80,11 +80,11 @@ begin
 
   hash[node]['System Serial Number'] = lshw.serial
 
-  hash[node]['cpus'] = {}
+  hash[node]['CPUs'] = {}
   lshw.cpus.each do |cpu|
-    hash[node]['cpus'][cpu.id] = {}
-    hash[node]['cpus'][cpu.id]['product'] = cpu.product
-    hash[node]['cpus'][cpu.id]['slot'] = cpu.slot
+    hash[node]['CPUs'][cpu.id] = {}
+    hash[node]['CPUs'][cpu.id]['Model'] = cpu.version
+    hash[node]['CPUs'][cpu.id]['Slot'] = cpu.slot
   end
 
   total_memory = 0
@@ -95,20 +95,19 @@ begin
   end
   hash[node]['Total Memory'] = total_memory
 
+  hash[node]['Interfaces'] = {}
   lshw.all_networks.each do |net|
-    hash[node][net.logical_name] = {"serial"=>net.mac}
+    hash[node]['Interfaces'][net.logical_name] = {"Serial"=>net.mac}
   end
 
   lsblk = LsblkParser.new(tmp_lsblk)
 
-  hash[node]['disks'] = {}
+  hash[node]['Disks'] = {}
   lsblk.rows.each do |row|
     if row.type == 'disk'
-      hash[node]['disks'][row.name] = row.size
+      hash[node]['Disks'][row.name] = {'Size'=>row.size}
     end
   end
-
-  puts hash
 ensure
   FileUtils.remove_entry dir
 end
