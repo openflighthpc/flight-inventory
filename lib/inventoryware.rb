@@ -80,6 +80,10 @@ begin
 
   hash[node]['System Serial Number'] = lshw.serial
 
+  hash[node]['Primary Group'] = options['pri_group']
+
+  hash[node]['Secondary Groups'] = options['sec_groups']
+
   hash[node]['CPUs'] = {}
   lshw.cpus.each do |cpu|
     hash[node]['CPUs'][cpu.id] = {}
