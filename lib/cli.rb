@@ -27,6 +27,7 @@ class MainParser
   options = {}
   options['pri_group'] = nil
   options['sec_groups'] = []
+  options['template'] = nil
 
   opt_parser = OptionParser.new do |opt|
     opt.banner = "Usage inventoryware NODE DATA [GROUPS]"
@@ -35,7 +36,7 @@ class MainParser
       options['node'] = node
     end
 
-    opt.on("-d", "--data DATA", "Parse data from DATA") do |data|
+    opt.on("-d", "--data DATA", "Parse data from source DATA") do |data|
       options['data_source'] = data
     end
 
@@ -47,6 +48,11 @@ class MainParser
     opt.on("-s", "--secondary-groups LIST,OF,GROUPS", Array,
            "Assign the node groups LIST, OF and GROUPS") do |sec_g|
       options['sec_groups'] = sec_g
+    end
+
+    opt.on("-t", "--template TEMPLATE",
+           "Path to desired template, if blank yaml will be output") do |templ|
+      options['template'] = templ
     end
 
     opt.on("-h","--help","show this help screen") do
