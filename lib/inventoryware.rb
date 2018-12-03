@@ -46,6 +46,38 @@ def check_data_source?(data_source)
   !(File.file?(data_source) && File.extname(data_source) == ".zip")
 end
 
+def format_bits_value(bits_value, suffix)
+  value = bits_value
+  counter = 0
+  while value >= 1000
+    counter += 1
+    value /= 1000
+  end
+  (value*1000).round / 1000.0
+  case counter
+  when 0
+    prefix = ''
+  when 1
+    prefix = 'K'
+  when 2
+    prefix = 'M'
+  when 3
+    prefix = 'G'
+  when 4
+    prefix = 'T'
+  when 5
+    prefix = 'P'
+  else
+    prefix = ''
+  end
+  # prevent errors if the counter gets too large, return original value
+  if prefix == ''
+    "#{bits_value} #{suffix}"
+  else
+    "#{value} #{prefix}#{suffix}"
+  end
+end
+
 TARGET_FILE = '/opt/inventory_tools/domain'
 
 begin
@@ -109,7 +141,8 @@ begin
   lshw.all_network_interfaces.each do |net|
     hash['Interfaces'][net.logical_name] = {}
     hash['Interfaces'][net.logical_name]['Serial'] = net.mac
-    hash['Interfaces'][net.logical_name]['Capacity'] = net.capacity
+    hash['Interfaces'][net.logical_name]['Capacity'] = \
+      format_bits_value(net.capacity, 'bit/s')
   end
 
   lsblk = LsblkParser.new(tmp_lsblk)
