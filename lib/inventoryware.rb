@@ -79,13 +79,13 @@ begin
   lshw = Lshw::XML(f)
   f.close
 
-  hash['Hardware Type'] = lshw.product
-
-  hash['System Serial Number'] = lshw.serial
-
   hash['Primary Group'] = options['pri_group']
 
   hash['Secondary Groups'] = options['sec_groups']
+
+  hash['Hardware Type'] = lshw.product
+
+  hash['System Serial Number'] = lshw.serial
 
   hash['BIOS Version'] = lshw.firmware.first.version
 
