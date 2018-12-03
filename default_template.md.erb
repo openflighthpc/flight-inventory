@@ -1,0 +1,48 @@
+<%= hash['Name'] %>
+  name: <%= hash['Name'] %>
+  primary_groups: <%= hash['Primary Group'] %>
+  secondary_groups:
+  <% hash['Secondary Groups'].each do |grp| %>
+    <%= "- #{grp}" %>
+  <% end %>
+
+  # System
+
+  ## BIOS Version
+
+  <%= hash['BIOS Version'] %>
+
+  ## System Serial Number
+
+  <%= hash['System Serial Number'] %>
+
+  ## CPU(s)
+
+  <% hash['CPUs'].each do |cpu, values| %>
+  ### <%= cpu %>
+
+  model: <%= values['Model'] %>
+  slot: <%= values['Slot'] %>
+
+  <%end%>
+
+  ## RAM
+
+  - Total: <%= hash['Total Memory'] %>
+
+
+  # Network Devices
+
+  | Interface | Speed | MAC |
+  |-----------|-------|-----|
+  <% hash['Interfaces'].each do |net, values| %>
+  | <%= net %> | <%= values['Capacity'] %> | <%= values['Serial'] %> |
+  <% end %>
+
+  # Disks
+
+  | Device | Size |
+  |--------|------|
+  <% hash['Disks'].each do |disk, values| %>
+  | <%= disk %> | <%= values['Size'] %> |
+  <% end %>
