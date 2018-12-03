@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'lshw'
+gem 'lshw', github: 'alces-software/lshw'
 gem 'rubyzip'
 
 group :development do
