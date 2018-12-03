@@ -88,12 +88,19 @@ begin
     file_locations[file] = File.join(dir, file)
   end
 
-  # Parse arguments
-  options = MainParser.parse(ARGV)
+  if ARGV.length() < 2
+    puts "Node and data source not specified"
+    exit
+  end
 
-  data_source = options['data_source']
   hash = {}
-  hash['Name'] = options['node']
+  hash['Name'] = ARGV.first
+  ARGV.shift
+  data_source = ARGV.first
+  ARGV.shift
+
+  # parse remaining options
+  options = MainParser.parse(ARGV)
 
   if check_data_source?(data_source)
     puts "Error with data source #{data_source}"\

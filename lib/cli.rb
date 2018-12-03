@@ -32,14 +32,6 @@ class MainParser
   opt_parser = OptionParser.new do |opt|
     opt.banner = "Usage inventoryware NODE DATA [GROUPS]"
 
-    opt.on("-n", "--node NODE", "Parse data for NODE") do |node|
-      options['node'] = node
-    end
-
-    opt.on("-d", "--data DATA", "Parse data from source DATA") do |data|
-      options['data_source'] = data
-    end
-
     opt.on("-p", "--primary-group PRIMARY-GROUP",
            "Assign the node to PRMIARY-GROUP") do |pri_g|
       options['pri_group'] = pri_g
@@ -62,10 +54,6 @@ class MainParser
   end
 
   opt_parser.parse!(args)
-
-  if !options['node'] || !options['data_source']
-    puts "Node and data source not specified"
-  end
 
   return options
   end
