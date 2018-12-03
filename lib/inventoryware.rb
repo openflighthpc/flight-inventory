@@ -79,11 +79,14 @@ def format_bits_value(bits_value, suffix)
 end
 
 TARGET_FILE = '/opt/inventory_tools/domain'
+REQ_FILES = ["lshw-xml.txt", "lsblk-a-P.txt"]
 
 begin
   dir = Dir.mktmpdir('inv_ware_')
-  tmp_lshw_xml = File.join(dir, 'lshw_xml')
-  tmp_lsblk = File.join(dir, 'lsblk')
+  file_locations = {}
+  REQ_FILES.each do |file|
+    file_locations[file] = File.join(dir, file)
+  end
 
   # Parse arguments
   options = MainParser.parse(ARGV)
@@ -102,12 +105,17 @@ begin
     zip_file.each do |entry|
       puts "Extracting #{entry.name}"
     end
-    zip_file.glob('lshw-xml.txt').first.extract(tmp_lshw_xml)
-    zip_file.glob('lsblk-a-P.txt').first.extract(tmp_lsblk)
+    if file_locations.all? { |file, v| zip_file.glob(file).first }
+      file_locations.each do |file, value|
+        zip_file.glob(file).first.extract(value)
+      end
+    else
+      puts "#{REQ_FILES.join(" & ")} files required in .zip but not found."
+      exit
+    end
   end
 
-  #TODO sort error conditions here
-  f = File.open(tmp_lshw_xml)
+  f = File.open(file_locations['lshw-xml.txt'])
   lshw = Lshw::XML(f)
   f.close
 
@@ -145,7 +153,7 @@ begin
       format_bits_value(net.capacity, 'bit/s')
   end
 
-  lsblk = LsblkParser.new(tmp_lsblk)
+  lsblk = LsblkParser.new(file_locations['lsblk-a-P.txt'])
 
   hash['Disks'] = {}
   lsblk.rows.each do |row|
