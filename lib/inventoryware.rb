@@ -36,13 +36,17 @@ end
 
 require_relative 'cli'
 require_relative 'lsblk_parser'
+require 'erubis'
 require 'lshw'
 require 'tmpdir'
+require 'yaml'
 require 'zip'
 
 def check_data_source?(data_source)
   !(File.file?(data_source) && File.extname(data_source) == ".zip")
 end
+
+TARGET_FILE = '/opt/inventory_tools/domain'
 
 begin
   dir = Dir.mktmpdir('inv_ware_')
@@ -53,9 +57,8 @@ begin
   options = MainParser.parse(ARGV)
 
   data_source = options['data_source']
-  node = options['node']
   hash = {}
-  hash[node] = {}
+  hash['Name'] = options['node']
 
   if check_data_source?(data_source)
     puts "Error with data source #{data_source}"\
@@ -76,19 +79,21 @@ begin
   lshw = Lshw::XML(f)
   f.close
 
-  hash[node]['Hardware Type'] = lshw.product
+  hash['Hardware Type'] = lshw.product
 
-  hash[node]['System Serial Number'] = lshw.serial
+  hash['System Serial Number'] = lshw.serial
 
-  hash[node]['Primary Group'] = options['pri_group']
+  hash['Primary Group'] = options['pri_group']
 
-  hash[node]['Secondary Groups'] = options['sec_groups']
+  hash['Secondary Groups'] = options['sec_groups']
 
-  hash[node]['CPUs'] = {}
+  hash['BIOS Version'] = lshw.firmware.first.version
+
+  hash['CPUs'] = {}
   lshw.cpus.each do |cpu|
-    hash[node]['CPUs'][cpu.id] = {}
-    hash[node]['CPUs'][cpu.id]['Model'] = cpu.version
-    hash[node]['CPUs'][cpu.id]['Slot'] = cpu.slot
+    hash['CPUs'][cpu.id] = {}
+    hash['CPUs'][cpu.id]['Model'] = cpu.version
+    hash['CPUs'][cpu.id]['Slot'] = cpu.slot
   end
 
   total_memory = 0
@@ -97,20 +102,41 @@ begin
       total_memory += bank.size
     end
   end
-  hash[node]['Total Memory'] = total_memory
 
-  hash[node]['Interfaces'] = {}
+  hash['Total Memory'] = total_memory
+
+  hash['Interfaces'] = {}
   lshw.all_network_interfaces.each do |net|
-    hash[node]['Interfaces'][net.logical_name] = {"Serial"=>net.mac}
+    hash['Interfaces'][net.logical_name] = {}
+    hash['Interfaces'][net.logical_name]['Serial'] = net.mac
+    hash['Interfaces'][net.logical_name]['Capacity'] = net.speed #DIVIDE THIS BY BITS N THAT:
   end
 
   lsblk = LsblkParser.new(tmp_lsblk)
 
-  hash[node]['Disks'] = {}
+  hash['Disks'] = {}
   lsblk.rows.each do |row|
     if row.type == 'disk'
-      hash[node]['Disks'][row.name] = {'Size'=>row.size}
+      hash['Disks'][row.name] = {'Size'=>row.size}
     end
+  end
+
+  if !File.directory?(File.dirname(TARGET_FILE))
+    puts "Directory #{File.dirname(TARGET_FILE)} not found - please create "\
+      "before contining."
+    exit
+  end
+
+  if options['template']
+    template = File.read(options['template'])
+    eruby = Erubis::Eruby.new(template)
+    # overrides existing target file
+    File.open(TARGET_FILE, 'w') { |file| file.write(eruby.result(:hash=>hash)) }
+  else
+    # make the node's name a key for the whole hash for pretty output
+    yaml_hash = { hash['Name'] => hash }
+    # appends to existing target file
+    File.open(TARGET_FILE, 'a') { |file| file.write(yaml_hash.to_yaml) }
   end
 ensure
   FileUtils.remove_entry dir
