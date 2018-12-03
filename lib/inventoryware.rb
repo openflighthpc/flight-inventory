@@ -109,7 +109,7 @@ begin
   lshw.all_network_interfaces.each do |net|
     hash['Interfaces'][net.logical_name] = {}
     hash['Interfaces'][net.logical_name]['Serial'] = net.mac
-    hash['Interfaces'][net.logical_name]['Capacity'] = net.speed #DIVIDE THIS BY BITS N THAT:
+    hash['Interfaces'][net.logical_name]['Capacity'] = net.capacity
   end
 
   lsblk = LsblkParser.new(tmp_lsblk)
