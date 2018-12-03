@@ -46,6 +46,7 @@ def check_data_source?(data_source)
   !(File.file?(data_source) && File.extname(data_source) == ".zip")
 end
 
+# convert decimal amount of bits to a human readable format
 def format_bits_value(bits_value, suffix)
   value = bits_value
   counter = 0
@@ -82,6 +83,7 @@ TARGET_FILE = '/opt/inventory_tools/domain'
 REQ_FILES = ["lshw-xml.txt", "lsblk-a-P.txt"]
 
 begin
+  #create a tmp file for each required file
   dir = Dir.mktmpdir('inv_ware_')
   file_locations = {}
   REQ_FILES.each do |file|
@@ -93,6 +95,7 @@ begin
     exit
   end
 
+  # grab first arguments
   hash = {}
   hash['Name'] = ARGV.first
   ARGV.shift
@@ -102,12 +105,14 @@ begin
   # parse remaining options
   options = MainParser.parse(ARGV)
 
+  # confirm data exists and is in right format (.zip)
   if check_data_source?(data_source)
     puts "Error with data source #{data_source}"\
          "- must be zip file"
     exit
   end
 
+  # unzip data and extract each required file to the created tmp files
   Zip::File.open(data_source) do |zip_file|
     zip_file.each do |entry|
       puts "Extracting #{entry.name}"
@@ -122,6 +127,7 @@ begin
     end
   end
 
+  # extract data from lshw
   f = File.open(file_locations['lshw-xml.txt'])
   lshw = Lshw::XML(f)
   f.close
@@ -160,6 +166,7 @@ begin
       format_bits_value(net.capacity, 'bit/s')
   end
 
+  # extract data from lsblk
   lsblk = LsblkParser.new(file_locations['lsblk-a-P.txt'])
 
   hash['Disks'] = {}
@@ -169,12 +176,16 @@ begin
     end
   end
 
+  # confirm file location exists
+  # decided against creating location if it did not exist as it requires sudo
+  #   execution - it may be that this would be better changed
   if !File.directory?(File.dirname(TARGET_FILE))
     puts "Directory #{File.dirname(TARGET_FILE)} not found - please create "\
       "before contining."
     exit
   end
 
+  # output
   if options['template']
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
