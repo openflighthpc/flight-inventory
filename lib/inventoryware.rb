@@ -47,14 +47,23 @@ def check_data_source?(data_source)
 end
 
 # convert decimal amount of bits to a human readable format
-def format_bits_value(bits_value, suffix)
-  value = bits_value
+def format_bits_value(bits_value)
+  format_data_value(bits_value, 1000, 'bit/s')
+end
+
+# convert binary amount of bytes to a human readable format
+def format_bytes_value(bytes_value)
+  format_data_value(bytes_value, 1024, 'iB')
+end
+
+def format_data_value(orig_value, grouping, suffix)
+  value = orig_value
   counter = 0
-  while value >= 1000
+  while value >= grouping
     counter += 1
-    value /= 1000
+    value /= grouping
   end
-  (value*1000).round / 1000.0
+  (value*grouping).round / grouping.to_f
   case counter
   when 0
     prefix = ''
@@ -73,7 +82,7 @@ def format_bits_value(bits_value, suffix)
   end
   # prevent errors if the counter gets too large, return original value
   if prefix == ''
-    "#{bits_value} #{suffix}"
+    "#{orig_value} #{suffix}"
   else
     "#{value} #{prefix}#{suffix}"
   end
@@ -156,14 +165,14 @@ begin
     end
   end
 
-  hash['Total Memory'] = total_memory
+  hash['Total Memory'] = format_bytes_value(total_memory)
 
   hash['Interfaces'] = {}
   lshw.all_network_interfaces.each do |net|
     hash['Interfaces'][net.logical_name] = {}
     hash['Interfaces'][net.logical_name]['Serial'] = net.mac
     hash['Interfaces'][net.logical_name]['Capacity'] = \
-      format_bits_value(net.capacity, 'bit/s')
+      format_bits_value(net.capacity)
   end
 
   # extract data from lsblk
