@@ -9,7 +9,7 @@ Command structure is:
 
 The zip must contain a lshw-xml.txt and a lsblk-a-P.txt
 
-Output is to a fixed location - `/opt/inventory_tools/domain`
+Output is to a fixed location - `/opt/inventoryware/output/domain`
 If no template is provided the node's information is appended to the destination file.
 If a template is provided it is filled as eRuby and the desitation file is overwritten with the
 resulting markdown.
@@ -19,7 +19,6 @@ resulting markdown.
 ```
 cd /opt
 git clone https://github.com/alces-software/inventoryware.git
-mkdir inventory_tools
 ```
 
 The script is located within `/opt/inventoryware/lib`

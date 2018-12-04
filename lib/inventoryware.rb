@@ -79,7 +79,7 @@ def format_bits_value(bits_value, suffix)
   end
 end
 
-TARGET_FILE = '/opt/inventory_tools/domain'
+TARGET_FILE = '/opt/inventoryware/output/domain'
 REQ_FILES = ["lshw-xml", "lsblk-a-P"]
 
 begin
