@@ -216,6 +216,7 @@ begin
       end
     end
     yaml_hash[hash['Name']] = hash
+    yaml_hash = Hash[yaml_hash.sort_by { |k,v| k }]
     File.open(YAML_FILE, 'w') { |file| file.write(yaml_hash.to_yaml) }
   end
 ensure
