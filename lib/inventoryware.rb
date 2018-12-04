@@ -88,7 +88,8 @@ def format_data_value(orig_value, grouping, suffix)
   end
 end
 
-TARGET_FILE = '/opt/inventoryware/output/domain'
+OUTPUT_DIR = '/opt/inventoryware/output'
+YAML_FILE = "#{OUTPUT_DIR}/domain"
 REQ_FILES = ["lshw-xml", "lsblk-a-P"]
 
 begin
@@ -188,8 +189,8 @@ begin
   # confirm file location exists
   # decided against creating location if it did not exist as it requires sudo
   #   execution - it may be that this would be better changed
-  if !File.directory?(File.dirname(TARGET_FILE))
-    puts "Directory #{File.dirname(TARGET_FILE)} not found - please create it"\
+  if !File.directory?(OUTPUT_DIR)
+    puts "Directory #{OUTPUT_DIR} not found - please create it"\
       "before contining."
     exit
   end
@@ -198,20 +199,24 @@ begin
   if options['template']
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
+    template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
+    template_out_file = "#{OUTPUT_DIR}/#{template_out_name}"
     # overrides existing target file
-    File.open(TARGET_FILE, 'w') { |file| file.write(eruby.result(:hash=>hash)) }
+    File.open(template_out_file, 'w') do |file|
+      file.write(eruby.result(:hash=>hash))
+    end
   else
     yaml_hash = {}
-    if File.file?(TARGET_FILE)
+    if File.file?(YAML_FILE)
       begin
-        yaml_hash = YAML.load_file(TARGET_FILE)
+        yaml_hash = YAML.load_file(YAML_FILE)
       rescue Psych::SyntaxError
         # If the file is not valid yaml we delete it & keep the hash empty
         # Psych is the underlying library YAML uses
       end
     end
     yaml_hash[hash['Name']] = hash
-    File.open(TARGET_FILE, 'w') { |file| file.write(yaml_hash.to_yaml) }
+    File.open(YAML_FILE, 'w') { |file| file.write(yaml_hash.to_yaml) }
   end
 ensure
   FileUtils.remove_entry dir
