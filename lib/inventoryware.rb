@@ -80,7 +80,7 @@ def format_bits_value(bits_value, suffix)
 end
 
 TARGET_FILE = '/opt/inventory_tools/domain'
-REQ_FILES = ["lshw-xml.txt", "lsblk-a-P.txt"]
+REQ_FILES = ["lshw-xml", "lsblk-a-P"]
 
 begin
   #create a tmp file for each required file
@@ -108,7 +108,7 @@ begin
   # confirm data exists and is in right format (.zip)
   if check_data_source?(data_source)
     puts "Error with data source #{data_source}"\
-         "- must be zip file"
+         " - must be zip file"
     exit
   end
 
@@ -117,9 +117,9 @@ begin
     zip_file.each do |entry|
       puts "Extracting #{entry.name}"
     end
-    if file_locations.all? { |file, v| zip_file.glob(file).first }
+    if file_locations.all? { |file, v| zip_file.glob("#{file}*").first }
       file_locations.each do |file, value|
-        zip_file.glob(file).first.extract(value)
+        zip_file.glob("#{file}*").first.extract(value)
       end
     else
       puts "#{REQ_FILES.join(" & ")} files required in .zip but not found."
@@ -128,7 +128,7 @@ begin
   end
 
   # extract data from lshw
-  f = File.open(file_locations['lshw-xml.txt'])
+  f = File.open(file_locations['lshw-xml'])
   lshw = Lshw::XML(f)
   f.close
 
@@ -167,7 +167,7 @@ begin
   end
 
   # extract data from lsblk
-  lsblk = LsblkParser.new(file_locations['lsblk-a-P.txt'])
+  lsblk = LsblkParser.new(file_locations['lsblk-a-P'])
 
   hash['Disks'] = {}
   lsblk.rows.each do |row|
