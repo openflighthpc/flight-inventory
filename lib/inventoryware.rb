@@ -189,7 +189,7 @@ begin
   # decided against creating location if it did not exist as it requires sudo
   #   execution - it may be that this would be better changed
   if !File.directory?(File.dirname(TARGET_FILE))
-    puts "Directory #{File.dirname(TARGET_FILE)} not found - please create "\
+    puts "Directory #{File.dirname(TARGET_FILE)} not found - please create it"\
       "before contining."
     exit
   end
@@ -201,10 +201,17 @@ begin
     # overrides existing target file
     File.open(TARGET_FILE, 'w') { |file| file.write(eruby.result(:hash=>hash)) }
   else
-    # make the node's name a key for the whole hash for pretty output
-    yaml_hash = { hash['Name'] => hash }
-    # appends to existing target file
-    File.open(TARGET_FILE, 'a') { |file| file.write(yaml_hash.to_yaml) }
+    yaml_hash = {}
+    if File.file?(TARGET_FILE)
+      begin
+        yaml_hash = YAML.load_file(TARGET_FILE)
+      rescue Psych::SyntaxError
+        # If the file is not valid yaml we delete it & keep the hash empty
+        # Psych is the underlying library YAML uses
+      end
+    end
+    yaml_hash[hash['Name']] = hash
+    File.open(TARGET_FILE, 'w') { |file| file.write(yaml_hash.to_yaml) }
   end
 ensure
   FileUtils.remove_entry dir
