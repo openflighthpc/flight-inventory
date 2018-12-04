@@ -23,3 +23,17 @@ mkdir inventory_tools
 ```
 
 The script is located within `/opt/inventoryware/lib`
+
+## Development
+
+It is recommended that Inventoryware is developed locally (so you have all your local
+development tools available) and synced, run, and tested in a clean remote environment (to
+be in an environment close to what it will normally use in production, and to avoid polluting
+or depending on things in your local environment).
+
+To aid this there is a MakeFile containing `watch-rsync` instructions
+```
+gem install rerun # If you don't have this already.
+make watch-rsync PASSWORD="password for machine" IP="ip of machine"
+```
+This will keep your working directory synced to `/tmp/inventoryware`
