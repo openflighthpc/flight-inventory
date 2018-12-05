@@ -30,7 +30,8 @@ class MainParser
   options['template'] = nil
 
   opt_parser = OptionParser.new do |opt|
-    opt.banner = "Usage inventoryware NODE DATA [GROUPS]"
+    opt.banner = "Usage inventoryware NODE_NAME DATA [PRIMARY_GROUP]" +\
+      " [SECONDARY_GROUPS] [TEMPLATE]"
 
     opt.on("-p", "--primary-group PRIMARY-GROUP",
            "Assign the node to PRMIARY-GROUP") do |pri_g|
@@ -47,7 +48,7 @@ class MainParser
       options['template'] = templ
     end
 
-    opt.on("-h","--help","show this help screen") do
+    opt.on("-h","--help","Show this help screen") do
       puts opt
       exit
     end

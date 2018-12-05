@@ -100,6 +100,9 @@ begin
     file_locations[file] = File.join(dir, file)
   end
 
+  # parse remaining options
+  options = MainParser.parse(ARGV)
+
   if ARGV.length() < 2
     puts "Node and data source not specified"
     exit
@@ -111,9 +114,6 @@ begin
   ARGV.shift
   data_source = ARGV.first
   ARGV.shift
-
-  # parse remaining options
-  options = MainParser.parse(ARGV)
 
   # confirm data exists and is in right format (.zip)
   if check_data_source?(data_source)
