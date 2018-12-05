@@ -37,7 +37,6 @@ end
 require_relative 'cli'
 require_relative 'lsblk_parser'
 require 'erubis'
-require 'lshw'
 require 'tmpdir'
 require 'yaml'
 require 'zip'
@@ -135,45 +134,6 @@ begin
       puts "#{REQ_FILES.join(" & ")} files required in .zip but not found."
       exit
     end
-  end
-
-  # extract data from lshw
-  f = File.open(file_locations['lshw-xml'])
-  lshw = Lshw::XML(f)
-  f.close
-
-  hash['Primary Group'] = options['pri_group']
-
-  hash['Secondary Groups'] = options['sec_groups']
-
-  hash['Hardware Type'] = lshw.product
-
-  hash['System Serial Number'] = lshw.serial
-
-  hash['BIOS Version'] = lshw.firmware.first.version
-
-  hash['CPUs'] = {}
-  lshw.cpus.each do |cpu|
-    hash['CPUs'][cpu.id] = {}
-    hash['CPUs'][cpu.id]['Model'] = cpu.version
-    hash['CPUs'][cpu.id]['Slot'] = cpu.slot
-  end
-
-  total_memory = 0
-  lshw.memory_nodes.each do |mem|
-    mem.banks.each do |bank|
-      total_memory += bank.size
-    end
-  end
-
-  hash['Total Memory'] = format_bytes_value(total_memory)
-
-  hash['Interfaces'] = {}
-  lshw.all_network_interfaces.each do |net|
-    hash['Interfaces'][net.logical_name] = {}
-    hash['Interfaces'][net.logical_name]['Serial'] = net.mac
-    hash['Interfaces'][net.logical_name]['Capacity'] = \
-      format_bits_value(net.capacity)
   end
 
   # extract data from lsblk

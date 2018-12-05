@@ -3,7 +3,6 @@
 source 'https://rubygems.org'
 
 gem 'erubis'
-gem 'lshw', github: 'alces-software/lshw'
 gem 'rubyzip'
 
 group :development do
