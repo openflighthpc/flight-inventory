@@ -46,14 +46,24 @@ def check_data_source?(data_source)
   !(File.file?(data_source) && File.extname(data_source) == ".zip")
 end
 
-def format_bits_value(bits_value, suffix)
-  value = bits_value
+# convert decimal amount of bits to a human readable format
+def format_bits_value(bits_value)
+  format_data_value(bits_value, 1000, 'bit/s')
+end
+
+# convert binary amount of bytes to a human readable format
+def format_bytes_value(bytes_value)
+  format_data_value(bytes_value, 1024, 'iB')
+end
+
+def format_data_value(orig_value, grouping, suffix)
+  value = orig_value
   counter = 0
-  while value >= 1000
+  while value >= grouping
     counter += 1
-    value /= 1000
+    value /= grouping
   end
-  (value*1000).round / 1000.0
+  (value*grouping).round / grouping.to_f
   case counter
   when 0
     prefix = ''
@@ -72,42 +82,63 @@ def format_bits_value(bits_value, suffix)
   end
   # prevent errors if the counter gets too large, return original value
   if prefix == ''
-    "#{bits_value} #{suffix}"
+    "#{orig_value} #{suffix}"
   else
     "#{value} #{prefix}#{suffix}"
   end
 end
 
-TARGET_FILE = '/opt/inventory_tools/domain'
+OUTPUT_DIR = '/opt/inventoryware/output'
+YAML_FILE = "#{OUTPUT_DIR}/domain"
+REQ_FILES = ["lshw-xml", "lsblk-a-P"]
 
 begin
+  #create a tmp file for each required file
   dir = Dir.mktmpdir('inv_ware_')
-  tmp_lshw_xml = File.join(dir, 'lshw_xml')
-  tmp_lsblk = File.join(dir, 'lsblk')
+  file_locations = {}
+  REQ_FILES.each do |file|
+    file_locations[file] = File.join(dir, file)
+  end
 
-  # Parse arguments
+  # parse remaining options
   options = MainParser.parse(ARGV)
 
-  data_source = options['data_source']
-  hash = {}
-  hash['Name'] = options['node']
-
-  if check_data_source?(data_source)
-    puts "Error with data source #{data_source}"\
-         "- must be zip file"
+  if ARGV.length() < 2
+    puts "Node and data source not specified"
     exit
   end
 
+  # grab first arguments
+  hash = {}
+  hash['Name'] = ARGV.first
+  ARGV.shift
+  data_source = ARGV.first
+  ARGV.shift
+
+  # confirm data exists and is in right format (.zip)
+  if check_data_source?(data_source)
+    puts "Error with data source #{data_source}"\
+         " - must be zip file"
+    exit
+  end
+
+  # unzip data and extract each required file to the created tmp files
   Zip::File.open(data_source) do |zip_file|
     zip_file.each do |entry|
       puts "Extracting #{entry.name}"
     end
-    zip_file.glob('lshw-xml.txt').first.extract(tmp_lshw_xml)
-    zip_file.glob('lsblk-a-P.txt').first.extract(tmp_lsblk)
+    if file_locations.all? { |file, v| zip_file.glob("#{file}*").first }
+      file_locations.each do |file, value|
+        zip_file.glob("#{file}*").first.extract(value)
+      end
+    else
+      puts "#{REQ_FILES.join(" & ")} files required in .zip but not found."
+      exit
+    end
   end
 
-  #TODO sort error conditions here
-  f = File.open(tmp_lshw_xml)
+  # extract data from lshw
+  f = File.open(file_locations['lshw-xml'])
   lshw = Lshw::XML(f)
   f.close
 
@@ -135,17 +166,18 @@ begin
     end
   end
 
-  hash['Total Memory'] = total_memory
+  hash['Total Memory'] = format_bytes_value(total_memory)
 
   hash['Interfaces'] = {}
   lshw.all_network_interfaces.each do |net|
     hash['Interfaces'][net.logical_name] = {}
     hash['Interfaces'][net.logical_name]['Serial'] = net.mac
     hash['Interfaces'][net.logical_name]['Capacity'] = \
-      format_bits_value(net.capacity, 'bit/s')
+      format_bits_value(net.capacity)
   end
 
-  lsblk = LsblkParser.new(tmp_lsblk)
+  # extract data from lsblk
+  lsblk = LsblkParser.new(file_locations['lsblk-a-P'])
 
   hash['Disks'] = {}
   lsblk.rows.each do |row|
@@ -154,22 +186,38 @@ begin
     end
   end
 
-  if !File.directory?(File.dirname(TARGET_FILE))
-    puts "Directory #{File.dirname(TARGET_FILE)} not found - please create "\
+  # confirm file location exists
+  # decided against creating location if it did not exist as it requires sudo
+  #   execution - it may be that this would be better changed
+  if !File.directory?(OUTPUT_DIR)
+    puts "Directory #{OUTPUT_DIR} not found - please create it"\
       "before contining."
     exit
   end
 
+  # output
   if options['template']
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
+    template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
+    template_out_file = "#{OUTPUT_DIR}/#{template_out_name}"
     # overrides existing target file
-    File.open(TARGET_FILE, 'w') { |file| file.write(eruby.result(:hash=>hash)) }
+    File.open(template_out_file, 'w') do |file|
+      file.write(eruby.result(:hash=>hash))
+    end
   else
-    # make the node's name a key for the whole hash for pretty output
-    yaml_hash = { hash['Name'] => hash }
-    # appends to existing target file
-    File.open(TARGET_FILE, 'a') { |file| file.write(yaml_hash.to_yaml) }
+    yaml_hash = {}
+    if File.file?(YAML_FILE)
+      begin
+        yaml_hash = YAML.load_file(YAML_FILE)
+      rescue Psych::SyntaxError
+        # If the file is not valid yaml we delete it & keep the hash empty
+        # Psych is the underlying library YAML uses
+      end
+    end
+    yaml_hash[hash['Name']] = hash
+    yaml_hash = Hash[yaml_hash.sort_by { |k,v| k }]
+    File.open(YAML_FILE, 'w') { |file| file.write(yaml_hash.to_yaml) }
   end
 ensure
   FileUtils.remove_entry dir
