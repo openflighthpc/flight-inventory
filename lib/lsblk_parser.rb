@@ -33,13 +33,18 @@ class LsblkParser
   end
   
   class LsblkRow
-    attr_reader :name, :type, :size
+    attr_reader :name, :type, :size, :maj_min, :rm, :ro, :mountpoint
 
     def initialize(row)
       @row = row
       @name = find_value('NAME')
       @type = find_value('TYPE') 
       @size = find_value('SIZE')
+      @maj_min = find_value('MAJ:MIN')
+      @rm = find_value('RM')
+      @ro = find_value('RO')
+      @mountpoint = find_value('MOUNTPOINT')
+
     end
 
     def find_value(key)

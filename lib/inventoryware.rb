@@ -147,11 +147,18 @@ begin
   # extract data from lsblk
   lsblk = LsblkParser.new(file_locations['lsblk-a-P'])
 
-  hash['Disks'] = {}
+  hash['lsblk'] = {}
   lsblk.rows.each do |row|
-    if row.type == 'disk'
-      hash['Disks'][row.name] = {'Size'=>row.size}
+    if !hash['lsblk'][row.type]
+      hash['lsblk'][row.type] = {}
     end
+    hash['lsblk'][row.type][row.name] = {
+      'MAJ:MIN' => row.maj_min,
+      'RM' => row.rm,
+      'SIZE' => row.size,
+      'RO' => row.ro,
+      'MOUNTPOINT' => row.mountpoint
+    }
   end
 
   # confirm file location exists
