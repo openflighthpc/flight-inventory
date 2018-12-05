@@ -38,6 +38,7 @@ require_relative 'cli'
 require_relative 'lsblk_parser'
 require 'erubis'
 require 'tmpdir'
+require 'xmlhasher'
 require 'yaml'
 require 'zip'
 
@@ -135,6 +136,13 @@ begin
       exit
     end
   end
+
+  hash['Primary Group'] = options['pri_group']
+
+  hash['Secondary Groups'] = options['sec_groups']
+
+  #this may need to be changed to not "slurp" the file
+  hash['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))
 
   # extract data from lsblk
   lsblk = LsblkParser.new(file_locations['lsblk-a-P'])
