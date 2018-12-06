@@ -37,6 +37,9 @@ pushd $TMPDIR
 lshw -xml > lshw-xml
 lsblk -a -P > lsblk-a-P
 lshw -short > lshw-short
+ifconfig -a > ifconfig-a
+fdisk -l > fdisk-l
+rpm -qa || dpkg -l > packages
 if [[ $OPTIONAL_CMDS == *"lscpu"* ]] ; then lscpu > lscpu ; fi
 if [[ $OPTIONAL_CMDS == *"lsusb"* ]] ; then lsusb -v > lsusb-v ; fi
 if [[ $OPTIONAL_CMDS == *"lspci"* ]] ; then lspci -v > lspci-v ; fi

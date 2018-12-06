@@ -41,6 +41,9 @@ pushd $TMPDIR
 ssh $NODE "lshw -xml" > lshw-xml
 ssh $NODE "lsblk -a -P" > lsblk-a-P
 ssh $NODE "lshw -short" > lshw-short
+ssh $NODE "ifconfig -a" > ifconfig-a
+ssh $NODE "fdisk -l" > fdisk-l
+ssh $NODE "rpm -qa || dpkg -l" > packages
 if [[ $OPTIONAL_CMDS == *"lscpu"* ]] ; then ssh $NODE "lscpu" > lscpu ; fi
 if [[ $OPTIONAL_CMDS == *"lsusb"* ]] ; then ssh $NODE "lsusb -v" > lsusb-v ; fi
 if [[ $OPTIONAL_CMDS == *"lspci"* ]] ; then ssh $NODE "lspci -v" > lspci-v ; fi
