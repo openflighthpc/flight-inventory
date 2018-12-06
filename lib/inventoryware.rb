@@ -36,6 +36,7 @@ end
 
 require_relative 'cli'
 require_relative 'lsblk_parser'
+require_relative 'utils'
 require 'erubis'
 require 'tmpdir'
 require 'xmlhasher'
@@ -141,7 +142,12 @@ begin
 
   hash['Secondary Groups'] = options['sec_groups']
 
-  #this may need to be changed to not "slurp" the file
+  XmlHasher.configure do |config|
+    config.snakecase = true
+    config.ignore_namespaces = true
+    config.string_keys = true
+  end
+
   hash['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))
 
   # extract data from lsblk
@@ -178,7 +184,7 @@ begin
     template_out_file = "#{OUTPUT_DIR}/#{template_out_name}"
     # overrides existing target file
     File.open(template_out_file, 'w') do |file|
-      file.write(eruby.result(:hash=>hash))
+      file.write(eruby.result(binding()))
     end
   else
     yaml_hash = {}

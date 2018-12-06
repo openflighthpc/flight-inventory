@@ -10,39 +10,39 @@
 
   ## BIOS Version
 
-  <%= hash['BIOS Version'] %>
+  <%= hash['lshw']['list']['node']['product'] %>
 
   ## System Serial Number
 
-  <%= hash['System Serial Number'] %>
+  <%= hash['lshw']['list']['node']['serial'] %>
 
   ## CPU(s)
 
-  <% hash['CPUs'].each do |cpu, values| %>
-  ### <%= cpu %>
+  <% find_hashes_with_key_value(hash, 'class', 'processor').each do |cpu| %>
+  ### <%= cpu['id'] %>
 
-  model: <%= values['Model'] %>
-  slot: <%= values['Slot'] %>
+  model: <%= cpu['version'] %>
+  slot: <%= cpu['slot'] %>
 
-  <%end%>
+  <% end %>
 
   ## RAM
 
-  - Total: <%= hash['Total Memory'] %>
+  - Total: <%= format_bytes_value(find_total_memory(hash)) %>
 
 
   # Network Devices
 
   | Interface | Speed | MAC |
   |-----------|-------|-----|
-  <% hash['Interfaces'].each do |net, values| %>
-  | <%= net %> | <%= values['Capacity'] %> | <%= values['Serial'] %> |
+  <% find_hashes_with_key_value(hash, 'class', 'network').each do |net| %>
+  |<%= net['logicalname'] %> | <%= format_bits_value(net['capacity'].to_i || 0) %> | <%= net['serial'] %> |
   <% end %>
 
   # Disks
 
   | Device | Size |
   |--------|------|
-  <% hash['Disks'].each do |disk, values| %>
-  | <%= disk %> | <%= values['Size'] %> |
+  <% hash['lsblk']['disk'].each do |disk, values| %>
+  | <%= disk %> | <%= values['SIZE'] %> |
   <% end %>
