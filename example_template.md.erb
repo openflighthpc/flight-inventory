@@ -11,7 +11,7 @@
 
   ## BIOS Version
 
-  <%= hash['lshw']['list']['node']['product'] %>
+  <%= find_hashes_with_key_value(hash, 'id', 'firmware').first['version'] %>
 
   ## System Serial Number
 
