@@ -6,6 +6,7 @@
     <%= "- #{grp}" %>
   <% end %>
 
+
   # System
 
   ## BIOS Version
@@ -25,7 +26,6 @@
   slot: <%= cpu['slot'] %>
 
   <% end %>
-
   ## RAM
 
   - Total: <%= format_bytes_value(find_total_memory(hash)) %>
@@ -38,6 +38,7 @@
   <% find_hashes_with_key_value(hash, 'class', 'network').each do |net| %>
   |<%= net['logicalname'] %> | <%= format_bits_value(net['capacity'].to_i || 0) %> | <%= net['serial'] %> |
   <% end %>
+
 
   # Disks
 
