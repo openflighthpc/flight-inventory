@@ -3,17 +3,17 @@
 NODE=$1
 
 # Install CentOS/RHEL
-# yum install lshw util-linux 
+# yum install lshw util-linux redhat-lsb-core
 # Install SLES/Suse
-# zypper in lshw util-linux 
+# zypper in lshw util-linux lsb-release
 # Install Ubuntu
-# apt-get install lshw util-linux 
+# apt-get install lshw util-linux lsb-release
 
 #
 # Check for required commands
 #
 ssh $NODE '
-COMMANDS="lshw lsblk" 
+COMMANDS="lshw lsblk lsb_release" 
 for cmd in $COMMANDS ; do
     if ! command -v $cmd >/dev/null 2>&1 ;then
         echo "Command $cmd not found, ensure it is installed for program to continue"
@@ -44,6 +44,9 @@ ssh $NODE "lshw -short" > lshw-short
 ssh $NODE "ifconfig -a" > ifconfig-a
 ssh $NODE "fdisk -l" > fdisk-l
 ssh $NODE "rpm -qa || dpkg -l" > packages
+ssh $NODE "cat /etc/os-release" > os-release
+ssh $NODE "uname -a" > uname-a
+ssh $NODE "lsb_release -a" > lsb_release-a
 if [[ $OPTIONAL_CMDS == *"lscpu"* ]] ; then ssh $NODE "lscpu" > lscpu ; fi
 if [[ $OPTIONAL_CMDS == *"lsusb"* ]] ; then ssh $NODE "lsusb -v" > lsusb-v ; fi
 if [[ $OPTIONAL_CMDS == *"lspci"* ]] ; then ssh $NODE "lspci -v" > lspci-v ; fi

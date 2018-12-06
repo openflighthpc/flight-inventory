@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Install CentOS/RHEL
-# yum install lshw util-linux 
+# yum install lshw util-linux redhat-lsb-core
 # Install SLES/Suse
-# zypper in lshw util-linux 
+# zypper in lshw util-linux lsb-release
 # Install Ubuntu
-# apt-get install lshw util-linux 
+# apt-get install lshw util-linux lsb-release 
 
 #
 # Check for required commands
 #
-COMMANDS="lshw lsblk"
+COMMANDS="lshw lsblk lsb_release"
 
 for cmd in $COMMANDS ; do
     if ! command -v $cmd >/dev/null 2>&1 ;then
@@ -40,6 +40,9 @@ lshw -short > lshw-short
 ifconfig -a > ifconfig-a
 fdisk -l > fdisk-l
 rpm -qa || dpkg -l > packages
+cat /etc/os-release > os-release
+uname -a > uname-a
+lsb_release -a > lsb_release-a
 if [[ $OPTIONAL_CMDS == *"lscpu"* ]] ; then lscpu > lscpu ; fi
 if [[ $OPTIONAL_CMDS == *"lsusb"* ]] ; then lsusb -v > lsusb-v ; fi
 if [[ $OPTIONAL_CMDS == *"lspci"* ]] ; then lspci -v > lspci-v ; fi
