@@ -36,56 +36,15 @@ end
 
 require_relative 'cli'
 require_relative 'lsblk_parser'
+require_relative 'utils'
 require 'erubis'
-require 'lshw'
 require 'tmpdir'
+require 'xmlhasher'
 require 'yaml'
 require 'zip'
 
 def check_data_source?(data_source)
   !(File.file?(data_source) && File.extname(data_source) == ".zip")
-end
-
-# convert decimal amount of bits to a human readable format
-def format_bits_value(bits_value)
-  format_data_value(bits_value, 1000, 'bit/s')
-end
-
-# convert binary amount of bytes to a human readable format
-def format_bytes_value(bytes_value)
-  format_data_value(bytes_value, 1024, 'iB')
-end
-
-def format_data_value(orig_value, grouping, suffix)
-  value = orig_value
-  counter = 0
-  while value >= grouping
-    counter += 1
-    value /= grouping
-  end
-  (value*grouping).round / grouping.to_f
-  case counter
-  when 0
-    prefix = ''
-  when 1
-    prefix = 'K'
-  when 2
-    prefix = 'M'
-  when 3
-    prefix = 'G'
-  when 4
-    prefix = 'T'
-  when 5
-    prefix = 'P'
-  else
-    prefix = ''
-  end
-  # prevent errors if the counter gets too large, return original value
-  if prefix == ''
-    "#{orig_value} #{suffix}"
-  else
-    "#{value} #{prefix}#{suffix}"
-  end
 end
 
 OUTPUT_DIR = '/opt/inventoryware/output'
@@ -137,53 +96,33 @@ begin
     end
   end
 
-  # extract data from lshw
-  f = File.open(file_locations['lshw-xml'])
-  lshw = Lshw::XML(f)
-  f.close
-
   hash['Primary Group'] = options['pri_group']
 
   hash['Secondary Groups'] = options['sec_groups']
 
-  hash['Hardware Type'] = lshw.product
-
-  hash['System Serial Number'] = lshw.serial
-
-  hash['BIOS Version'] = lshw.firmware.first.version
-
-  hash['CPUs'] = {}
-  lshw.cpus.each do |cpu|
-    hash['CPUs'][cpu.id] = {}
-    hash['CPUs'][cpu.id]['Model'] = cpu.version
-    hash['CPUs'][cpu.id]['Slot'] = cpu.slot
+  XmlHasher.configure do |config|
+    config.snakecase = true
+    config.ignore_namespaces = true
+    config.string_keys = true
   end
 
-  total_memory = 0
-  lshw.memory_nodes.each do |mem|
-    mem.banks.each do |bank|
-      total_memory += bank.size
-    end
-  end
-
-  hash['Total Memory'] = format_bytes_value(total_memory)
-
-  hash['Interfaces'] = {}
-  lshw.all_network_interfaces.each do |net|
-    hash['Interfaces'][net.logical_name] = {}
-    hash['Interfaces'][net.logical_name]['Serial'] = net.mac
-    hash['Interfaces'][net.logical_name]['Capacity'] = \
-      format_bits_value(net.capacity)
-  end
+  hash['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))
 
   # extract data from lsblk
   lsblk = LsblkParser.new(file_locations['lsblk-a-P'])
 
-  hash['Disks'] = {}
+  hash['lsblk'] = {}
   lsblk.rows.each do |row|
-    if row.type == 'disk'
-      hash['Disks'][row.name] = {'Size'=>row.size}
+    if !hash['lsblk'][row.type]
+      hash['lsblk'][row.type] = {}
     end
+    hash['lsblk'][row.type][row.name] = {
+      'MAJ:MIN' => row.maj_min,
+      'RM' => row.rm,
+      'SIZE' => row.size,
+      'RO' => row.ro,
+      'MOUNTPOINT' => row.mountpoint
+    }
   end
 
   # confirm file location exists
@@ -203,7 +142,7 @@ begin
     template_out_file = "#{OUTPUT_DIR}/#{template_out_name}"
     # overrides existing target file
     File.open(template_out_file, 'w') do |file|
-      file.write(eruby.result(:hash=>hash))
+      file.write(eruby.result(binding()))
     end
   else
     yaml_hash = {}

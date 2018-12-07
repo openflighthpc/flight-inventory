@@ -1,0 +1,49 @@
+<%= hash['Name'] %>
+  name: <%= hash['Name'] %>
+  primary_groups: <%= hash['Primary Group'] %>
+  secondary_groups:
+  <% hash['Secondary Groups'].each do |grp| %>
+    <%= "- #{grp}" %>
+  <% end %>
+
+
+  # System
+
+  ## BIOS Version
+
+  <%= find_hashes_with_key_value(hash, 'id', 'firmware').first['version'] %>
+
+  ## System Serial Number
+
+  <%= hash['lshw']['list']['node']['serial'] %>
+
+  ## CPU(s)
+
+  <% find_hashes_with_key_value(hash, 'class', 'processor').each do |cpu| %>
+  ### <%= cpu['id'] %>
+
+  model: <%= cpu['version'] %>
+  slot: <%= cpu['slot'] %>
+
+  <% end %>
+  ## RAM
+
+  - Total: <%= format_bytes_value(find_total_memory(hash)) %>
+
+
+  # Network Devices
+
+  | Interface | Speed | MAC |
+  |-----------|-------|-----|
+  <% find_hashes_with_key_value(hash, 'class', 'network').each do |net| %>
+  |<%= net['logicalname'] %> | <%= format_bits_value(net['capacity'].to_i || 0) %> | <%= net['serial'] %> |
+  <% end %>
+
+
+  # Disks
+
+  | Device | Size |
+  |--------|------|
+  <% hash['lsblk']['disk'].each do |disk, values| %>
+  | <%= disk %> | <%= values['SIZE'] %> |
+  <% end %>

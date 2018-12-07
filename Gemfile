@@ -3,8 +3,8 @@
 source 'https://rubygems.org'
 
 gem 'erubis'
-gem 'lshw', github: 'alces-software/lshw'
 gem 'rubyzip'
+gem 'xmlhasher'
 
 group :development do
   gem 'pry'
