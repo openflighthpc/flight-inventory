@@ -36,7 +36,6 @@ end
 
 require_relative 'cli'
 require_relative 'lsblk_parser'
-require_relative 'mapper'
 require_relative 'utils'
 require 'erubis'
 require 'tmpdir'
@@ -51,6 +50,7 @@ end
 OUTPUT_DIR = '/opt/inventoryware/output'
 YAML_FILE = "#{OUTPUT_DIR}/domain"
 REQ_FILES = ["lshw-xml", "lsblk-a-P"]
+MAPPING = YAML.load_file(File.join(File.dirname(__FILE__), "../mapping.yaml"))
 
 begin
   #create a tmp file for each required file
@@ -142,7 +142,7 @@ begin
       puts "Accepted values are #{MAPPING.keys.join(" & ")}."
       exit
     end
-    os = options['os']
+    mapping = MAPPING[options['os']]
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
     template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
