@@ -50,7 +50,7 @@ end
 OUTPUT_DIR = '/opt/inventoryware/output'
 YAML_FILE = "#{OUTPUT_DIR}/domain"
 REQ_FILES = ["lshw-xml", "lsblk-a-P"]
-MAPPING = YAML.load_file(File.join(File.dirname(__FILE__), "../mapping.yaml"))
+MAPPING = YAML.load_file(File.join(lib_dir, "../mapping.yaml"))
 
 begin
   #create a tmp file for each required file
