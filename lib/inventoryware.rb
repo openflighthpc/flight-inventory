@@ -36,6 +36,7 @@ end
 
 require_relative 'cli'
 require_relative 'lsblk_parser'
+require_relative 'mapper'
 require_relative 'utils'
 require 'erubis'
 require 'tmpdir'
@@ -136,6 +137,12 @@ begin
 
   # output
   if options['template']
+    unless MAPPING.keys.include? options['os']
+      puts "Please provide a valid operating system version before continuing."
+      puts "Accepted values are #{MAPPING.keys.join(" & ")}."
+      exit
+    end
+    os = options['os']
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
     template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
