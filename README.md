@@ -4,7 +4,7 @@
 
 Command structure is:
 ```
-./inventoryware NODE ZIP_LOCATION -p PRI_GROUP -s LIST,OF,SECONDARY,GROUPS -t TEMPLATE_LOCATION
+./inventoryware NODE ZIP_LOCATION -p PRI_GROUP -s LIST,OF,SECONDARY,GROUPS -t TEMPLATE_LOCATION -o OS
 ```
 
 The zip must contain a lshw-xml.txt and a lsblk-a-P.txt
