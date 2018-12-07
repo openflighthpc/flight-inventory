@@ -129,7 +129,7 @@ begin
   # decided against creating location if it did not exist as it requires sudo
   #   execution - it may be that this would be better changed
   if !File.directory?(OUTPUT_DIR)
-    puts "Directory #{OUTPUT_DIR} not found - please create it"\
+    puts "Directory #{OUTPUT_DIR} not found - please create it "\
       "before contining."
     exit
   end
