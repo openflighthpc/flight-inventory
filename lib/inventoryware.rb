@@ -63,8 +63,8 @@ begin
   # parse remaining options
   options = MainParser.parse(ARGV)
 
-  if ARGV.length() < 2
-    puts "Node and data source not specified"
+  unless ARGV.length() == 2
+    puts "Node and data source should be the only two arguments specified."
     exit
   end
 
