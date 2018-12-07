@@ -146,7 +146,7 @@ begin
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
     template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
-    template_out_file = "#{OUTPUT_DIR}/#{template_out_name}"
+    template_out_file = File.join(OUTPUT_DIR, template_out_name)
     # overrides existing target file
     File.open(template_out_file, 'w') do |file|
       file.write(eruby.result(binding()))
