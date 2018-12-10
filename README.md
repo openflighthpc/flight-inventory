@@ -4,7 +4,7 @@
 
 Command structure is:
 ```
-./inventoryware NODE ZIP_LOCATION -p PRI_GROUP -s LIST,OF,SECONDARY,GROUPS -t TEMPLATE_LOCATION
+./inventoryware NODE ZIP_LOCATION [-p PRI_GROUP] [-s LIST,OF,SECONDARY,GROUPS] [-t TEMPLATE_LOCATION -m MAP]
 ```
 
 The zip must contain a lshw-xml.txt and a lsblk-a-P.txt
@@ -36,3 +36,16 @@ gem install rerun # If you don't have this already.
 make watch-rsync PASSWORD="password for machine" IP="ip of machine"
 ```
 This will keep your working directory synced to `/tmp/inventoryware`
+
+## Creating Templates
+
+Templates accepted by Inventoryware are .erb templates filled using Erubis. The relevant data
+is stored in and referenced from a large hash named `hash`. The top level keys indicate the
+source of the underlying data: 'Name', 'Primary Group' and 'Secondary Group' are filled via the
+command line, 'lshw' and 'lsblk are from their respective files in the zip.
+The method `find_hashes_with_key_value` is for use in navigating the hash, it will return all
+hashes with the given key-value pair regarless of it's depth in the hash.
+Additionally some fields are different based on qualities of the node. These must be specified
+via the command line and these fields are referenced through the `mapping` obejct. At the moment
+this is just if the commands were run in a vm.
+See the example template for these methods in practice.

@@ -30,7 +30,7 @@ class MainParser
   options['template'] = nil
 
   opt_parser = OptionParser.new do |opt|
-    opt.banner = "Usage inventoryware NODE_NAME DATA [PRIMARY_GROUP]" +\
+    opt.banner = "Usage inventoryware NODE_NAME DATA [PRIMARY_GROUP]" + \
       " [SECONDARY_GROUPS] [TEMPLATE]"
 
     opt.on("-p", "--primary-group PRIMARY-GROUP",
@@ -44,8 +44,15 @@ class MainParser
     end
 
     opt.on("-t", "--template TEMPLATE",
-           "Path to desired template, if blank yaml will be output") do |templ|
+           "Path to desired template. " + \
+           "If not sepecified, yaml will be output") do |templ|
       options['template'] = templ
+    end
+
+    opt.on("-m", "--mapping MAPPING-INFO",
+           "Information for lshw field mapping. " + \
+           "Accepted values are #{MAPPING.keys.join(" & ")}") do |map|
+      options["map"] = map
     end
 
     opt.on("-h","--help","Show this help screen") do

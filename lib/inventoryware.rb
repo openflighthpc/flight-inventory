@@ -50,6 +50,7 @@ end
 OUTPUT_DIR = '/opt/inventoryware/output'
 YAML_FILE = "#{OUTPUT_DIR}/domain"
 REQ_FILES = ["lshw-xml", "lsblk-a-P"]
+MAPPING = YAML.load_file(File.join(lib_dir, "../mapping.yaml"))
 
 begin
   #create a tmp file for each required file
@@ -62,8 +63,8 @@ begin
   # parse remaining options
   options = MainParser.parse(ARGV)
 
-  if ARGV.length() < 2
-    puts "Node and data source not specified"
+  unless ARGV.length() == 2
+    puts "Node and data source should be the only two arguments specified."
     exit
   end
 
@@ -136,10 +137,16 @@ begin
 
   # output
   if options['template']
+    unless MAPPING.keys.include? options['map']
+      puts "Please provide valid lshw mapping information before continuing."
+      puts "Accepted values are #{MAPPING.keys.join(" & ")}."
+      exit
+    end
+    mapping = MAPPING[options['map']]
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
     template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
-    template_out_file = "#{OUTPUT_DIR}/#{template_out_name}"
+    template_out_file = File.join(OUTPUT_DIR, template_out_name)
     # overrides existing target file
     File.open(template_out_file, 'w') do |file|
       file.write(eruby.result(binding()))
