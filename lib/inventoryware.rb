@@ -135,6 +135,11 @@ begin
     exit
   end
 
+  #TODO verify output location
+  if options['location']
+    out_file = options['location']
+  end
+
   # output
   if options['template']
     unless MAPPING.keys.include? options['map']
@@ -145,21 +150,18 @@ begin
     mapping = MAPPING[options['map']]
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
-    if options['location']
-      template_out_file = options['location']
-    else
-      template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
-      template_out_file = File.join(OUTPUT_DIR, template_out_name)
-    end
+    template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
+    out_file ||= File.join(OUTPUT_DIR, template_out_name)
     # overrides existing target file
-    File.open(template_out_file, 'w') do |file|
+    File.open(out_file, 'w') do |file|
       file.write(eruby.result(binding()))
     end
   else
+    out_file ||= YAML_FILE
     yaml_hash = {}
-    if File.file?(YAML_FILE)
+    if File.file?(out_file)
       begin
-        yaml_hash = YAML.load_file(YAML_FILE)
+        yaml_hash = YAML.load_file(out_file)
       rescue Psych::SyntaxError
         # If the file is not valid yaml we delete it & keep the hash empty
         # Psych is the underlying library YAML uses
@@ -167,7 +169,7 @@ begin
     end
     yaml_hash[hash['Name']] = hash
     yaml_hash = Hash[yaml_hash.sort_by { |k,v| k }]
-    File.open(YAML_FILE, 'w') { |file| file.write(yaml_hash.to_yaml) }
+    File.open(out_file, 'w') { |file| file.write(yaml_hash.to_yaml) }
   end
 ensure
   FileUtils.remove_entry dir
