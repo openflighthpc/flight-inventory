@@ -49,6 +49,11 @@ class MainParser
       options['template'] = templ
     end
 
+    opt.on("-l", "--location OUTPUT-LOCATION",
+           "Path to the desired output file.") do |location|
+      options['location'] = location
+    end
+
     opt.on("-m", "--mapping MAPPING-INFO",
            "Information for lshw field mapping. " + \
            "Accepted values are #{MAPPING.keys.join(" & ")}") do |map|
