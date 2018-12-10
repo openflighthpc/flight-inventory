@@ -126,6 +126,8 @@ begin
     }
   end
 
+  file_mode = 'w'
+
   # confirm file location exists
   # decided against creating location if it did not exist as it requires sudo
   #   execution - it may be that this would be better changed
@@ -134,7 +136,8 @@ begin
       puts "Invalid destination '#{options['location']}'"
       exit
     end
-    out_file = options['locations']
+    out_file = options['location']
+    file_mode = 'a'
   elsif !File.directory?(OUTPUT_DIR)
     puts "Directory #{OUTPUT_DIR} not found - please create it "\
       "before contining."
@@ -153,7 +156,7 @@ begin
     eruby = Erubis::Eruby.new(template)
     template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
     out_file ||= File.join(OUTPUT_DIR, template_out_name)
-    File.open(out_file, 'w') do |file|
+    File.open(out_file, file_mode) do |file|
       file.write(eruby.result(binding()))
     end
   else
@@ -169,7 +172,7 @@ begin
     end
     yaml_hash[hash['Name']] = hash
     yaml_hash = Hash[yaml_hash.sort_by { |k,v| k }]
-    File.open(out_file, 'w') { |file| file.write(yaml_hash.to_yaml) }
+    File.open(out_file, file_mode) { |file| file.write(yaml_hash.to_yaml) }
   end
 ensure
   FileUtils.remove_entry dir
