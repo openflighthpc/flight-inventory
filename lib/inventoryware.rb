@@ -129,15 +129,16 @@ begin
   # confirm file location exists
   # decided against creating location if it did not exist as it requires sudo
   #   execution - it may be that this would be better changed
-  if !File.directory?(OUTPUT_DIR)
+  if options['location']
+    unless validate_file(options['location'])
+      puts "Invalid destination '#{options['location']}'"
+      exit
+    end
+    out_file = options['locations']
+  elsif !File.directory?(OUTPUT_DIR)
     puts "Directory #{OUTPUT_DIR} not found - please create it "\
       "before contining."
     exit
-  end
-
-  #TODO verify output location
-  if options['location']
-    out_file = options['location']
   end
 
   # output
@@ -152,7 +153,6 @@ begin
     eruby = Erubis::Eruby.new(template)
     template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"
     out_file ||= File.join(OUTPUT_DIR, template_out_name)
-    # overrides existing target file
     File.open(out_file, 'w') do |file|
       file.write(eruby.result(binding()))
     end
