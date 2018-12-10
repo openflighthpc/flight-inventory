@@ -4,14 +4,17 @@
 
 Command structure is:
 ```
-./inventoryware NODE ZIP_LOCATION [-p PRI_GROUP] [-s LIST,OF,SECONDARY,GROUPS] [-t TEMPLATE_LOCATION -m MAP]
+./inventoryware NODE ZIP_LOCATION [-p PRI_GROUP] [-s LIST,OF,SECONDARY,GROUPS] [-t TEMPLATE_LOCATION -m MAP] [-l OUTPUT_DESTINATION]
 ```
 
 The zip must contain a lshw-xml.txt and a lsblk-a-P.txt
 
-Output is to a fixed location - `/opt/inventoryware/output/domain`
+If no destination is provided the output is stored in `/opt/inventoryware/output`. Here all yaml is
+added to the file `domain` and all templates are stored in a file titled `NODE_TEMPLATE.md.erb`.
+
 If no template is provided the node's information is appended to the destination file.
-If a template is provided it is filled as eRuby and the desitation file is overwritten with the
+
+If a template is provided it is filled as eRuby and the destination file is overwritten with the
 resulting markdown.
 
 ## Installation
@@ -47,5 +50,5 @@ The method `find_hashes_with_key_value` is for use in navigating the hash, it wi
 hashes with the given key-value pair regarless of it's depth in the hash.
 Additionally some fields are different based on qualities of the node. These must be specified
 via the command line and these fields are referenced through the `mapping` obejct. At the moment
-this is just if the commands were run in a vm.
+this is just if the commands were/were not run in a vm.
 See the example template for these methods in practice.

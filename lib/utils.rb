@@ -20,6 +20,13 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
+def validate_file(path)
+  return false if File.directory?(path)
+  return false unless File.directory?(File.dirname(path))
+  return false if File.exists?(path) && !File.writable?(path)
+  return true
+end
+
 # 'value' can be a regular expression or a plain old string
 def find_hashes_with_key_value(obj, key, value, store = [])
   if obj.respond_to?(:key?) && obj.key?(key) && /#{value}/.match(obj[key])
