@@ -4,12 +4,15 @@
 
 Command structure is:
 ```
-./inventoryware NODE ZIP_LOCATION [-p PRI_GROUP] [-s LIST,OF,SECONDARY,GROUPS] [-t TEMPLATE_LOCATION -m MAP]
+./inventoryware NODE ZIP_LOCATION [-p PRI_GROUP] [-s LIST,OF,SECONDARY,GROUPS] [-t TEMPLATE_LOCATION -m MAP] [-l OUTPUT_DESTINATION]
 ```
 
 The zip must contain a lshw-xml.txt and a lsblk-a-P.txt
 
-Output is to a fixed location - `/opt/inventoryware/output/domain`
+If no destination is provided the output is stored in `/opt/inventoryware/output`. Here all yaml is
+added to the file `domain` and all templates are store in a file titled `NODE_TEMPLATE.md.erb`.
+If a destination is provided, templates append to the specified location rather than override (as 
+they do in the default).
 If no template is provided the node's information is appended to the destination file.
 If a template is provided it is filled as eRuby and the desitation file is overwritten with the
 resulting markdown.
