@@ -27,6 +27,15 @@ def validate_file(path)
   return true
 end
 
+def exit_unless_dir(path)
+  unless File.directory?(path)
+    puts "Directory #{File.expand_path(path)} not found - please create it "\
+      "before contining."
+    exit
+  end
+  return true
+end
+
 # 'value' can be a regular expression or a plain old string
 def find_hashes_with_key_value(obj, key, value, store = [])
   if obj.respond_to?(:key?) && obj.key?(key) && /#{value}/.match(obj[key])

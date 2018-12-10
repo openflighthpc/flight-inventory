@@ -135,10 +135,8 @@ begin
       exit
     end
     out_file = options['location']
-  elsif !File.directory?(OUTPUT_DIR)
-    puts "Directory #{OUTPUT_DIR} not found - please create it "\
-      "before contining."
-    exit
+  else
+    exit_unless_dir(OUTPUT_DIR)
   end
 
   # output
@@ -157,7 +155,14 @@ begin
       file.write(eruby.result(binding()))
     end
   else
-    out_file ||= YAML_FILE
+    if not out_file
+      exit_unless_dir(YAML_DIR)
+      yaml_out_name = "#{hash['Name']}_data.yaml"
+      out_file = File.join(YAML_DIR, yaml_out_name)
+    end
+    # This section, for adding the data to any existing yaml, has no use now
+    # each node gets its own output file. I'm leaving it here in the case that
+    # someone manges to rename a yaml, so it won't be overriden by new data.
     yaml_hash = {}
     if File.file?(out_file)
       begin
