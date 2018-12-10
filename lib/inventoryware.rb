@@ -137,12 +137,12 @@ begin
 
   # output
   if options['template']
-    unless MAPPING.keys.include? options['os']
-      puts "Please provide a valid operating system version before continuing."
+    unless MAPPING.keys.include? options['map']
+      puts "Please provide valid lshw mapping information before continuing."
       puts "Accepted values are #{MAPPING.keys.join(" & ")}."
       exit
     end
-    mapping = MAPPING[options['os']]
+    mapping = MAPPING[options['map']]
     template = File.read(options['template'])
     eruby = Erubis::Eruby.new(template)
     template_out_name = "#{hash['Name']}_#{File.basename(options['template'])}"

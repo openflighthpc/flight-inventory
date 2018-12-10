@@ -1,4 +1,4 @@
-el6:
+non-vm:
   cpu_model: version
-el7:
+vm:
   cpu_model: model

@@ -49,10 +49,10 @@ class MainParser
       options['template'] = templ
     end
 
-    opt.on("-o", "--operating-system OPERATING-SYSTEM",
-           "The operating system version on the node. " + \
-           "Accepted values are #{MAPPING.keys.join(" & ")}") do |os|
-      options["os"] = os
+    opt.on("-m", "--mapping MAPPING-INFO",
+           "Information for lshw field mapping. " + \
+           "Accepted values are #{MAPPING.keys.join(" & ")}") do |map|
+      options["map"] = map
     end
 
     opt.on("-h","--help","Show this help screen") do

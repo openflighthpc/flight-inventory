@@ -4,7 +4,7 @@
 
 Command structure is:
 ```
-./inventoryware NODE ZIP_LOCATION -p PRI_GROUP -s LIST,OF,SECONDARY,GROUPS -t TEMPLATE_LOCATION -o OS
+./inventoryware NODE ZIP_LOCATION [-p PRI_GROUP] [-s LIST,OF,SECONDARY,GROUPS] [-t TEMPLATE_LOCATION -m MAP]
 ```
 
 The zip must contain a lshw-xml.txt and a lsblk-a-P.txt
@@ -45,6 +45,7 @@ source of the underlying data: 'Name', 'Primary Group' and 'Secondary Group' are
 command line, 'lshw' and 'lsblk are from their respective files in the zip.
 The method `find_hashes_with_key_value` is for use in navigating the hash, it will return all
 hashes with the given key-value pair regarless of it's depth in the hash.
-Additionally some fields are different based on the OS the target node uses. The OS must be
-specified via the command line and these fields must be referenced through the `mapping` obejct.
+Additionally some fields are different based on qualities of the node. These must be specified
+via the command line and these fields are referenced through the `mapping` obejct. At the moment
+this is just if the commands were run in a vm.
 See the example template for these methods in practice.
