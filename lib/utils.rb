@@ -20,6 +20,10 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
+def check_data_source?(data_source)
+  !(File.file?(data_source) && File.extname(data_source) == ".zip")
+end
+
 def validate_file(path)
   return false if File.directory?(path)
   return false unless File.directory?(File.dirname(path))

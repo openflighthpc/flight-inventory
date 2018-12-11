@@ -43,10 +43,6 @@ require 'xmlhasher'
 require 'yaml'
 require 'zip'
 
-def check_data_source?(data_source)
-  !(File.file?(data_source) && File.extname(data_source) == ".zip")
-end
-
 OUTPUT_DIR = File.join(lib_dir, '../store')
 YAML_DIR = File.join(OUTPUT_DIR, 'yaml')
 REQ_FILES = ["lshw-xml", "lsblk-a-P"]
