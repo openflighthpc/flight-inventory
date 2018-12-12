@@ -47,7 +47,6 @@ require 'zip'
 OUTPUT_DIR = File.join(lib_dir, '../store')
 YAML_DIR = File.join(OUTPUT_DIR, 'yaml')
 REQ_FILES = ["lshw-xml", "lsblk-a-P"]
-MAPPING = YAML.load_file(File.join(lib_dir, "../mapping.yaml"))
 
 program :name, 'Inventoryware'
 program :version, '0.0.1'
