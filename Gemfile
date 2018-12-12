@@ -2,6 +2,7 @@
 
 source 'https://rubygems.org'
 
+gem 'commander'
 gem 'erubis'
 gem 'rubyzip'
 gem 'xmlhasher'
