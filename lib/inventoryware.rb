@@ -130,7 +130,7 @@ end
 command :render do |c|
   c.syntax = "invware render NODE TEMPLATE [LOCATION]"
   c.description = "Render a node's data as an eRuby template"
-  c.option '--location LOCATION', String, 'Destination of the filled tempalate'
+  c.option '-l', '--location LOCATION', String, 'Destination of the filled tempalate'
   c.action do |args, options|
     unless args.length == 2
       puts "Specify node and template as the only arguments"
