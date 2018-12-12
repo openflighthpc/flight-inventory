@@ -158,7 +158,7 @@ command :render do |c|
         puts "Invalid destination '#{options.location}'"
         exit
       end
-      out_file = options['location']
+      out_file = options.location
     else
       exit_unless_dir(OUTPUT_DIR)
     end
