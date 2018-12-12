@@ -23,13 +23,28 @@
 # Only designed on lsblk output with the -a (all) and 
 # -P (key/value pairs) options
 class LsblkParser
-  attr_reader :rows
-
   def initialize(file)
     f = File.open(file)
     f_rows = f.read.split("\n")
     f.close
     @rows = f_rows.map { |row| LsblkRow.new(row) }
+  end
+
+  def hashify()
+    hash = {}
+    @rows.each do |row|
+      if !hash[row.type]
+        hash[row.type] = {}
+      end
+      hash[row.type][row.name] = {
+        'MAJ:MIN' => row.maj_min,
+        'RM' => row.rm,
+        'SIZE' => row.size,
+        'RO' => row.ro,
+        'MOUNTPOINT' => row.mountpoint
+      }
+    end
+    return hash
   end
   
   class LsblkRow
