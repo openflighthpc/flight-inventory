@@ -57,13 +57,13 @@ command :parse do |c|
   c.description = 'Parse hardware information into yaml'
   c.action do |args, options|
     unless args.length() == 1
-      puts "Specify source location only"
+      puts "Error: The data source should be the only argument."
       exit
     end
     data_source = args[0]
     # confirm data exists and is in right format (.zip)
     if check_data_source?(data_source)
-      puts "Error with data source #{data_source}"\
+      puts "Error: data source #{data_source}"\
            " - must be zip file"
       exit
     end
@@ -84,7 +84,7 @@ command :parse do |c|
             zip_file.glob("#{file}*").first.extract(value)
           end
         else
-          puts "#{REQ_FILES.join(" & ")} files required in .zip but not found."
+          puts "Error: #{REQ_FILES.join(" & ")} files required in .zip but not found."
           exit
         end
       end
@@ -133,7 +133,7 @@ command :render do |c|
   c.option '-l', '--location LOCATION', String, 'Destination of the filled tempalate'
   c.action do |args, options|
     unless args.length == 2
-      puts "Specify node and template as the only arguments"
+      puts "Error: 'node' and 'template' should be the only arguments"
       exit
     end
     node = args[0]
@@ -155,7 +155,7 @@ command :render do |c|
     #   execution - it may be that this would be better changed
     if options.location
       unless validate_file(options.location)
-        puts "Invalid destination '#{options.location}'"
+        puts "Error: Invalid destination '#{options.location}'"
         exit
       end
       out_file = options.location

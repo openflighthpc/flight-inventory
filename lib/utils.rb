@@ -33,8 +33,8 @@ end
 
 def exit_unless_dir(path)
   unless File.directory?(path)
-    puts "Directory #{File.expand_path(path)} not found - please create it "\
-      "before contining."
+    puts "Error: Directory #{File.expand_path(path)} not found - please create "\
+      "it before contining."
     exit
   end
   return true
