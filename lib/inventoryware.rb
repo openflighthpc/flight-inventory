@@ -39,6 +39,7 @@ require_relative 'lsblk_parser'
 require_relative 'utils'
 require 'commander/import'
 require 'erubis'
+require 'ostruct'
 require 'tmpdir'
 require 'xmlhasher'
 require 'yaml'
@@ -108,7 +109,7 @@ command :parse do |c|
       out_file = File.join(YAML_DIR, yaml_out_name)
       # This section, for adding the data to any existing yaml, has no use now
       # each node gets its own output file. I'm leaving it here in the case that
-      # someone manges to rename a yaml, so it won't be overriden by new data.
+      # someone manages to rename a yaml, so it won't be overriden by new data.
       yaml_hash = {}
       if File.file?(out_file)
         begin
@@ -127,10 +128,23 @@ command :parse do |c|
   end
 end
 
+def gen_ctx_with_plugins(hash, template)
+  render_env = Module.new do
+    def hash
+      hash
+    end
+  end
+  Dir[File.join(File.dirname(__FILE__), '..', 'plugins', '*.rb')].each do |file|
+    #TODO replace __FILE__
+    render_env.instance_eval(File.read(file))
+  end
+  ctx = render_env.instance_eval { binding }
+end
+
 command :render do |c|
   c.syntax = "invware render NODE TEMPLATE [LOCATION]"
   c.description = "Render a node's data as an eRuby template"
-  c.option '-l', '--location LOCATION', String, 'Destination of the filled tempalate'
+  c.option '-l', '--location LOCATION', String, 'Destination for the filled template'
   c.action do |args, options|
     unless args.length == 2
       puts "Error: 'node' and 'template' should be the only arguments"
@@ -162,6 +176,7 @@ command :render do |c|
     else
       exit_unless_dir(OUTPUT_DIR)
     end
+
     # output
     # TODO verfiy template?
     template_contents = File.read(template)
@@ -169,7 +184,7 @@ command :render do |c|
     template_out_name = "#{node}_#{File.basename(template)}"
     out_file ||= File.join(OUTPUT_DIR, template_out_name)
     File.open(out_file, 'w') do |file|
-      file.write(eruby.result(binding()))
+      file.write(eruby.result(gen_ctx_with_plugins(hash, template_contents)))
     end
   end
 end
