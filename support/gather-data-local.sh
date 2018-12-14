@@ -1,5 +1,8 @@
 #!/bin/bash
 
+PRIGROUP=$1
+SECGROUPS=$2
+
 # Install CentOS/RHEL
 # yum install lshw util-linux redhat-lsb-core
 # Install SLES/Suse
@@ -34,6 +37,27 @@ done)
 #
 TMPDIR=$(mktemp -d)
 pushd $TMPDIR
+# Command Versions
+cat << EOF > command_versions
+lshw: $(lshw -version)
+lsblk: $(lsblk --version)
+ifconfig: $(ifconfig --version)
+fdisk: $(fdisk -v)
+packager: $(rpm --version || dpkg --version)
+uname: $(uname --version)
+lsb_release: $(lsb_release --version)
+$(for cmd in $OPTIONAL_CMDS ; do
+echo "$cmd: $($cmd --version 2>&1 )"
+)
+EOF
+
+# Groups
+cat << EOF > groups
+primary_group: $PRIGROUP
+secondary_groups: $SECGROUPS
+EOF
+
+# Everything Else
 lshw -xml > lshw-xml
 lsblk -a -P > lsblk-a-P
 lshw -short > lshw-short
