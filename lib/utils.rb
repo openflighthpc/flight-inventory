@@ -46,20 +46,6 @@ def exit_unless_dir(path)
   return true
 end
 
-# 'value' can be a regular expression or a plain old string
-def find_hashes_with_key_value(obj, key, value, store = [])
-  if obj.respond_to?(:key?) && obj.key?(key) && /#{value}/.match(obj[key])
-    store.push(obj)
-  else
-    obj.each do |elem|
-      if elem.is_a? Enumerable
-        find_hashes_with_key_value(elem, key, value, store)
-      end
-    end
-  end
-  return store
-end
-
 # convert decimal amount of bits to a human readable format
 def format_bits_value(bits_value)
   format_data_value(bits_value, 1000, 'bit/s')

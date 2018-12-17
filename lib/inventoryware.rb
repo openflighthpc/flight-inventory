@@ -37,6 +37,7 @@ end
 require 'require_all'
 
 require_rel 'command'
+require_rel 'erb_utils'
 require_rel 'commands/*.rb'
 require_rel 'lsblk_parser'
 require_rel 'utils'
