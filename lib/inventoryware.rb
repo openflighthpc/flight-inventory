@@ -36,7 +36,6 @@ end
 
 require 'require_all'
 
-require_rel 'cli'
 require_rel 'command'
 require_rel 'commands/*.rb'
 require_rel 'lsblk_parser'
