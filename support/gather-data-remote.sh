@@ -1,6 +1,8 @@
 #!/bin/bash
 
 NODE=$1
+PRIGROUP=$2
+SECGROUPS=$3
 
 # Install CentOS/RHEL
 # yum install lshw util-linux redhat-lsb-core
@@ -38,6 +40,28 @@ done
 #
 TMPDIR=$(mktemp -d)
 pushd $TMPDIR
+# Command Versions
+cat << EOF > command_versions
+lshw: $(ssh $NODE "lshw -version")
+lsblk: $(ssh $NODE "lsblk --version")
+ifconfig: $(ssh $NODE "ifconfig --version")
+fdisk: $(ssh $NODE "fdisk -v")
+packager: $(ssh $NODE "rpm --version || dpkg --version")
+uname: $(ssh $NODE "uname --version")
+lsb_release: $(ssh $NODE "lsb_release --version")
+$(for cmd in $OPTIONAL_CMDS ; do
+VERS=$(ssh $NODE "$cmd --version 2>&1")
+echo "$cmd: $VERS"
+)
+EOF
+
+# Groups
+cat << EOF > groups
+primary_group: $PRIGROUP
+secondary_groups: $SECGROUPS
+EOF
+
+# Everything Else
 ssh $NODE "lshw -xml" > lshw-xml
 ssh $NODE "lsblk -a -P" > lsblk-a-P
 ssh $NODE "lshw -short" > lshw-short
