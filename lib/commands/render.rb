@@ -4,7 +4,6 @@ require 'erubis'
 module Inventoryware
   module Commands
     class Render < Command
-
       def gen_ctx_with_plugins(hash, template)
         render_env = Module.new do
           def hash
@@ -26,14 +25,14 @@ module Inventoryware
         node = @argv[0]
         template = @argv[1]
 
-        unless check_file(template)
+        unless check_file?(template)
           puts "Error: Template at #{template} inaccessible"
           exit
         end
 
         node_yaml = "#{node}.yaml"
         node_yaml_location = File.join(YAML_DIR, node_yaml)
-        unless check_file(node_yaml_location)
+        unless check_file?(node_yaml_location)
           puts "Error: File #{node_yaml} not found within #{File.expand_path(YAML_DIR)}"
           exit
         end
@@ -49,7 +48,7 @@ module Inventoryware
         # decided against creating location if it did not exist as it requires sudo
         #   execution - it may be that this would be better changed
         if @options.location
-          unless check_file_writable(@options.location)
+          unless check_file_writable?(@options.location)
             puts "Error: Invalid destination '#{@options.location}'"
             exit
           end

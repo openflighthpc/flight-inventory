@@ -46,14 +46,14 @@ class LsblkParser
     end
     return hash
   end
-  
+
   class LsblkRow
     attr_reader :name, :type, :size, :maj_min, :rm, :ro, :mountpoint
 
     def initialize(row)
       @row = row
       @name = find_value('NAME')
-      @type = find_value('TYPE') 
+      @type = find_value('TYPE')
       @size = find_value('SIZE')
       @maj_min = find_value('MAJ:MIN')
       @rm = find_value('RM')

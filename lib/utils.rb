@@ -24,13 +24,13 @@ def check_zip?(path)
   (File.file?(path) && File.extname(path) == ".zip")
 end
 
-def check_file_writable(path)
-  return false unless check_file(path)
+def check_file_writable?(path)
+  return false unless check_file?(path)
   return false if File.exists?(path) and not File.writable?(path)
   return true
 end
 
-def check_file(path)
+def check_file?(path)
   return false if File.directory?(path)
   return false unless File.directory?(File.dirname(path))
   return false if File.exists?(path) and not File.readable?(path)
