@@ -16,6 +16,7 @@ GEM
     pry-byebug (3.6.0)
       byebug (~> 10.0)
       pry (~> 0.10)
+    require_all (2.0.0)
     rubyzip (1.2.2)
     xmlhasher (1.0.4)
       escape_utils (~> 1.2)
@@ -29,6 +30,7 @@ DEPENDENCIES
   erubis
   pry
   pry-byebug
+  require_all
   rubyzip
   xmlhasher
 

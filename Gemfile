@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 gem 'commander'
 gem 'erubis'
+gem 'require_all'
 gem 'rubyzip'
 gem 'xmlhasher'
 
