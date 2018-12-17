@@ -25,7 +25,7 @@ module Inventoryware
         node = @argv[0]
         template = @argv[1]
 
-        unless check_file?(template)
+        unless File.file?(template) and File.readable?(template)
           puts "Error: Template at #{template} inaccessible"
           exit
         end
