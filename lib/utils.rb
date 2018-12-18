@@ -20,6 +20,10 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
+def check_data_source?(data_source)
+  !(File.file?(data_source) && File.extname(data_source) == ".zip")
+end
+
 def validate_file(path)
   return false if File.directory?(path)
   return false unless File.directory?(File.dirname(path))
@@ -29,8 +33,8 @@ end
 
 def exit_unless_dir(path)
   unless File.directory?(path)
-    puts "Directory #{File.expand_path(path)} not found - please create it "\
-      "before contining."
+    puts "Error: Directory #{File.expand_path(path)} not found - please create "\
+      "it before contining."
     exit
   end
   return true

@@ -1,4 +1,0 @@
-non-vm:
-  cpu_model: version
-vm:
-  cpu_model: model

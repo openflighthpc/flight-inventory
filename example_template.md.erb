@@ -22,7 +22,7 @@
   <% find_hashes_with_key_value(hash, 'class', 'processor')&.each do |cpu| %>
   ### <%= cpu['id'] %>
 
-  model: <%= cpu[mapping['cpu_model']] %>
+  model: <%= cpu['version'] %>
   slot: <%= cpu['slot'] %>
 
   <% end %>
