@@ -81,10 +81,11 @@ module Inventoryware
   end
 
   command :render do |c|
-    cli_syntax(c, 'NODE TEMPLATE')
-    c.description = "Render a node's data as an eRuby template"
+    cli_syntax(c, 'TEMPLATE NODE(S)')
+    c.description = "Render nodes' data as an eRuby template"
     c.option '-l', '--location LOCATION',
         "Output the rendered template to the specified location"
+    c.option '--all', "Render all data in #{YAML_DIR}"
     action(c, Commands::Render)
   end
 
