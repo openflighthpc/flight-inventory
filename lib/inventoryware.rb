@@ -51,6 +51,8 @@ module Inventoryware
   OUTPUT_DIR = File.join(LIB_DIR, '../store')
   YAML_DIR = File.join(OUTPUT_DIR, 'yaml')
   REQ_FILES = ["lshw-xml", "lsblk-a-P"]
+  OTHER_FILES = []
+  ALL_FILES = REQ_FILES + OTHER_FILES
 
   program :name, 'Inventoryware'
   program :version, '0.0.1'

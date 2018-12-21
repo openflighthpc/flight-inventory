@@ -20,8 +20,12 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
+def check_zip_exists?(path)
+  (File.file?(path) && check_zip?(path))
+end
+
 def check_zip?(path)
-  (File.file?(path) && File.extname(path) == ".zip")
+  File.extname(path) == ".zip"
 end
 
 def check_file_writable?(path)
@@ -40,7 +44,7 @@ end
 def exit_unless_dir(path)
   unless File.directory?(path)
     puts "Error: Directory #{File.expand_path(path)} not found - please create "\
-      "it before contining."
+      "it before continuing."
     exit
   end
   return true
