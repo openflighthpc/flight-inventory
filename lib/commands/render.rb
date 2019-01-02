@@ -68,6 +68,10 @@ module Inventoryware
       end
 
       def output(node_locations, template, out_file)
+        node_locations = node_locations.sort_by { |location|
+          File.basename(location)
+        }
+
         # TODO verify template contents?
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
