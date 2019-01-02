@@ -131,7 +131,10 @@ module Inventoryware
         exit_unless_dir(YAML_DIR)
         yaml_out_name = "#{hash['Name']}.yaml"
         out_file = File.join(YAML_DIR, yaml_out_name)
-        #TODO check out_file writable but be fine if it doesn't exist
+        unless check_file_writable?(out_file)
+          p "Error: output file #{out_file} not accessible - aborting"
+          exit
+        end
         yaml_hash = {hash['Name'] => hash}
         File.open(out_file, 'w') { |file| file.write(yaml_hash.to_yaml) }
         p "#{name}.zip imported to #{File.expand_path(out_file)}"

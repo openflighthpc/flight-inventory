@@ -49,7 +49,6 @@ module Inventoryware
           p "Error: No node data found in #{YAML_DIR}"
           exit
         end
-        #TODO sort node_locations?
         return node_locations
       end
 
