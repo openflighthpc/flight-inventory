@@ -4,6 +4,41 @@ require 'zip'
 module Inventoryware
   module Commands
     class Parse < Command
+      def run
+        unless @argv.length() == 1
+          p "Error: The data source should be the only argument."
+          exit
+        end
+
+        XmlHasher.configure do |config|
+          config.snakecase = true
+          config.ignore_namespaces = true
+          config.string_keys = true
+        end
+
+        begin
+          top_dir = Dir.mktmpdir('inv_ware_')
+
+          # get all zips in in the source, if it's a dir or not
+          top_lvl_zip_paths = expand_dir(@argv[0])
+
+          # for each of these, extract to /tmp/
+          top_lvl_zip_paths.each { |zip_path| extract_zip(zip_path, top_dir) }
+
+          # extract any zips in these zips
+          recursively_extract_zips(top_dir)
+
+          # remove empty file paths from the tmp dir
+          clean_dir(top_dir)
+
+          # parse the extracted files to yaml
+          process_container_dir(top_dir)
+        ensure
+          FileUtils.remove_entry top_dir
+        end
+      end
+
+      private
       # maybe make this work with >1 level?
       def expand_dir(data_source)
         contents = []
@@ -101,44 +136,12 @@ module Inventoryware
         exit_unless_dir(YAML_DIR)
         yaml_out_name = "#{hash['Name']}.yaml"
         out_file = File.join(YAML_DIR, yaml_out_name)
+        #TODO check out_file writable but be fine if it doesn't exist
         yaml_hash = {hash['Name'] => hash}
         File.open(out_file, 'w') { |file| file.write(yaml_hash.to_yaml) }
         p "#{name}.zip imported to #{File.expand_path(out_file)}"
       end
 
-      def run
-        unless @argv.length() == 1
-          p "Error: The data source should be the only argument."
-          exit
-        end
-
-        XmlHasher.configure do |config|
-          config.snakecase = true
-          config.ignore_namespaces = true
-          config.string_keys = true
-        end
-
-        begin
-          top_dir = Dir.mktmpdir('inv_ware_')
-
-          # get all zips in in the source, if it's a dir or not
-          top_lvl_zip_paths = expand_dir(@argv[0])
-
-          # for each of these, extract to /tmp/
-          top_lvl_zip_paths.each { |zip_path| extract_zip(zip_path, top_dir) }
-
-          # extract any zips in these zips
-          recursively_extract_zips(top_dir)
-
-          # remove empty file paths from the tmp dir
-          clean_dir(top_dir)
-
-          # parse the extracted files to yaml
-          process_container_dir(top_dir)
-        ensure
-          FileUtils.remove_entry top_dir
-        end
-      end
     end
   end
 end
