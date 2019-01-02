@@ -75,25 +75,28 @@ module Inventoryware
         out = ""
         # check, will loading all output cause issues with memory size?
         # probably fine - 723 nodes was 350Kb
-        # TODO move this block to its own method
         node_locations.each do |node|
-          begin
-            # `.values[0]` is to ignore the name of the node & just get its data
-            hash = YAML.load_file(node).values[0]
-          rescue Psych::SyntaxError
-            puts "Error: parsing yaml in #{node} - aborting"
-            exit
-          end
-
-          #TODO do we need to generate the entire context for each node
-          ctx = gen_ctx_with_plugins(hash, template_contents)
-          out += eruby.result(ctx)
+          out += parse_yaml(node, eruby, template_contents)
           p "Parsed #{File.basename(node)}"
         end
 
         File.open(out_file, 'w') do |file|
           file.write(out)
         end
+      end
+
+      def parse_yaml(node, eruby, template_contents)
+        begin
+          # `.values[0]` is to ignore the name of the node & just get its data
+          hash = YAML.load_file(node).values[0]
+        rescue Psych::SyntaxError
+          puts "Error: parsing yaml in #{node} - aborting"
+          exit
+        end
+
+        #TODO do we need to generate the entire context for each node?
+        ctx = gen_ctx_with_plugins(hash, template_contents)
+        eruby.result(ctx)
       end
 
       def gen_ctx_with_plugins(hash, template)
