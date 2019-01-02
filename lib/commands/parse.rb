@@ -39,15 +39,10 @@ module Inventoryware
       end
 
       private
-      # maybe make this work with >1 level?
       def expand_dir(data_source)
         contents = []
         if File.directory?(data_source)
-          Dir.foreach(data_source) do |item|
-            next if item == '.' or item == '..'
-            next unless check_zip?(item)
-            contents.push(File.join(data_source, item))
-          end
+          contents = Dir.glob(File.join(data_source, "**/*.zip"))
         elsif check_zip_exists?(data_source)
           contents = [data_source]
         end
