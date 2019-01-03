@@ -16,8 +16,8 @@ SECGROUPS=$2
 BASEDIR="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 BINDIR="$BASEDIR/bin"
 LSHW="$BINDIR/lshw-static"
-
-
+LSBLK="$BINDIR/lsblk"
+LSB_RELEASE="$BINDIR/lsb_release"
 
 #
 # Check for required commands
@@ -72,7 +72,7 @@ lsblk -a -P > lsblk-a-P
 lshw -short > lshw-short
 ifconfig -a > ifconfig-a
 fdisk -l > fdisk-l
-rpm -qa || dpkg -l > packages
+(rpm -qa || dpkg -l) > packages
 cat /etc/os-release > os-release
 uname -a > uname-a
 lsb_release -a > lsb_release-a
