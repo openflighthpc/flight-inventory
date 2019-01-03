@@ -21,6 +21,7 @@ module Inventoryware
           exit
         end
 
+        out_file = nil
         # confirm file location exists
         # decided against creating location if it did not exist as it requires sudo
         #   execution - it may be that this would be better changed
@@ -30,10 +31,6 @@ module Inventoryware
             exit
           end
           out_file = @options.location
-        else
-          exit_unless_dir(OUTPUT_DIR)
-          template_out_name = "#{File.basename(template)}"
-          out_file = File.join(OUTPUT_DIR, template_out_name)
         end
 
         output(@options.all ? find_all_nodes() : find_nodes(nodes),
@@ -85,11 +82,17 @@ module Inventoryware
         # probably fine - 723 nodes was 350Kb
         node_locations.each do |node|
           out += parse_yaml(node, eruby, render_env)
-          p "Parsed #{File.basename(node)}"
+          # this message is output through stderr in order to not interfere
+          # with the output of the rendered template
+          $stderr.puts "Rendered #{File.basename(node)}"
         end
 
-        File.open(out_file, 'w') do |file|
-          file.write(out)
+        if out_file
+          File.open(out_file, 'w') do |file|
+            file.write(out)
+          end
+        else
+          $stdout.puts out
         end
       end
 
