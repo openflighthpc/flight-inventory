@@ -4,43 +4,20 @@ require 'erubis'
 module Inventoryware
   module Commands
     class Render < Command
-      def gen_ctx_with_plugins(hash, template)
-        render_env = Module.new do
-          def hash
-            hash
-          end
-        end
-        Dir[File.join(LIB_DIR, '..', 'plugins', '*.rb')].each do |file|
-          render_env.instance_eval(File.read(file))
-        end
-        ctx = render_env.instance_eval { binding }
-      end
-
       def run
-        unless @argv.length == 2
-          puts "Error: 'node' and 'template' should be the only arguments"
+        if @options.all and not @argv.length == 1
+          puts "Error: 'template' should be the only argument - all nodes are being parsed."
+          exit
+        elsif not @options.all and @argv.length < 2
+          puts "Error: Please provide a template and at least one node."
           exit
         end
 
-        node = @argv[0]
-        template = @argv[1]
+        template = @argv[0]
+        nodes = @argv[1..-1]
 
-        unless File.file?(template) and File.readable?(template)
+        unless check_file_readable?(template)
           puts "Error: Template at #{template} inaccessible"
-          exit
-        end
-
-        node_yaml = "#{node}.yaml"
-        node_yaml_location = File.join(YAML_DIR, node_yaml)
-        unless check_file?(node_yaml_location)
-          puts "Error: File #{node_yaml} not found within #{File.expand_path(YAML_DIR)}"
-          exit
-        end
-
-        begin
-          hash = YAML.load_file(node_yaml_location)[node]
-        rescue Psych::SyntaxError
-          puts "Error: parsing yaml in #{node_yaml_location} - aborting"
           exit
         end
 
@@ -55,17 +32,79 @@ module Inventoryware
           out_file = @options.location
         else
           exit_unless_dir(OUTPUT_DIR)
-          template_out_name = "#{node}_#{File.basename(template)}"
+          template_out_name = "#{File.basename(template)}"
           out_file = File.join(OUTPUT_DIR, template_out_name)
         end
 
-        # output
+        output(@options.all ? find_all_nodes() : find_nodes(nodes),
+               template,
+               out_file
+              )
+      end
+
+      private
+      def find_all_nodes()
+        node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
+        if node_locations.empty?
+          p "Error: No node data found in #{YAML_DIR}"
+          exit
+        end
+        return node_locations
+      end
+
+      def find_nodes(nodes)
+        node_locations = []
+        nodes.each do |node|
+          node_yaml = "#{node}.yaml"
+          node_yaml_location = File.join(YAML_DIR, node_yaml)
+          unless check_file_readable?(node_yaml_location)
+            puts "Error: File #{node_yaml} not found within #{File.expand_path(YAML_DIR)}"
+            exit
+          end
+          node_locations.append(node_yaml_location)
+        end
+        return node_locations
+      end
+
+      def output(node_locations, template, out_file)
+        node_locations = node_locations.sort_by do |location|
+          File.basename(location)
+        end
+
         # TODO verify template contents?
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
-        File.open(out_file, 'w') do |file|
-          file.write(eruby.result(gen_ctx_with_plugins(hash, template_contents)))
+
+        render_env = Module.new
+        Dir[File.join(LIB_DIR, '..', 'plugins', '*.rb')].each do |file|
+          render_env.instance_eval(File.read(file))
         end
+
+        out = ""
+        # check, will loading all output cause issues with memory size?
+        # probably fine - 723 nodes was 350Kb
+        node_locations.each do |node|
+          out += parse_yaml(node, eruby, render_env)
+          p "Parsed #{File.basename(node)}"
+        end
+
+        File.open(out_file, 'w') do |file|
+          file.write(out)
+        end
+      end
+
+      def parse_yaml(node, eruby, render_env)
+        begin
+          # `.values[0]` ignores the name of the node & gets just its data
+          hash = YAML.load_file(node).values[0]
+        rescue Psych::SyntaxError
+          puts "Error: parsing yaml in #{node} - aborting"
+          exit
+        end
+
+        ctx = render_env.instance_eval { binding }
+
+        return eruby.result(ctx)
       end
     end
   end
