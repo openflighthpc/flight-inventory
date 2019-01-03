@@ -19,11 +19,11 @@
 
   ## CPU(s)
 
-  <% find_hashes_with_key_value(hash, 'class', 'processor')&.each do |cpu| %>
-  ### <%= cpu['id'] %>
+  <% cpus(hash).each do |cpu| %>
+  ### <%= cpu.id %>
 
-  model: <%= cpu['version'] %>
-  slot: <%= cpu['slot'] %>
+  model: <%= cpu.version %>
+  slot: <%= cpu.slot %>
 
   <% end %>
   ## RAM

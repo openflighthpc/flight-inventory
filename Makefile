@@ -9,6 +9,7 @@ rsync:
 		-r \
 		--delete \
 		--exclude=vendor/ \
+		--exclude=store/ \
 		--exclude='Gemfile.lock'\
 		--copy-links \
 		--perms \
