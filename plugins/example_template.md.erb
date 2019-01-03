@@ -1,8 +1,8 @@
 <%= hash['Name'] %>:
   name: <%= hash['Name'] %>
-  primary_group: <%= hash['Primary Group'] %>
+  primary_group: <%= hash['groups']['Primary Group'] %>
   secondary_groups:
-  <% hash['Secondary Groups']&.each do |grp| %>
+  <% hash['groups']['Secondary Groups']&.each do |grp| %>
     <%= "- #{grp}" %>
   <% end %>
 
