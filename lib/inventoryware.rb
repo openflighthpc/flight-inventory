@@ -48,8 +48,7 @@ require 'yaml'
 
 module Inventoryware
   LIB_DIR = File.dirname(__FILE__)
-  OUTPUT_DIR = File.join(LIB_DIR, '../store')
-  YAML_DIR = File.join(OUTPUT_DIR, 'yaml')
+  YAML_DIR = File.join(LIB_DIR, '../store')
   REQ_FILES = ["lshw-xml", "lsblk-a-P"]
   OTHER_FILES = []
   ALL_FILES = REQ_FILES + OTHER_FILES
@@ -85,7 +84,7 @@ module Inventoryware
     c.description = "Render nodes' data as an eRuby template"
     c.option '-l', '--location LOCATION',
         "Output the rendered template to the specified location"
-    c.option '--all', "Render all data in #{YAML_DIR}"
+    c.option '--all', "Render all data in #{File.expand_path(YAML_DIR)}"
     action(c, Commands::Render)
   end
 
