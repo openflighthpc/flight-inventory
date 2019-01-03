@@ -67,19 +67,24 @@ module Inventoryware
       end
 
       def output(node_locations, template, out_file)
-        node_locations = node_locations.sort_by { |location|
+        node_locations = node_locations.sort_by do |location|
           File.basename(location)
-        }
+        end
 
         # TODO verify template contents?
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
 
+        render_env = Module.new
+        Dir[File.join(LIB_DIR, '..', 'plugins', '*.rb')].each do |file|
+          render_env.instance_eval(File.read(file))
+        end
+
         out = ""
         # check, will loading all output cause issues with memory size?
         # probably fine - 723 nodes was 350Kb
         node_locations.each do |node|
-          out += parse_yaml(node, eruby, template_contents)
+          out += parse_yaml(node, eruby, render_env)
           p "Parsed #{File.basename(node)}"
         end
 
@@ -88,30 +93,18 @@ module Inventoryware
         end
       end
 
-      def parse_yaml(node, eruby, template_contents)
+      def parse_yaml(node, eruby, render_env)
         begin
-          # `.values[0]` is to ignore the name of the node & just get its data
+          # `.values[0]` ignores the name of the node & gets just its data
           hash = YAML.load_file(node).values[0]
         rescue Psych::SyntaxError
           puts "Error: parsing yaml in #{node} - aborting"
           exit
         end
 
-        #TODO do we need to generate the entire context for each node?
-        ctx = gen_ctx_with_plugins(hash, template_contents)
-        eruby.result(ctx)
-      end
-
-      def gen_ctx_with_plugins(hash, template)
-        render_env = Module.new do
-          def hash
-            hash
-          end
-        end
-        Dir[File.join(LIB_DIR, '..', 'plugins', '*.rb')].each do |file|
-          render_env.instance_eval(File.read(file))
-        end
         ctx = render_env.instance_eval { binding }
+
+        return eruby.result(ctx)
       end
     end
   end
