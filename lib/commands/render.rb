@@ -75,7 +75,11 @@ module Inventoryware
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
 
-        render_env = Module.new
+        render_env = Module.new do
+          class << self
+            attr_reader :hash
+          end
+        end
         Dir[File.join(LIB_DIR, '..', 'plugins', '*.rb')].each do |file|
           render_env.instance_eval(File.read(file))
         end
@@ -108,7 +112,7 @@ module Inventoryware
           $stderr.puts "Error: parsing yaml in #{node} - aborting"
           exit
         end
-
+        render_env.instance_variable_set(:@hash, hash)
         ctx = render_env.instance_eval { binding }
 
         return eruby.result(ctx)
