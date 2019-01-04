@@ -6,7 +6,7 @@ module Inventoryware
     class Parse < Command
       def run
         unless @argv.length() == 1
-          p "Error: The data source should be the only argument."
+          $stderr.puts "Error: The data source should be the only argument."
           exit
         end
 
@@ -47,7 +47,7 @@ module Inventoryware
           contents = [data_source]
         end
         if contents.empty?
-          p "No .zip files found at #{data_source}"
+          $stderr.puts "No .zip files found at #{data_source}"
           exit
         end
         return contents
@@ -99,20 +99,20 @@ module Inventoryware
 
       def process_dir(dir)
         node_name = File.basename(dir)
-        p "Importing #{node_name}.zip"
+        $stderr.puts "Importing #{node_name}.zip"
 
         invalid = false
         file_locations = {}
         ALL_FILES.each do |file|
           file_locations[file] = Dir.glob(File.join(dir, "#{file}*"))&.first
           if not file_locations[file] and REQ_FILES.include?(file)
-            p "Warning: File #{file} required in #{node_name}.zip but not found."
+            $stderr.puts "Warning: File #{file} required in #{node_name}.zip but not found."
             invalid = true
           end
         end
 
         if invalid
-          p "Skipping #{node_name}.zip"
+          $stderr.puts "Skipping #{node_name}.zip"
           return false
         end
 
@@ -138,12 +138,13 @@ module Inventoryware
         yaml_out_name = "#{hash['Name']}.yaml"
         out_file = File.join(YAML_DIR, yaml_out_name)
         unless check_file_writable?(out_file)
-          p "Error: output file #{out_file} not accessible - aborting"
+          $stderr.puts "Error: output file #{out_file} not accessible "\
+            "- aborting"
           exit
         end
         yaml_hash = {hash['Name'] => hash}
         File.open(out_file, 'w') { |file| file.write(yaml_hash.to_yaml) }
-        p "#{name}.zip imported to #{File.expand_path(out_file)}"
+        $stderr.puts "#{name}.zip imported to #{File.expand_path(out_file)}"
       end
 
     end
