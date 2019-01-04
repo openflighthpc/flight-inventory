@@ -31,12 +31,12 @@ class LsblkParser
   end
 
   def hashify()
-    hash = {}
+    blk_hash = {}
     @rows.each do |row|
-      if !hash[row.type]
-        hash[row.type] = {}
+      if !blk_hash[row.type]
+        blk_hash[row.type] = {}
       end
-      hash[row.type][row.name] = {
+      blk_hash[row.type][row.name] = {
         'MAJ:MIN' => row.maj_min,
         'RM' => row.rm,
         'SIZE' => row.size,
@@ -44,7 +44,7 @@ class LsblkParser
         'MOUNTPOINT' => row.mountpoint
       }
     end
-    return hash
+    return blk_hash
   end
 
   class LsblkRow

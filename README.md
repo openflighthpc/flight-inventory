@@ -2,25 +2,28 @@
 
 ## Use
 
-Command structure is:
+The commands' syntax is as follows:
 ```
-./inventoryware NODE ZIP_LOCATION [-p PRI_GROUP] [-s LIST,OF,SECONDARY,GROUPS] [-t TEMPLATE_LOCATION -m MAP] [-l OUTPUT_DESTINATION]
+parse DATA_LOCATION
+
+render TEMPLATE_LOCATION [NODE_NAME(S) | --all] [-l DESTINATION]
 ```
 
-The zip must contain a lshw-xml.txt and a lsblk-a-P.txt
+The `parse` command processes zips at the specified location into yaml stored in the `store/`
+directory.
+If the location is a directory all '.zips' in it will be processed. Each of these zips are expanded
+and any nested zips are processed. Only bottom level .zips are processed so don't allow any node's
+data to be sibling to a .zip. Each zip must contain a lshw-xml and a lsblk-a-P file. A `groups`
+file will be processed if it exists.
 
-If no destination is provided the output is stored in `/opt/inventoryware/output`. Here all yaml is
-added to the file `domain` and all templates are stored in a file titled `NODE_TEMPLATE.md.erb`.
-
-If no template is provided the node's information is appended to the destination file.
-
-If a template is provided it is filled as eRuby and the destination file is overwritten with the
-resulting markdown.
+The `render` command fills eRuby templates using stored data. The first argument is the template to
+fill then either n nodes follow or `--all` can be passed to process all .yaml files in the `store/`
+directory. The output will be passed to stdout unless a destination is specified with the `-l`
+option.
 
 ## Installation
 
 ```
-cd /opt
 git clone https://github.com/alces-software/inventoryware.git
 ```
 
@@ -40,15 +43,10 @@ make watch-rsync PASSWORD="password for machine" IP="ip of machine"
 ```
 This will keep your working directory synced to `/tmp/inventoryware`
 
-## Creating Templates
+## Templates
 
 Templates accepted by Inventoryware are .erb templates filled using Erubis. The relevant data
-is stored in and referenced from a large hash named `hash`. The top level keys indicate the
-source of the underlying data: 'Name', 'Primary Group' and 'Secondary Group' are filled via the
-command line, 'lshw' and 'lsblk are from their respective files in the zip.
-The method `find_hashes_with_key_value` is for use in navigating the hash, it will return all
-hashes with the given key-value pair regarless of it's depth in the hash.
-Additionally some fields are different based on qualities of the node. These must be specified
-via the command line and these fields are referenced through the `mapping` obejct. At the moment
-this is just if the commands were/were not run in a vm.
-See the example template for these methods in practice.
+is stored in a large hash called `node_data`. There are helper methods for navigation and
+formatting this data in `lib/erb_util.rb`. Additionally, in order to the accomodate all possible
+domains of use, the system will dynamically read any code stored in the top level `plugins/`
+directory and utilise that for filling the specified template.
