@@ -116,39 +116,40 @@ module Inventoryware
           return false
         end
 
-        hash = {}
-        hash['Name'] = node_name
-        hash['groups'] = {}
-        hash['groups']['Primary Group'] = nil
-        hash['groups']['Secondary Groups'] = []
+        node_data = {}
+        node_data['Name'] = node_name
+        node_data['groups'] = {}
+        node_data['groups']['Primary Group'] = nil
+        node_data['groups']['Secondary Groups'] = []
         if file_locations['groups']
           groups_hash = YAML.load(File.read(file_locations['groups']))
-          hash['groups']['Primary Group'] = groups_hash['primary_group']
+          node_data['groups']['Primary Group'] = groups_hash['primary_group']
           sec_groups = groups_hash['secondary_groups'].split(',')
-          hash['groups']['Secondary Groups'] = sec_groups
+          node_data['groups']['Secondary Groups'] = sec_groups
         end
         # extract data from lshw
-        hash['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))
+        node_data['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))
         # extract data from lsblk
-        hash['lsblk'] = LsblkParser.new(file_locations['lsblk-a-P']).hashify()
+        node_data['lsblk'] = LsblkParser.new(file_locations['lsblk-a-P']).hashify()
 
-        output_yaml(hash['Name'], hash)
+        output_yaml(node_data)
       end
 
-      def output_yaml(name, hash)
+      def output_yaml(node_data)
+        node_name = node_data['Name']
         exit_unless_dir(YAML_DIR)
-        yaml_out_name = "#{hash['Name']}.yaml"
+        yaml_out_name = "#{node_name}.yaml"
         out_file = File.join(YAML_DIR, yaml_out_name)
         unless check_file_writable?(out_file)
           $stderr.puts "Error: output file #{out_file} not accessible "\
             "- aborting"
           exit
         end
-        yaml_hash = {hash['Name'] => hash}
+        yaml_hash = {node_name => node_data}
         File.open(out_file, 'w') { |file| file.write(yaml_hash.to_yaml) }
-        $stderr.puts "#{name}.zip imported to #{File.expand_path(out_file)}"
+        $stderr.puts "#{node_name}.zip imported to "\
+          "#{File.expand_path(out_file)}"
       end
-
     end
   end
 end

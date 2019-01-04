@@ -77,7 +77,7 @@ module Inventoryware
 
         render_env = Module.new do
           class << self
-            attr_reader :hash
+            attr_reader :node_data
           end
         end
         Dir[File.join(LIB_DIR, '..', 'plugins', '*.rb')].each do |file|
@@ -104,15 +104,15 @@ module Inventoryware
         end
       end
 
-      def parse_yaml(node, eruby, render_env)
+      def parse_yaml(node_location, eruby, render_env)
         begin
           # `.values[0]` ignores the name of the node & gets just its data
-          hash = YAML.load_file(node).values[0]
+          node_data = YAML.load_file(node_location).values[0]
         rescue Psych::SyntaxError
-          $stderr.puts "Error: parsing yaml in #{node} - aborting"
+          $stderr.puts "Error: parsing yaml in #{node_location} - aborting"
           exit
         end
-        render_env.instance_variable_set(:@hash, hash)
+        render_env.instance_variable_set(:@node_data, node_data)
         ctx = render_env.instance_eval { binding }
 
         return eruby.result(ctx)
