@@ -50,8 +50,8 @@ end
 
 def exit_unless_dir(path)
   unless File.directory?(path)
-    puts "Error: Directory #{File.expand_path(path)} not found - please create "\
-      "it before continuing."
+    $stderr.puts "Error: Directory #{File.expand_path(path)} not found - "\
+      "please create it before continuing."
     exit
   end
   return true

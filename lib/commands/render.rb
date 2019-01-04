@@ -6,10 +6,12 @@ module Inventoryware
     class Render < Command
       def run
         if @options.all and not @argv.length == 1
-          puts "Error: 'template' should be the only argument - all nodes are being parsed."
+          $stderr.puts "Error: 'template' should be the only argument - all "\
+            "nodes are being parsed."
           exit
         elsif not @options.all and @argv.length < 2
-          puts "Error: Please provide a template and at least one node."
+          $stderr.puts "Error: Please provide a template and at least one "\
+            "node."
           exit
         end
 
@@ -17,7 +19,7 @@ module Inventoryware
         nodes = @argv[1..-1]
 
         unless check_file_readable?(template)
-          puts "Error: Template at #{template} inaccessible"
+          $stderr.puts "Error: Template at #{template} inaccessible"
           exit
         end
 
@@ -27,7 +29,7 @@ module Inventoryware
         #   execution - it may be that this would be better changed
         if @options.location
           unless check_file_writable?(@options.location)
-            puts "Error: Invalid destination '#{@options.location}'"
+            $stderr.puts "Error: Invalid destination '#{@options.location}'"
             exit
           end
           out_file = @options.location
@@ -43,7 +45,7 @@ module Inventoryware
       def find_all_nodes()
         node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
         if node_locations.empty?
-          p "Error: No node data found in #{YAML_DIR}"
+          $stderr.puts "Error: No node data found in #{YAML_DIR}"
           exit
         end
         return node_locations
@@ -55,7 +57,8 @@ module Inventoryware
           node_yaml = "#{node}.yaml"
           node_yaml_location = File.join(YAML_DIR, node_yaml)
           unless check_file_readable?(node_yaml_location)
-            puts "Error: File #{node_yaml} not found within #{File.expand_path(YAML_DIR)}"
+            $stderr.puts "Error: File #{node_yaml} not found within "\
+              "#{File.expand_path(YAML_DIR)}"
             exit
           end
           node_locations.append(node_yaml_location)
@@ -92,6 +95,7 @@ module Inventoryware
             file.write(out)
           end
         else
+          # '$stdout' here is just to be explicit - for clarity
           $stdout.puts out
         end
       end
@@ -101,7 +105,7 @@ module Inventoryware
           # `.values[0]` ignores the name of the node & gets just its data
           hash = YAML.load_file(node).values[0]
         rescue Psych::SyntaxError
-          puts "Error: parsing yaml in #{node} - aborting"
+          $stderr.puts "Error: parsing yaml in #{node} - aborting"
           exit
         end
 
