@@ -118,12 +118,14 @@ module Inventoryware
 
         hash = {}
         hash['Name'] = node_name
+        hash['groups'] = {}
+        hash['groups']['Primary Group'] = nil
+        hash['groups']['Secondary Groups'] = []
         if file_locations['groups']
           groups_hash = YAML.load(File.read(file_locations['groups']))
-          hash['groups'] = {
-            'Primary Group' => groups_hash['primary_group'],
-            'Secondary Groups' => groups_hash['secondary_groups'].split(',')
-          }
+          hash['groups']['Primary Group'] = groups_hash['primary_group']
+          sec_groups = groups_hash['secondary_groups'].split(',')
+          hash['groups']['Secondary Groups'] = sec_groups
         end
         # extract data from lshw
         hash['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))
