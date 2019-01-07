@@ -1,49 +1,46 @@
 <%= node_data['Name'] %>:
   name: <%= node_data['Name'] %>
   primary_group: <%= node_data['groups']['Primary Group'] %>
-  secondary_groups:
-  <% node_data['groups']['Secondary Groups']&.each do |grp| %>
-    <%= "- #{grp}" %>
-  <% end %>
+  secondary_groups: <% node_data['groups']['Secondary Groups'].each_with_index do |grp, index| %><%= "#{grp}#{',' unless (index == node_data['groups']['Secondary Groups'].size - 1)}" %><% end %>
+  info: |
+    # System
+
+    ## BIOS Version
+
+    <%= find_hashes_with_key_value(node_data, 'id', 'firmware')&.first['version'] %>
+
+    ## System Serial Number
+
+    <%= node_data['lshw']['list']['node']['serial'] %>
+
+    ## CPU(s)
+
+    <% cpus.each do |cpu| %>
+    ### <%= cpu.id %>
+
+    model: <%= cpu.version %>
+    slot: <%= cpu.slot %>
+
+    <% end %>
+    ## RAM
+
+    - Total: <%= format_bytes_value(find_total_memory) %>
 
 
-  # System
+    # Network Devices
 
-  ## BIOS Version
-
-  <%= find_hashes_with_key_value(node_data, 'id', 'firmware')&.first['version'] %>
-
-  ## System Serial Number
-
-  <%= node_data['lshw']['list']['node']['serial'] %>
-
-  ## CPU(s)
-
-  <% cpus.each do |cpu| %>
-  ### <%= cpu.id %>
-
-  model: <%= cpu.version %>
-  slot: <%= cpu.slot %>
-
-  <% end %>
-  ## RAM
-
-  - Total: <%= format_bytes_value(find_total_memory) %>
+    | Interface | Speed | MAC |
+    |-----------|-------|-----|
+    <% find_hashes_with_key_value(node_data, 'class', 'network')&.each do |net| %>
+    | <%= net['logicalname'] %> | <%= format_bits_value(net['capacity'].to_i || 0) %> | <%= net['serial'] %> |
+    <% end %>
 
 
-  # Network Devices
+    # Disks
 
-  | Interface | Speed | MAC |
-  |-----------|-------|-----|
-  <% find_hashes_with_key_value(node_data, 'class', 'network')&.each do |net| %>
-  | <%= net['logicalname'] %> | <%= format_bits_value(net['capacity'].to_i || 0) %> | <%= net['serial'] %> |
-  <% end %>
+    | Device | Size |
+    |--------|------|
+    <% node_data['lsblk']['disk']&.each do |disk, values| %>
+    | <%= disk %> | <%= values['SIZE'] %> |
+    <% end %>
 
-
-  # Disks
-
-  | Device | Size |
-  |--------|------|
-  <% node_data['lsblk']['disk']&.each do |disk, values| %>
-  | <%= disk %> | <%= values['SIZE'] %> |
-  <% end %>
