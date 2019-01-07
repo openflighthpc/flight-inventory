@@ -18,6 +18,9 @@ BINDIR="$BASEDIR/bin"
 LSHW="$BINDIR/lshw-static"
 LSBLK="$BINDIR/lsblk"
 LSB_RELEASE="$BINDIR/lsb_release"
+FDISK="$BINDIR/fdisk"
+LSCPU="$BINDIR/lscpu"
+
 
 #
 # Check for required commands
