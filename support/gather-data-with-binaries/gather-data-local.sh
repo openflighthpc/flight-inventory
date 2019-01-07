@@ -17,7 +17,7 @@ BASEDIR="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 BINDIR="$BASEDIR/bin"
 LSHW="$BINDIR/lshw-static"
 LSBLK="$BINDIR/lsblk"
-LSB_RELEASE="$BINDIR/lsb_release"
+OS_RELEASE="$BINDIR/os-release"
 FDISK="$BINDIR/fdisk"
 LSCPU="$BINDIR/lscpu"
 
@@ -25,7 +25,7 @@ LSCPU="$BINDIR/lscpu"
 #
 # Check for required commands
 #
-COMMANDS="lshw lsblk lsb_release"
+COMMANDS="lshw lsblk"
 
 for cmd in $COMMANDS ; do
     if ! command -v $cmd >/dev/null 2>&1 ;then
@@ -51,13 +51,12 @@ TMPDIR=$(mktemp -d)
 pushd $TMPDIR
 # Command Versions
 cat << EOF > command_versions
-lshw: $(lshw -version)
-lsblk: $(lsblk --version)
-ifconfig: $(ifconfig --version)
-fdisk: $(fdisk -v)
+lshw: $($LSHW -version)
+lsblk: $($LSBLK --version)
+ifconfig: $($IFCONFIG --version)
+fdisk: $($FDISK -v)
 packager: $(rpm --version || dpkg --version)
 uname: $(uname --version)
-lsb_release: $(lsb_release --version)
 $(for cmd in $OPTIONAL_CMDS ; do
 echo "$cmd: $($cmd --version 2>&1 )"
 )
@@ -70,15 +69,14 @@ secondary_groups: $SECGROUPS
 EOF
 
 # Everything Else
-lshw -xml > lshw-xml
-lsblk -a -P > lsblk-a-P
-lshw -short > lshw-short
-ifconfig -a > ifconfig-a
-fdisk -l > fdisk-l
+$LSHW -xml > lshw-xml
+$LSBLK -a -P > lsblk-a-P
+$LSHW -short > lshw-short
+$IFCONFIG -a > ifconfig-a
+$FDISK -l > fdisk-l
 (rpm -qa || dpkg -l) > packages
-cat /etc/os-release > os-release
+$OS_RELEASE > os-release
 uname -a > uname-a
-lsb_release -a > lsb_release-a
 if [[ $OPTIONAL_CMDS == *"lscpu"* ]] ; then lscpu > lscpu ; fi
 if [[ $OPTIONAL_CMDS == *"lsusb"* ]] ; then lsusb -v > lsusb-v ; fi
 if [[ $OPTIONAL_CMDS == *"lspci"* ]] ; then lspci -v > lspci-v ; fi
