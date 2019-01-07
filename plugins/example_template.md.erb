@@ -1,7 +1,7 @@
 <%= node_data['Name'] %>:
   name: <%= node_data['Name'] %>
   primary_group: <%= node_data['groups']['Primary Group'] %>
-  secondary_groups: <% node_data['groups']['Secondary Groups'].each_with_index do |grp, index| %><%= "#{grp}#{',' unless (index == node_data['groups']['Secondary Groups'].size - 1)}" %><% end %>
+  secondary_groups: <%= node_data['groups']['Secondary Groups'].join(',') %>
   info: |
     # System
 
