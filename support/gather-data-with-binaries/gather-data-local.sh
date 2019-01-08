@@ -37,7 +37,7 @@ for cmd in $COMMANDS ; do
 done
 
 OPTIONAL_CMDS=$(
-CMDS="lscpu lsusb lspci lsscsi dmidecode"
+CMDS="lscpu lspci lsscsi dmidecode"
 for cmd in $CMDS ; do
     if command -v $cmd >/dev/null 2>&1 ; then
         echo -n "$cmd "
@@ -77,8 +77,8 @@ $FDISK -l > fdisk-l
 (rpm -qa || dpkg -l) > packages
 $OS_RELEASE > os-release
 uname -a > uname-a
+cat /sys/kernel/debug/usb/devices > usb-devices
 if [[ $OPTIONAL_CMDS == *"lscpu"* ]] ; then lscpu > lscpu ; fi
-if [[ $OPTIONAL_CMDS == *"lsusb"* ]] ; then lsusb -v > lsusb-v ; fi
 if [[ $OPTIONAL_CMDS == *"lspci"* ]] ; then lspci -v > lspci-v ; fi
 if [[ $OPTIONAL_CMDS == *"lsscsi"* ]] ; then lsscsi > lsscsi ; fi
 if [[ $OPTIONAL_CMDS == *"dmidecode"* ]] ; then dmidecode > dmidecode ; fi
