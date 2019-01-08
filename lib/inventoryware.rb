@@ -85,6 +85,8 @@ module Inventoryware
     c.option '-l', '--location LOCATION',
         "Output the rendered template to the specified location"
     c.option '--all', "Render all data in #{File.expand_path(YAML_DIR)}"
+    c.option '-g', '--group GROUP',
+      "Render all nodes in GROUP, commma-seperate values for multiple groups"
     action(c, Commands::Render)
   end
 

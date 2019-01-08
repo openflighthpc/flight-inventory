@@ -5,11 +5,11 @@ module Inventoryware
   module Commands
     class Render < Command
       def run
-        if @options.all and not @argv.length == 1
-          $stderr.puts "Error: 'template' should be the only argument - all "\
+        if (@options.group or @options.all) and not @argv.length == 1
+          $stderr.puts "Error: 'template' should be the only argument - set "\
             "nodes are being parsed."
           exit
-        elsif not @options.all and @argv.length < 2
+        elsif not (@options.all or @options.group) and @argv.length < 2
           $stderr.puts "Error: Please provide a template and at least one "\
             "node."
           exit
@@ -35,10 +35,15 @@ module Inventoryware
           out_file = @options.location
         end
 
-        output(@options.all ? find_all_nodes() : find_nodes(nodes),
-               template,
-               out_file
-              )
+        if @options.all
+          node_locations = find_all_nodes
+        elsif @options.group
+          node_locations = find_nodes_in_groups(@options.group.split(','))
+        else
+          node_locations = find_nodes(nodes)
+        end
+
+        output(node_locations, template, out_file)
       end
 
       private
@@ -49,6 +54,32 @@ module Inventoryware
           exit
         end
         return node_locations
+      end
+
+      # this quite an intensive method of way to go about searching the yaml
+      # each file is converted to a sting and then searched
+      # seems fine as it stands but if speed becomes an issue could stand to
+      #   be changed
+      def find_nodes_in_groups(groups)
+        nodes = []
+        find_all_nodes().each do |location|
+          found = []
+          File.open(location) do |file|
+            contents = file.read
+            m = contents.match(/primary_group: (.*^?)/)[1]
+            found.append(m) unless m.empty?
+            m = contents.match(/secondary_groups: (.*^?)/)[1]
+            found = found + (m.split(',')) unless m.empty?
+          end
+          unless (found & groups).empty?
+            nodes.append(location)
+          end
+        end
+        if nodes.empty?
+          $stderr.puts "Error: no nodes in #{groups.join(', ')} found - exiting"
+          exit
+        end
+        return nodes
       end
 
       def find_nodes(nodes)
@@ -87,11 +118,11 @@ module Inventoryware
         out = ""
         # check, will loading all output cause issues with memory size?
         # probably fine - 723 nodes was 350Kb
-        node_locations.each do |node|
-          out += parse_yaml(node, eruby, render_env)
+        node_locations.each do |location|
+          out += parse_yaml(location, eruby, render_env)
           # this message is output through stderr in order to not interfere
           # with the output of the rendered template
-          $stderr.puts "Rendered #{File.basename(node)}"
+          $stderr.puts "Rendered #{File.basename(location)}"
         end
 
         if out_file
