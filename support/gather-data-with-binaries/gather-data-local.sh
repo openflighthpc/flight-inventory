@@ -20,6 +20,7 @@ LSBLK="$BINDIR/lsblk"
 OS_RELEASE="$BINDIR/os-release"
 FDISK="$BINDIR/fdisk"
 LSCPU="$BINDIR/lscpu"
+LSPCI="$BINDIR/lspci"
 
 
 #
@@ -37,7 +38,7 @@ for cmd in $COMMANDS ; do
 done
 
 OPTIONAL_CMDS=$(
-CMDS="lscpu lspci lsscsi dmidecode"
+CMDS="lscpu lsscsi dmidecode"
 for cmd in $CMDS ; do
     if command -v $cmd >/dev/null 2>&1 ; then
         echo -n "$cmd "
@@ -53,6 +54,7 @@ pushd $TMPDIR
 cat << EOF > command_versions
 lshw: $($LSHW -version)
 lsblk: $($LSBLK --version)
+lspci: $($LSPCI --version)
 ifconfig: $($IFCONFIG --version)
 fdisk: $($FDISK -v)
 packager: $(rpm --version || dpkg --version)
@@ -78,8 +80,8 @@ $FDISK -l > fdisk-l
 $OS_RELEASE > os-release
 uname -a > uname-a
 cat /sys/kernel/debug/usb/devices > usb-devices
-if [[ $OPTIONAL_CMDS == *"lscpu"* ]] ; then lscpu > lscpu ; fi
-if [[ $OPTIONAL_CMDS == *"lspci"* ]] ; then lspci -v > lspci-v ; fi
+$LSCPU > lscpu 
+$LSPCI -v -mm > lspci-v-mm
 if [[ $OPTIONAL_CMDS == *"lsscsi"* ]] ; then lsscsi > lsscsi ; fi
 if [[ $OPTIONAL_CMDS == *"dmidecode"* ]] ; then dmidecode > dmidecode ; fi
 popd
