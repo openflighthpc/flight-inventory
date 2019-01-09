@@ -19,6 +19,7 @@ LSHW="$BINDIR/lshw-static"
 LSPCI="$BINDIR/lspci"
 LSSCSI="$BINDIR/lsscsi"
 OS_RELEASE="$BINDIR/os-release"
+UNAME="$BINDIR/uname"
 
 #
 # Collect data
