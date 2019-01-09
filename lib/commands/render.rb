@@ -66,9 +66,9 @@ module Inventoryware
           found = []
           File.open(location) do |file|
             contents = file.read
-            m = contents.match(/primary_group: (.*^?)/)[1]
+            m = contents.match(/primary_group: (.*?)$/)[1]
             found.append(m) unless m.empty?
-            m = contents.match(/secondary_groups: (.*^?)/)[1]
+            m = contents.match(/secondary_groups: (.*?)$/)[1]
             found = found + (m.split(',')) unless m.empty?
           end
           unless (found & groups).empty?
