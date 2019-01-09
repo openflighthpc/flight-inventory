@@ -1,7 +1,96 @@
 #!/bin/bash
 
-PRIGROUP=$1
-SECGROUPS=$2
+#
+# Functions
+#
+print_help() {
+    echo "Gather Data - Collect physical and logical system configuration information"
+    echo ""
+    echo "./gather-data.sh -p PRIMARY_GROUP [-g comma,separate,secondary,groups] [-t check_type] [-v]"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help          Show this help page"
+    echo "  -p, --primary       Primary group for the node [REQUIRED]"
+    echo "  -g, --groups        Comma-separated list of secondary groups for the node"
+    echo "  -t, --type          Type of check to run (physical or logical), if not provided"
+    echo "                      then both types will be collected"
+    echo "  -v, --verbose       Print additional debug information"
+}
+
+#
+# Arg Parsing
+#
+while test $# -gt 0 ; do
+    case "$1" in
+        -h|--help)
+            print_help
+            exit 0
+            ;;
+        -p|--primary)
+            shift
+
+            # Ensure argument passed
+            if test $# -gt 0 ; then
+                export PRIGROUP=$1
+            else
+                echo "ERROR: No primary groups provided"
+                print_help
+                exit 1
+            fi
+            shift
+            ;;
+        -g|--groups)
+            shift
+
+            # Ensure argument passed
+            if test $# -gt 0 ; then
+                export SECGROUPS=$1
+            else
+                echo "ERROR: No secondary groups provided"
+                print_help
+                exit 1
+            fi
+            shift
+            ;;
+        -t|--type)
+            shift
+
+            # Ensure argument passed
+            if test $# -gt 0 ; then
+                export TYPE=$1
+            else
+                echo "ERROR: No type provided"
+                print_help
+                exit 1
+            fi
+            shift
+            ;;
+        -v|--verbose)
+            shift
+            VERBOSE=true
+            ;;
+        *)
+            echo "ERROR: Unrecognised argument provided"
+            print_help
+            exit 1
+            ;;
+    esac
+done
+
+#
+# Validation
+#
+if [ -z $PRIGROUP ] ; then
+    echo "ERROR: Must provide a primary group"
+    print_help
+    exit 1
+fi
+
+if [ ! -z $VERBOSE ] ; then
+    echo "PRIGROUP = $PRIGROUP"
+    echo "SECGROUPS = $SECGROUPS"
+    echo "TYPE = $TYPE"
+fi
 
 #
 # Command Paths
