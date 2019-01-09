@@ -43,7 +43,7 @@ module Inventoryware
         contents = []
         if File.directory?(data_source)
           contents = Dir.glob(File.join(data_source, "**/*.zip"))
-        elsif check_zip_exists?(data_source)
+        elsif Utils::check_zip_exists?(data_source)
           contents = [data_source]
         end
         if contents.empty?
@@ -134,10 +134,10 @@ module Inventoryware
 
       def output_yaml(node_data)
         node_name = node_data['name']
-        exit_unless_dir(YAML_DIR)
+        Utils::exit_unless_dir(YAML_DIR)
         yaml_out_name = "#{node_name}.yaml"
         out_file = File.join(YAML_DIR, yaml_out_name)
-        unless check_file_writable?(out_file)
+        unless Utils::check_file_writable?(out_file)
           $stderr.puts "Error: output file #{out_file} not accessible "\
             "- aborting"
           exit
