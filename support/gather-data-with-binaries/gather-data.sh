@@ -30,17 +30,17 @@ pushd $TMPDIR
 
 # Command Versions
 cat << EOF > command_versions
-dmidecode: $($DMIDECODE --version)
-fdisk: $($FDISK -v)
-ifconfig: $($IFCONFIG --version)
-ip: $($IP -V)
-lsblk: $($LSBLK --version)
-lscpu: $($LSCPU --version)
-lshw: $($LSHW -version)
-lspci: $($LSPCI --version)
-lsscsi: $($LSSCSI --version)
-packager: $(rpm --version || dpkg --version)
-uname: $($UNAME --version)
+dmidecode: $($DMIDECODE --version 2>&1)
+fdisk: $($FDISK -v 2>&1)
+ifconfig: $($IFCONFIG --version 2>&1)
+ip: $($IP -V 2>&1)
+lsblk: $($LSBLK --version 2>&1)
+lscpu: $($LSCPU --version 2>&1)
+lshw: $($LSHW -version 2>&1)
+lspci: $($LSPCI --version 2>&1)
+lsscsi: $($LSSCSI --version 2>&1)
+packager: $(rpm --version 2>&1 || dpkg --version 2>&1)
+uname: $($UNAME --version 2>&1)
 EOF
 
 # Groups
