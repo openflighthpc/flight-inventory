@@ -66,7 +66,6 @@ def expand_node_ranges(nodes)
       suffix = m[2]
       ranges = suffix.split(',')
       ranges.each do |range|
-        p range
         if range.match(/-/)
           num_1, num_2 = range.split('-')
           padding = num_1.match(/^0+/)
