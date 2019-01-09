@@ -21,22 +21,13 @@ OS_RELEASE="$BINDIR/os-release"
 FDISK="$BINDIR/fdisk"
 LSCPU="$BINDIR/lscpu"
 LSPCI="$BINDIR/lspci"
+IFCONFIG="$BINDIR/ifconfig"
+IP="$BINDIR/ip"
 
 
 #
 # Check for required commands
 #
-COMMANDS="lshw lsblk"
-
-for cmd in $COMMANDS ; do
-    if ! command -v $cmd >/dev/null 2>&1 ;then
-        echo "Command '$cmd' not found, ensure it is installed for program to continue"
-        echo "Example install commands for various platforms are available in this script"
-        echo "Exiting..."
-        exit 1
-    fi
-done
-
 OPTIONAL_CMDS=$(
 CMDS="lscpu lsscsi dmidecode"
 for cmd in $CMDS ; do
@@ -56,6 +47,7 @@ lshw: $($LSHW -version)
 lsblk: $($LSBLK --version)
 lspci: $($LSPCI --version)
 ifconfig: $($IFCONFIG --version)
+ip: $($IP -V)
 fdisk: $($FDISK -v)
 packager: $(rpm --version || dpkg --version)
 uname: $(uname --version)
@@ -75,6 +67,7 @@ $LSHW -xml > lshw-xml
 $LSBLK -a -P > lsblk-a-P
 $LSHW -short > lshw-short
 $IFCONFIG -a > ifconfig-a
+$IP -o addr > ip-o-addr
 $FDISK -l > fdisk-l
 (rpm -qa || dpkg -l) > packages
 $OS_RELEASE > os-release
