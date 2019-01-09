@@ -99,6 +99,8 @@ module Inventoryware
       end
 
       def output(node_locations, template, out_file)
+        node_locations = node_locations.uniq
+
         node_locations = node_locations.sort_by do |location|
           File.basename(location)
         end
