@@ -133,7 +133,7 @@ dmidecode: $($DMIDECODE --version 2>&1)
 fdisk: $($FDISK -v 2>&1)
 lsblk: $($LSBLK --version 2>&1)
 lscpu: $($LSCPU --version 2>&1)
-lshw: $($LSHW -version 2>&1)
+lshw: $($LSHW -version 2>/dev/null)
 lspci: $($LSPCI --version 2>&1)
 lsscsi: $($LSSCSI --version 2>&1)"
 fi )
@@ -141,8 +141,8 @@ $(if [[ $TYPES == *"logical"* ]] ; then
 echo "# Logical
 ifconfig: $($IFCONFIG --version 2>&1)
 ip: $($IP -V 2>&1)
-packager: $(rpm --version 2>&1 || dpkg --version 2>&1)
-uname: $($UNAME --version 2>&1)"
+packager: $(rpm --version 2>/dev/null || dpkg --version 2>/dev/null |head -1)
+uname: $($UNAME --version 2>&1 |head -1)"
 fi)
 EOF
 
