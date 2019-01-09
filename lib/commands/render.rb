@@ -5,11 +5,11 @@ module Inventoryware
   module Commands
     class Render < Command
       def run
-        if (@options.group or @options.all) and not @argv.length == 1
-          $stderr.puts "Error: 'template' should be the only argument - set "\
+        if @options.all and not @argv.length == 1
+          $stderr.puts "Error: 'template' should be the only argument - all "\
             "nodes are being parsed."
           exit
-        elsif not (@options.all or @options.group) and @argv.length < 2
+        elsif not @options.group and @argv.length < 2
           $stderr.puts "Error: Please provide a template and at least one "\
             "node."
           exit
@@ -37,10 +37,14 @@ module Inventoryware
 
         if @options.all
           node_locations = find_all_nodes
-        elsif @options.group
-          node_locations = find_nodes_in_groups(@options.group.split(','))
         else
-          node_locations = find_nodes(nodes)
+          if nodes
+            single_nodes = find_nodes(nodes)
+          end
+          if @options.group
+            groups_nodes = find_nodes_in_groups(@options.group.split(','))
+          end
+          node_locations = single_nodes + groups_nodes
         end
 
         output(node_locations, template, out_file)
