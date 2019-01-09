@@ -20,12 +20,14 @@ LSPCI="$BINDIR/lspci"
 LSSCSI="$BINDIR/lsscsi"
 OS_RELEASE="$BINDIR/os-release"
 UNAME="$BINDIR/uname"
+ZIP="$BINDIR/zip"
 
 #
 # Collect data
 #
 TMPDIR=$(mktemp -d)
 pushd $TMPDIR
+
 # Command Versions
 cat << EOF > command_versions
 dmidecode: $($DMIDECODE --version)
@@ -62,6 +64,7 @@ $OS_RELEASE > os-release
 $UNAME -a > uname-a
 (rpm -qa || dpkg -l) > packages
 cat /sys/kernel/debug/usb/devices > usb-devices
+
 popd
 
 #
@@ -69,7 +72,7 @@ popd
 #
 ZIPFILE="/tmp/$(hostname -s).zip"
 pushd $TMPDIR
-zip -r $ZIPFILE ./*
+$ZIP -r $ZIPFILE ./*
 popd
 
 rm -rf $TMPDIR

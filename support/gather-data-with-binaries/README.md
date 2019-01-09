@@ -11,3 +11,7 @@ All binaries have been compiled on CentOS 7 and are tested to run on:
 With assumption that if it works on these older OSes then it will be portable to later SLES and Ubuntu versions.
 
 Build instructions for each static library can be found within the directory `build/`
+
+## Gathering Data
+
+To run the script simply execute the `gather-data.sh` script. As long as the `bin/` directory lives next to the `gather-data.sh` script then the binaries then the script will execute without issue. 
