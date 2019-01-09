@@ -117,7 +117,7 @@ module Inventoryware
         end
 
         node_data = {}
-        node_data['Name'] = node_name
+        node_data['name'] = node_name
         node_data['groups'] = {}
         node_data['groups']['primary_group'] = nil
         node_data['groups']['secondary_groups'] = nil
@@ -133,7 +133,7 @@ module Inventoryware
       end
 
       def output_yaml(node_data)
-        node_name = node_data['Name']
+        node_name = node_data['name']
         exit_unless_dir(YAML_DIR)
         yaml_out_name = "#{node_name}.yaml"
         out_file = File.join(YAML_DIR, yaml_out_name)
