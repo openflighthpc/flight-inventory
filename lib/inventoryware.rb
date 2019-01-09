@@ -73,6 +73,13 @@ module Inventoryware
     command.syntax = s
   end
 
+  def self.add_node_options(command)
+    command.option '--all', "Render all data in #{File.expand_path(YAML_DIR)}"
+    command.option '-g', '--group GROUP',
+      "Render all nodes in GROUP, commma-seperate values for multiple groups"
+    return command
+  end
+
   command :parse do |c|
     cli_syntax(c, 'DATA_SOURCE')
     c.description = 'Parse hardware information into yaml'
@@ -84,10 +91,15 @@ module Inventoryware
     c.description = "Render nodes' data as an eRuby template"
     c.option '-l', '--location LOCATION',
         "Output the rendered template to the specified location"
-    c.option '--all', "Render all data in #{File.expand_path(YAML_DIR)}"
-    c.option '-g', '--group GROUP',
-      "Render all nodes in GROUP, commma-seperate values for multiple groups"
+    c = add_node_options(c)
     action(c, Commands::Render)
+  end
+
+  command :edit do |c|
+    cli_syntax(c, 'FIELD VALUE NODE(S)')
+    c.description = "Edit some nodes' data"
+    c = add_node_options(c)
+    action(c, Commands::Edit)
   end
 
 end
