@@ -1,6 +1,27 @@
 #!/bin/bash
 
 #
+# Global Vars
+#
+TYPES="logical physical"
+
+BASEDIR="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
+BINDIR="$BASEDIR/bin"
+
+DMIDECODE="$BINDIR/dmidecode"
+FDISK="$BINDIR/fdisk"
+IFCONFIG="$BINDIR/ifconfig"
+IP="$BINDIR/ip"
+LSBLK="$BINDIR/lsblk"
+LSCPU="$BINDIR/lscpu"
+LSHW="$BINDIR/lshw-static"
+LSPCI="$BINDIR/lspci"
+LSSCSI="$BINDIR/lsscsi"
+OS_RELEASE="$BINDIR/os-release"
+UNAME="$BINDIR/uname"
+ZIP="$BINDIR/zip"
+
+#
 # Functions
 #
 print_help() {
@@ -33,7 +54,7 @@ while test $# -gt 0 ; do
             if test $# -gt 0 ; then
                 export PRIGROUP=$1
             else
-                echo "ERROR: No primary groups provided"
+                echo -e "ERROR: No primary groups provided\n"
                 print_help
                 exit 1
             fi
@@ -46,7 +67,7 @@ while test $# -gt 0 ; do
             if test $# -gt 0 ; then
                 export SECGROUPS=$1
             else
-                echo "ERROR: No secondary groups provided"
+                echo -e "ERROR: No secondary groups provided\n"
                 print_help
                 exit 1
             fi
@@ -58,8 +79,14 @@ while test $# -gt 0 ; do
             # Ensure argument passed
             if test $# -gt 0 ; then
                 export TYPE=$1
+                if [[ ! $TYPES == *"$TYPE"* ]] ; then
+                    echo -e "ERROR: $TYPE is an invalid type, must be one of: $TYPES\n"
+                    print_help
+                    exit 1
+                fi
+                TYPES="$TYPE"
             else
-                echo "ERROR: No type provided"
+                echo -e "ERROR: No type provided\n"
                 print_help
                 exit 1
             fi
@@ -70,7 +97,7 @@ while test $# -gt 0 ; do
             VERBOSE=true
             ;;
         *)
-            echo "ERROR: Unrecognised argument provided"
+            echo -e "ERROR: Unrecognised argument provided\n"
             print_help
             exit 1
             ;;
@@ -81,7 +108,7 @@ done
 # Validation
 #
 if [ -z $PRIGROUP ] ; then
-    echo "ERROR: Must provide a primary group"
+    echo -e "ERROR: Must provide a primary group\n"
     print_help
     exit 1
 fi
@@ -89,27 +116,8 @@ fi
 if [ ! -z $VERBOSE ] ; then
     echo "PRIGROUP = $PRIGROUP"
     echo "SECGROUPS = $SECGROUPS"
-    echo "TYPE = $TYPE"
+    echo "TYPES = $TYPES"
 fi
-
-#
-# Command Paths
-#
-BASEDIR="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
-BINDIR="$BASEDIR/bin"
-
-DMIDECODE="$BINDIR/dmidecode"
-FDISK="$BINDIR/fdisk"
-IFCONFIG="$BINDIR/ifconfig"
-IP="$BINDIR/ip"
-LSBLK="$BINDIR/lsblk"
-LSCPU="$BINDIR/lscpu"
-LSHW="$BINDIR/lshw-static"
-LSPCI="$BINDIR/lspci"
-LSSCSI="$BINDIR/lsscsi"
-OS_RELEASE="$BINDIR/os-release"
-UNAME="$BINDIR/uname"
-ZIP="$BINDIR/zip"
 
 #
 # Collect data
@@ -119,17 +127,23 @@ pushd $TMPDIR
 
 # Command Versions
 cat << EOF > command_versions
+$(if [[ $TYPES == *"physical"* ]] ; then
+echo "# Physical
 dmidecode: $($DMIDECODE --version 2>&1)
 fdisk: $($FDISK -v 2>&1)
-ifconfig: $($IFCONFIG --version 2>&1)
-ip: $($IP -V 2>&1)
 lsblk: $($LSBLK --version 2>&1)
 lscpu: $($LSCPU --version 2>&1)
 lshw: $($LSHW -version 2>&1)
 lspci: $($LSPCI --version 2>&1)
-lsscsi: $($LSSCSI --version 2>&1)
+lsscsi: $($LSSCSI --version 2>&1)"
+fi )
+$(if [[ $TYPES == *"logical"* ]] ; then
+echo "# Logical
+ifconfig: $($IFCONFIG --version 2>&1)
+ip: $($IP -V 2>&1)
 packager: $(rpm --version 2>&1 || dpkg --version 2>&1)
-uname: $($UNAME --version 2>&1)
+uname: $($UNAME --version 2>&1)"
+fi)
 EOF
 
 # Groups
@@ -138,21 +152,27 @@ primary_group: $PRIGROUP
 secondary_groups: $SECGROUPS
 EOF
 
-# Everything Else
+# Physical
+if [[ $TYPES == *"physical"* ]] ; then
 $DMIDECODE > dmidecode 
 $FDISK -l > fdisk-l
-$IFCONFIG -a > ifconfig-a
-$IP -o addr > ip-o-addr
 $LSBLK -a -P > lsblk-a-P
 $LSCPU > lscpu 
 $LSHW -short > lshw-short
 $LSHW -xml > lshw-xml
 $LSPCI -v -mm > lspci-v-mm
 $LSSCSI > lsscsi
+cat /sys/kernel/debug/usb/devices > usb-devices
+fi
+
+# Logical
+if [[ $TYPES == *"logical"* ]] ; then
+$IFCONFIG -a > ifconfig-a
+$IP -o addr > ip-o-addr
 $OS_RELEASE > os-release
 $UNAME -a > uname-a
 (rpm -qa || dpkg -l) > packages
-cat /sys/kernel/debug/usb/devices > usb-devices
+fi
 
 popd
 
