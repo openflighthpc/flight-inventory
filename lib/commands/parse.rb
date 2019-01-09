@@ -118,11 +118,11 @@ module Inventoryware
 
         node_data = {}
         node_data['name'] = node_name
-        node_data['groups'] = {}
-        node_data['groups']['primary_group'] = nil
-        node_data['groups']['secondary_groups'] = nil
+        node_data['mutable'] = {}
+        node_data['mutable']['primary_group'] = nil
+        node_data['mutable']['secondary_groups'] = nil
         if file_locations['groups']
-          node_data['groups'] = YAML.load(File.read(file_locations['groups']))
+          node_data['mutable'] = YAML.load(File.read(file_locations['groups']))
         end
         # extract data from lshw
         node_data['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))

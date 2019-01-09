@@ -1,7 +1,7 @@
 <%= node_data['name'] %>:
   name: <%= node_data['name'] %>
-  primary_group: <%= node_data['groups']['primary_group'] %>
-  secondary_groups: <%= node_data['groups']['secondary_groups'] %>
+  primary_group: <%= node_data['mutable']['primary_group'] %>
+  secondary_groups: <%= node_data['mutable']['secondary_groups'] %>
   info: |
     # System
 
