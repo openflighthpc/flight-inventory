@@ -56,3 +56,34 @@ def exit_unless_dir(path)
   end
   return true
 end
+
+def expand_node_ranges(nodes)
+  new_nodes = []
+  nodes.each do |node|
+    if node.match(/.*\[[0-9]+.*[0-9]+\]$/)
+      m = node.match(/^(.*)\[(.*)\]$/)
+      prefix = m[1]
+      suffix = m[2]
+      ranges = suffix.split(',')
+      ranges.each do |range|
+        p range
+        if range.match(/-/)
+          num_1, num_2 = range.split('-')
+          padding = num_1.match(/^0+/)
+          unless num_1 <= num_2
+            $stderr.puts "Invalid node range #{range}"
+            exit
+          end
+          (num_1.to_i .. num_2.to_i).each do |num|
+            new_nodes.push(sprintf("%s%0#{padding.to_s.length + 1}d", prefix, num))
+          end
+        else
+          new_nodes << "#{prefix}#{range}"
+        end
+      end
+      nodes.delete(node)
+    end
+  end
+  nodes = nodes + new_nodes
+  return nodes
+end

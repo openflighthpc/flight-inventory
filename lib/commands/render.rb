@@ -83,6 +83,7 @@ module Inventoryware
       end
 
       def find_nodes(nodes)
+        nodes = expand_node_ranges(nodes)
         node_locations = []
         nodes.each do |node|
           node_yaml = "#{node}.yaml"
