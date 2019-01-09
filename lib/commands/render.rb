@@ -73,13 +73,8 @@ module Inventoryware
       end
 
       def parse_yaml(node_location, eruby, render_env)
-        begin
-          # `.values[0]` ignores the name of the node & gets just its data
-          node_data = YAML.load_file(node_location).values[0]
-        rescue Psych::SyntaxError
-          $stderr.puts "Error: parsing yaml in #{node_location} - aborting"
-          exit
-        end
+        # `.values[0]` ignores the name of the node & gets just its data
+        node_data = Utils::read_node_yaml(node_location).values[0]
         render_env.instance_variable_set(:@node_data, node_data)
         ctx = render_env.instance_eval { binding }
 

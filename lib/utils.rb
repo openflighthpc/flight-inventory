@@ -111,6 +111,26 @@ module Inventoryware
       nodes = argv[other_args.length..-1]
     end
 
+    def self.read_node_yaml(node_location)
+      begin
+        node_data = YAML.load_file(node_location)
+      rescue Psych::SyntaxError
+        $stderr.puts "Error: parsing yaml in #{node_location} - aborting"
+        exit
+      end
+      return node_data
+    end
+
+    def self.output_node_yaml(node_data, location)
+      unless check_file_writable?(location)
+        $stderr.puts "Error: output file #{location} not accessible "\
+          "- aborting"
+        exit
+      end
+      yaml_hash = {node_data['name'] => node_data}
+      File.open(location, 'w') { |file| file.write(yaml_hash.to_yaml) }
+    end
+
     def self.select_nodes(nodes, options)
       node_locations = []
       if options.all

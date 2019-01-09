@@ -129,21 +129,11 @@ module Inventoryware
         # extract data from lsblk
         node_data['lsblk'] = LsblkParser.new(file_locations['lsblk-a-P']).hashify()
 
-        output_yaml(node_data)
-      end
-
-      def output_yaml(node_data)
-        node_name = node_data['name']
         Utils::exit_unless_dir(YAML_DIR)
         yaml_out_name = "#{node_name}.yaml"
         out_file = File.join(YAML_DIR, yaml_out_name)
-        unless Utils::check_file_writable?(out_file)
-          $stderr.puts "Error: output file #{out_file} not accessible "\
-            "- aborting"
-          exit
-        end
-        yaml_hash = {node_name => node_data}
-        File.open(out_file, 'w') { |file| file.write(yaml_hash.to_yaml) }
+        Utils::output_node_yaml(node_data, out_file)
+
         $stderr.puts "#{node_name}.zip imported to "\
           "#{File.expand_path(out_file)}"
       end
