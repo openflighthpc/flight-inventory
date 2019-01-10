@@ -176,8 +176,7 @@ module Inventoryware
         end
       end
       if nodes.empty?
-        $stderr.puts "Error: no nodes in #{groups.join(', ')} found - exiting"
-        exit
+        $stderr.puts "No nodes found in #{groups.join(', ')}."
       end
       return nodes
     end
@@ -189,9 +188,9 @@ module Inventoryware
         node_yaml = "#{node}.yaml"
         node_yaml_location = File.join(YAML_DIR, node_yaml)
         unless check_file_readable?(node_yaml_location)
-          $stderr.puts "Error: File #{node_yaml} not found within "\
+          $stderr.puts "File #{node_yaml} not found within "\
             "#{File.expand_path(YAML_DIR)}"
-          exit
+          next
         end
         node_locations.append(node_yaml_location)
       end
