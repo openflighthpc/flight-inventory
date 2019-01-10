@@ -31,8 +31,8 @@
 
     | Interface | Speed | MAC |
     |-----------|-------|-----|
-    <% find_hashes_with_key_value(node_data, 'class', 'network')&.each do |net| %>
-    | <%= net['logicalname'] %> | <%= format_bits_value(net['capacity'].to_i || 0) %> | <%= net['serial'] %> |
+    <% network_devices.each do |net| %>
+    | <%= net.logicalname %> | <%= net.speed %> | <%= net.serial %> |
     <% end %>
 
 
