@@ -28,9 +28,6 @@ module Inventoryware
             unless value.empty?
               node_data['mutable'][key] = value
             end
-            if value.empty? and node_data['mutable'].key?(key)
-              node_data['mutable'].delete(key)
-            end
           end
           Utils::output_node_yaml(node_data, location)
         end
