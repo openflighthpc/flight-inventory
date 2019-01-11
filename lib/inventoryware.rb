@@ -102,8 +102,7 @@ module Inventoryware
     action(c, Commands::Modify)
   end
 
-  command :add_location do |c|
-    c.name = 'add-location'
+  command :'add-location' do |c|
     cli_syntax(c, 'NODE(S)')
     c.description = "Specify some nodes' location - can also be"\
       " acheived through modify"
