@@ -70,16 +70,8 @@ module Inventoryware
           ranges.each do |range|
             if range.match(/-/)
               num_1, num_2 = range.split('-')
-              # chomp here is in case num_1 consists only of 0's
-              # in that case, e.g. node[000-001], the padding should be 1 char shorter
-              # than all the leading 0s in num_1, e.g. '00'
-              padding = num_1.chomp('0').match(/^0+/)
-              unless num_1 <= num_2
-                $stderr.puts "Invalid node range #{range}"
-                exit
-              end
               (num_1.to_i .. num_2.to_i).each do |num|
-                new_nodes.push(sprintf("%s%0#{padding.to_s.length + 1}d", prefix, num))
+                new_nodes << "#{prefix}#{num.to_s.rjust(num_1.length, '0')}"
               end
             else
               new_nodes << "#{prefix}#{range}"
