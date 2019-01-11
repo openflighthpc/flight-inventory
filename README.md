@@ -6,7 +6,7 @@ The commands' syntax is as follows:
 ```
 parse DATA_LOCATION
 
-render TEMPLATE_LOCATION [NODE_NAME(S) | --all] [-l DESTINATION]
+render TEMPLATE_LOCATION [NODE_NAME(S) -g GROUPS,HERE | --all] [-l DESTINATION]
 ```
 
 The `parse` command processes zips at the specified location into yaml stored in the `store/`
@@ -18,8 +18,9 @@ file will be processed if it exists.
 
 The `render` command fills eRuby templates using stored data. The first argument is the template to
 fill then either n nodes follow or `--all` can be passed to process all .yaml files in the `store/`
-directory. The output will be passed to stdout unless a destination is specified with the `-l`
-option.
+directory. Additionally groups can be selected with the `-g` option in which case all nodes in the
+specified groups will be processed.
+The output will be passed to stdout unless a destination is specified with the `-l` option.
 
 ## Installation
 
