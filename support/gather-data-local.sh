@@ -63,7 +63,7 @@ lsblk -a -P > lsblk-a-P
 lshw -short > lshw-short
 ifconfig -a > ifconfig-a
 fdisk -l > fdisk-l
-rpm -qa || dpkg -l > packages
+(rpm -qa || dpkg -l) > packages
 cat /etc/os-release > os-release
 uname -a > uname-a
 lsb_release -a > lsb_release-a

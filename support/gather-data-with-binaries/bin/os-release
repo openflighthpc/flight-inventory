@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# This script provides OS release information in a similar
+# way to that of `lsb_release` but without the platform 
+# inconsistencies encountered when using one lsb_release
+# script on Ubuntu, CentOS and SLES.
+#
+
+FILE="/etc/os-release"
+
+if [ ! -f $FILE ] ; then
+  FILE="/etc/system-release"
+  NAME=$(cat $FILE |awk '{print $1}')
+  PRETTY_NAME=$(cat $FILE)
+  VERSION_ID=$(cat $FILE |awk '{print $3}')
+else
+  source $FILE
+fi
+
+echo -e "Distributor ID:\t$NAME
+Description:\t$PRETTY_NAME
+Release:\t$VERSION_ID"
