@@ -143,6 +143,19 @@ module Inventoryware
       File.open(location, 'w') { |file| file.write(yaml_hash.to_yaml) }
     end
 
+    def self.read_node_or_create(location)
+      if Utils::check_file_readable?(location)
+        node_data = Utils.read_node_yaml(location).values[0]
+      else
+        node_data = {
+          'name' => File.basename(location, '.yaml'),
+          'mutable' => {},
+          'imported' => false
+        }
+      end
+      return node_data
+    end
+
     def self.select_nodes(nodes, options, return_missing = false)
       node_locations = []
       if options.all
