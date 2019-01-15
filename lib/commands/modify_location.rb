@@ -1,7 +1,7 @@
 
 module Inventoryware
   module Commands
-    class AddLocation < Command
+    class ModifyLocation < Command
       def run
         other_args = []
         nodes = Utils::resolve_node_options(@argv, @options, other_args)
@@ -18,6 +18,7 @@ module Inventoryware
 
         fields.keys.each do |field|
           p "Enter a #{field} or press enter to skip"
+          # TODO swap gets for use of highline gem?
           value = STDIN.gets.chomp
           fields[field] = value if value
         end

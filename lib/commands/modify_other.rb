@@ -1,7 +1,7 @@
 
 module Inventoryware
   module Commands
-    class Modify < Command
+    class ModifyOther < Command
       def run
         other_args = ["modification"]
         nodes = Utils::resolve_node_options(@argv, @options, other_args)
