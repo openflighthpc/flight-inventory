@@ -24,7 +24,7 @@ module Inventoryware
         end
 
         node_locations.each do |location|
-          node_data = Utils.read_node_yaml(location).values[0]
+          node_data = Utils::read_node_or_create(location)
           fields.each do |key, value|
             unless value.empty?
               node_data['mutable'][key] = value
