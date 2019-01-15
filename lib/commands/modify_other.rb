@@ -14,6 +14,12 @@ module Inventoryware
         end
         field, value = modification.split('=')
 
+        protected_fields = ['primary_group', 'secondary_groups']
+        if protected_fields.include?(field)
+          $stderr.puts "Error: cannot modify '#{field}' this way."
+          exit
+        end
+
         node_locations = Utils::select_nodes(nodes,
                                              @options,
                                              return_missing = true)
