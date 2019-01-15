@@ -145,7 +145,7 @@ module Inventoryware
 
       def merge_recursively(a, b)
         a.merge(b) do |key, a_item, b_item|
-          if a_item.is_a?(Hash)
+          if a_item.is_a?(Hash) and b_item.is_a?(Hash)
             merge_recursively(a_item, b_item)
           else
             b_item
