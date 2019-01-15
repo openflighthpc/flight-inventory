@@ -109,4 +109,13 @@ module Inventoryware
     c = add_node_options(c)
     action(c, Commands::ModifyLocation)
   end
+
+  command :'modify groups' do |c|
+    cli_syntax(c, 'GROUP NODE(S)')
+    c.description = "Modify nodes' groups"
+    c = add_node_options(c)
+    c.option '-p', '--primary', "Modify the nodes' primary groups"
+    c.option '-r', '--remove', "Remove the nodes from this group"
+    action(c, Commands::ModifyGroups)
+  end
 end
