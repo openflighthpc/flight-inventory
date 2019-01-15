@@ -23,7 +23,7 @@ module Inventoryware
           if @options.primary
             node_data['mutable']['primary_group'] = group
           else
-            sec = node_data['mutable']['secondary_groups']&.split(',')
+            sec = node_data['mutable'].fetch('secondary_groups', nil)&.split(',')
             if @options.remove and sec.include?(group)
               sec.delete(group)
             elsif not @options.remove
