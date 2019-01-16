@@ -31,16 +31,15 @@ Invalid destination '#{@options.location}'
         end
 
         node_locations = Utils::select_nodes(nodes, @options)
-        output(node_locations, template, out_file)
-      end
-
-      def output(node_locations, template, out_file)
         node_locations = node_locations.uniq
-
         node_locations = node_locations.sort_by do |location|
           File.basename(location)
         end
 
+        output(node_locations, template, out_file)
+      end
+
+      def output(node_locations, template, out_file)
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
 
@@ -68,11 +67,12 @@ Invalid destination '#{@options.location}'
             file.write(out)
           end
         else
-          # '$stdout' here is just to be explicit - for clarity
+          # '$stdout' here is just for clarity
           $stdout.puts out
         end
       end
 
+      # fill the template for a single node
       def parse_yaml(node_location, eruby, render_env)
         # `.values[0]` ignores the name of the node & gets just its data
         node_data = Utils::read_node_yaml(node_location).values[0]

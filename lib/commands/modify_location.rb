@@ -16,6 +16,7 @@ module Inventoryware
           'slot' => {'name' => nil, 'value' => nil}
         }
 
+        # Get input REPL style
         fields.each do |field, hash|
           name = hash['name'] ? hash['name'] : field
           p "Enter a #{name} or press enter to skip"
@@ -24,6 +25,7 @@ module Inventoryware
           hash['value'] = value unless value == ''
         end
 
+        # save data
         node_locations.each do |location|
           node_data = Utils::read_node_or_create(location)
           fields.each do |field, hash|

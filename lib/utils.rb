@@ -50,6 +50,7 @@ module Inventoryware
       return true
     end
 
+    # raise an error if given path isn't a directory
     def self.exit_unless_dir(path)
       unless File.directory?(path)
         raise FileSysError, <<-ERROR
@@ -60,6 +61,7 @@ Please create it before continuing."
       return true
     end
 
+    # given a list of nodes, expand each elem that is a range
     def self.expand_node_ranges(nodes)
       new_nodes = []
       nodes.each do |node|
@@ -85,6 +87,8 @@ Please create it before continuing."
       return nodes
     end
 
+    # Errors for each way that arguments and nodes can be given incorrectly
+    # 'other_args' in an array of all non-node arguments for the command
     #TODO make this method less awful
     def self.resolve_node_options(argv, options, other_args)
       arg_str = other_args.join(', ')
@@ -126,6 +130,7 @@ Please provide at least one node.
       nodes = argv[other_args.length..-1]
     end
 
+    # returns the yaml hash of a file at the given location
     def self.read_node_yaml(node_location)
       begin
         node_data = YAML.load_file(node_location)
@@ -137,6 +142,7 @@ Error parsing yaml in #{node_location} - aborting
       return node_data
     end
 
+    # outputs the node data to the specified location
     def self.output_node_yaml(node_data, location)
       unless check_file_writable?(location)
         raise FileSysError, <<-ERROR
@@ -147,6 +153,7 @@ Output file #{location} not accessible - aborting
       File.open(location, 'w') { |file| file.write(yaml_hash.to_yaml) }
     end
 
+    # reads a node's yaml but creats one if it doesn't exist
     def self.read_node_or_create(location)
       if Utils::check_file_readable?(location)
         node_data = Utils.read_node_yaml(location).values[0]
@@ -160,6 +167,8 @@ Output file #{location} not accessible - aborting
       return node_data
     end
 
+    # given a set of nodes and relevant options returns an expanded list
+    #   of all the necessary nodes
     def self.select_nodes(nodes, options, return_missing = false)
       node_locations = []
       if options.all
@@ -176,6 +185,7 @@ Output file #{location} not accessible - aborting
     end
 
     private
+    # retrieves all .yaml files in the storage dir
     def self.find_all_nodes()
       node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
       if node_locations.empty?
@@ -186,6 +196,7 @@ No node data found in #{File.expand_path(YAML_DIR)}
       return node_locations
     end
 
+    # retreives all nodes in the given groups
     # this quite an intensive method of way to go about searching the yaml
     # each file is converted to a sting and then searched
     # seems fine as it stands but if speed becomes an issue could stand to
@@ -211,6 +222,10 @@ No node data found in #{File.expand_path(YAML_DIR)}
       return nodes
     end
 
+    # retreives the .yaml file for each of the given nodes
+    # expands node ranges if they exist
+    # if return missing is passed, returns paths to the .yamls of non-existent
+    #   nodes
     def self.find_nodes(nodes, return_missing = false)
       nodes = expand_node_ranges(nodes)
       node_locations = []
