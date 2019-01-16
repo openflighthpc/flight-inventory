@@ -33,8 +33,6 @@ module Inventoryware
           'room' => {'name' => nil, 'value' => nil},
           'rack' => {'name' => nil, 'value' => nil},
           'start_unit' => {'name' => 'starting rack unit', 'value' => nil},
-          'chassis' => {'name' => nil, 'value' => nil},
-          'slot' => {'name' => nil, 'value' => nil}
         }
 
         # Get input REPL style
