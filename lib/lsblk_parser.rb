@@ -20,50 +20,52 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-# Only designed on lsblk output with the -a (all) and 
+# Only designed on lsblk output with the -a (all) and
 # -P (key/value pairs) options
-class LsblkParser
-  def initialize(file)
-    f = File.open(file)
-    f_rows = f.read.split("\n")
-    f.close
-    @rows = f_rows.map { |row| LsblkRow.new(row) }
-  end
+module Inventoryware
+  class LsblkParser
+    def initialize(file)
+      f = File.open(file)
+      f_rows = f.read.split("\n")
+      f.close
+      @rows = f_rows.map { |row| LsblkRow.new(row) }
+    end
 
-  def hashify()
-    blk_hash = {}
-    @rows.each do |row|
-      if !blk_hash[row.type]
-        blk_hash[row.type] = {}
+    def hashify()
+      blk_hash = {}
+      @rows.each do |row|
+        if !blk_hash[row.type]
+          blk_hash[row.type] = {}
+        end
+        blk_hash[row.type][row.name] = {
+          'MAJ:MIN' => row.maj_min,
+          'RM' => row.rm,
+          'SIZE' => row.size,
+          'RO' => row.ro,
+          'MOUNTPOINT' => row.mountpoint
+        }
       end
-      blk_hash[row.type][row.name] = {
-        'MAJ:MIN' => row.maj_min,
-        'RM' => row.rm,
-        'SIZE' => row.size,
-        'RO' => row.ro,
-        'MOUNTPOINT' => row.mountpoint
-      }
-    end
-    return blk_hash
-  end
-
-  class LsblkRow
-    attr_reader :name, :type, :size, :maj_min, :rm, :ro, :mountpoint
-
-    def initialize(row)
-      @row = row
-      @name = find_value('NAME')
-      @type = find_value('TYPE')
-      @size = find_value('SIZE')
-      @maj_min = find_value('MAJ:MIN')
-      @rm = find_value('RM')
-      @ro = find_value('RO')
-      @mountpoint = find_value('MOUNTPOINT')
-
+      return blk_hash
     end
 
-    def find_value(key)
-      /#{key}="(.*?)"/.match(@row)[1]
+    class LsblkRow
+      attr_reader :name, :type, :size, :maj_min, :rm, :ro, :mountpoint
+
+      def initialize(row)
+        @row = row
+        @name = find_value('NAME')
+        @type = find_value('TYPE')
+        @size = find_value('SIZE')
+        @maj_min = find_value('MAJ:MIN')
+        @rm = find_value('RM')
+        @ro = find_value('RO')
+        @mountpoint = find_value('MOUNTPOINT')
+
+      end
+
+      def find_value(key)
+        /#{key}="(.*?)"/.match(@row)[1]
+      end
     end
   end
 end
