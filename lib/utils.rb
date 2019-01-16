@@ -1,14 +1,14 @@
 #==============================================================================
-# Copyright (C) 2018 Stephen F. Norledge and Alces Software Ltd.
+# Copyright (C) 2018-19 Stephen F. Norledge and Alces Software Ltd.
 #
-# This file/package is part of Alces inventoryware.
+# This file/package is part of Alces Inventoryware.
 #
-# Alces inventoryware is free software: you can redistribute it and/or
+# Alces Inventoryware is free software: you can redistribute it and/or
 # modify it under the terms of the GNU Affero General Public License
 # as published by the Free Software Foundation, either version 3 of
 # the License, or (at your option) any later version.
 #
-# Alces inventoryware is distributed in the hope that it will be useful,
+# Alces Inventoryware is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Affero General Public License for more details.
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this package.  If not, see <http://www.gnu.org/licenses/>.
 #
-# For more information on Alces inventoryware, please visit:
+# For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
@@ -50,15 +50,18 @@ module Inventoryware
       return true
     end
 
+    # raise an error if given path isn't a directory
     def self.exit_unless_dir(path)
       unless File.directory?(path)
-        $stderr.puts "Error: Directory #{File.expand_path(path)} not found - "\
-          "please create it before continuing."
-        exit
+        raise FileSysError, <<-ERROR
+Directory #{File.expand_path(path)} not found.
+Please create it before continuing."
+        ERROR
       end
       return true
     end
 
+    # given a list of nodes, expand each elem that is a range
     def self.expand_node_ranges(nodes)
       new_nodes = []
       nodes.each do |node|
@@ -84,6 +87,8 @@ module Inventoryware
       return nodes
     end
 
+    # Errors for each way that arguments and nodes can be given incorrectly
+    # 'other_args' in an array of all non-node arguments for the command
     #TODO make this method less awful
     def self.resolve_node_options(argv, options, other_args)
       arg_str = other_args.join(', ')
@@ -91,31 +96,33 @@ module Inventoryware
       if options.all
         unless argv.length == other_args.length
           unless other_args.length == 0
-            $stderr.puts "Error: #{arg_str} should be the only argument(s) - "
-              "all nodes are being parsed."
-            exit
+            raise ArgumentError, <<-ERROR
+#{arg_str} should be the only argument(s) - all nodes are being parsed.
+            ERROR
           else
-            $stderr.puts "Error: There should be the no arguments - all "\
-              "nodes are being parsed."
-            exit
+            raise ArgumentError, <<-ERROR
+There should be the no arguments - all nodes are being parsed.
+            ERROR
           end
         end
 
       elsif options.group
         if argv.length < other_args.length
-          $stderr.puts "Error: please provide #{arg_str}."
-          exit
+          raise ArgumentError, <<-ERROR
+Please provide #{arg_str}.
+          ERROR
         end
 
       else
         if argv.length < other_args.length + 1
           unless other_args.length == 0
-            $stderr.puts "Error: Please provide #{arg_str} and at least one "\
-              "node."
-            exit
+            raise ArgumentError, <<-ERROR
+Please provide #{arg_str} and at least one node.
+            ERROR
           else
-            $stderr.puts "Error: Please provide at least one node."
-            exit
+            raise ArgumentError, <<-ERROR
+Please provide at least one node.
+            ERROR
           end
         end
       end
@@ -123,26 +130,30 @@ module Inventoryware
       nodes = argv[other_args.length..-1]
     end
 
+    # returns the yaml hash of a file at the given location
     def self.read_node_yaml(node_location)
       begin
         node_data = YAML.load_file(node_location)
       rescue Psych::SyntaxError
-        $stderr.puts "Error: parsing yaml in #{node_location} - aborting"
-        exit
+        raise InventorywareError <<-ERROR
+Error parsing yaml in #{node_location} - aborting
+        ERROR
       end
       return node_data
     end
 
+    # outputs the node data to the specified location
     def self.output_node_yaml(node_data, location)
       unless check_file_writable?(location)
-        $stderr.puts "Error: output file #{location} not accessible "\
-          "- aborting"
-        exit
+        raise FileSysError, <<-ERROR
+Output file #{location} not accessible - aborting
+        ERROR
       end
       yaml_hash = {node_data['name'] => node_data}
       File.open(location, 'w') { |file| file.write(yaml_hash.to_yaml) }
     end
 
+    # reads a node's yaml but creats one if it doesn't exist
     def self.read_node_or_create(location)
       if Utils::check_file_readable?(location)
         node_data = Utils.read_node_yaml(location).values[0]
@@ -156,6 +167,8 @@ module Inventoryware
       return node_data
     end
 
+    # given a set of nodes and relevant options returns an expanded list
+    #   of all the necessary nodes
     def self.select_nodes(nodes, options, return_missing = false)
       node_locations = []
       if options.all
@@ -172,15 +185,18 @@ module Inventoryware
     end
 
     private
+    # retrieves all .yaml files in the storage dir
     def self.find_all_nodes()
       node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
       if node_locations.empty?
-        $stderr.puts "Error: No node data found in #{YAML_DIR}"
-        exit
+        raise FileSysError, <<-ERROR
+No node data found in #{File.expand_path(YAML_DIR)}
+        ERROR
       end
       return node_locations
     end
 
+    # retreives all nodes in the given groups
     # this quite an intensive method of way to go about searching the yaml
     # each file is converted to a sting and then searched
     # seems fine as it stands but if speed becomes an issue could stand to
@@ -206,6 +222,10 @@ module Inventoryware
       return nodes
     end
 
+    # retreives the .yaml file for each of the given nodes
+    # expands node ranges if they exist
+    # if return missing is passed, returns paths to the .yamls of non-existent
+    #   nodes
     def self.find_nodes(nodes, return_missing = false)
       nodes = expand_node_ranges(nodes)
       node_locations = []

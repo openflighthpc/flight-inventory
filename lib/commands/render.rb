@@ -1,3 +1,24 @@
+#==============================================================================
+# Copyright (C) 2018-19 Stephen F. Norledge and Alces Software Ltd.
+#
+# This file/package is part of Alces Inventoryware.
+#
+# Alces Inventoryware is free software: you can redistribute it and/or
+# modify it under the terms of the GNU Affero General Public License
+# as published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+#
+# Alces Inventoryware is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this package.  If not, see <http://www.gnu.org/licenses/>.
+#
+# For more information on Alces Inventoryware, please visit:
+# https://github.com/alces-software/inventoryware
+#==============================================================================
 
 require 'erubis'
 
@@ -12,8 +33,9 @@ module Inventoryware
         template = @argv[0]
 
         unless Utils::check_file_readable?(template)
-          $stderr.puts "Error: Template at #{template} inaccessible"
-          exit
+          raise ArgumentError, <<-ERROR
+Template at #{template} inaccessible
+          ERROR
         end
 
         out_file = nil
@@ -22,24 +44,23 @@ module Inventoryware
         #   execution - it may be that this would be better changed
         if @options.location
           unless Utils::check_file_writable?(@options.location)
-            $stderr.puts "Error: Invalid destination '#{@options.location}'"
-            exit
+            raise ArgumentError, <<-ERROR
+Invalid destination '#{@options.location}'
+            ERROR
           end
           out_file = @options.location
         end
 
         node_locations = Utils::select_nodes(nodes, @options)
-        output(node_locations, template, out_file)
-      end
-
-      def output(node_locations, template, out_file)
         node_locations = node_locations.uniq
-
         node_locations = node_locations.sort_by do |location|
           File.basename(location)
         end
 
-        # TODO verify template contents?
+        output(node_locations, template, out_file)
+      end
+
+      def output(node_locations, template, out_file)
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
 
@@ -67,11 +88,12 @@ module Inventoryware
             file.write(out)
           end
         else
-          # '$stdout' here is just to be explicit - for clarity
+          # '$stdout' here is just for clarity
           $stdout.puts out
         end
       end
 
+      # fill the template for a single node
       def parse_yaml(node_location, eruby, render_env)
         # `.values[0]` ignores the name of the node & gets just its data
         node_data = Utils::read_node_yaml(node_location).values[0]
