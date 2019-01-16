@@ -1,7 +1,7 @@
 
 module Inventoryware
   module Commands
-    class Modify < Command
+    class ModifyOther < Command
       def run
         other_args = ["modification"]
         nodes = Utils::resolve_node_options(@argv, @options, other_args)
@@ -14,20 +14,18 @@ module Inventoryware
         end
         field, value = modification.split('=')
 
+        protected_fields = ['primary_group', 'secondary_groups']
+        if protected_fields.include?(field)
+          $stderr.puts "Error: cannot modify '#{field}' this way."
+          exit
+        end
+
         node_locations = Utils::select_nodes(nodes,
                                              @options,
                                              return_missing = true)
 
         node_locations.each do |location|
-          if Utils::check_file_readable?(location)
-            node_data = Utils.read_node_yaml(location).values[0]
-          else
-            node_data = {
-              'name' => File.basename(location, '.yaml'),
-              'mutable' => {},
-              'imported' => false
-            }
-          end
+          node_data = Utils::read_node_or_create(location)
           if value
             node_data['mutable'][field] = value
           else
