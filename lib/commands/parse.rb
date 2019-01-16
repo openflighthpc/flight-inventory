@@ -119,8 +119,6 @@ module Inventoryware
         node_data = {}
         node_data['name'] = node_name
         node_data['mutable'] = {}
-        node_data['mutable']['primary_group'] = nil
-        node_data['mutable']['secondary_groups'] = nil
         if file_locations['groups']
           node_data['mutable'] = YAML.load(File.read(file_locations['groups']))
         end
@@ -132,10 +130,27 @@ module Inventoryware
         Utils::exit_unless_dir(YAML_DIR)
         yaml_out_name = "#{node_name}.yaml"
         out_file = File.join(YAML_DIR, yaml_out_name)
+
+        if Utils::check_file_readable?(out_file)
+          old_data = Utils::read_node_yaml(out_file).values[0]
+          # NB: this prioritses 'node_data' - new values will override old ones
+          node_data = merge_recursively(old_data, node_data)
+        end
+
         Utils::output_node_yaml(node_data, out_file)
 
         $stderr.puts "#{node_name}.zip imported to "\
           "#{File.expand_path(out_file)}"
+      end
+
+      def merge_recursively(a, b)
+        a.merge(b) do |key, a_item, b_item|
+          if a_item.is_a?(Hash)
+            merge_recursively(a_item, b_item)
+          else
+            b_item
+          end
+        end
       end
     end
   end
