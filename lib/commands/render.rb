@@ -39,7 +39,6 @@ module Inventoryware
           File.basename(location)
         end
 
-        # TODO verify template contents?
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
 
