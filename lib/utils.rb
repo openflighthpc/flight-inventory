@@ -207,17 +207,17 @@ No node data found in #{File.expand_path(YAML_DIR)}
         found = []
         File.open(location) do |file|
           contents = file.read
-          m = contents.match(/primary_group: (.*?)$/)[1]
-          found.append(m) unless m.empty?
-          m = contents.match(/secondary_groups: (.*?)$/)[1]
-          found = found + (m.split(',')) unless m.empty?
+          m = contents.match(/primary_group: (.*?)$/)
+          found.append(m[1]) if m
+          m = contents.match(/secondary_groups: (.*?)$/)
+          found = found + (m[1].split(',')) if m
         end
         unless (found & groups).empty?
           nodes.append(location)
         end
       end
       if nodes.empty?
-        $stderr.puts "No nodes found in #{groups.join(', ')}."
+        $stderr.puts "No nodes found in #{groups.join(' or ')}."
       end
       return nodes
     end
