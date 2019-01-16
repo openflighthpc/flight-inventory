@@ -96,10 +96,17 @@ module Inventoryware
   end
 
   command :modify do |c|
-    cli_syntax(c, 'FIELD VALUE NODE(S)')
+    cli_syntax(c, 'FIELD=VALUE NODE(S)')
     c.description = "Modify some nodes' data"
     c = add_node_options(c)
     action(c, Commands::Modify)
   end
 
+  command :'add-location' do |c|
+    cli_syntax(c, 'NODE(S)')
+    c.description = "Specify some nodes' location - can also be"\
+      " acheived through modify"
+    c = add_node_options(c)
+    action(c, Commands::AddLocation)
+  end
 end

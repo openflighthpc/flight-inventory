@@ -84,23 +84,40 @@ module Inventoryware
       return nodes
     end
 
+    #TODO make this method less awful
     def self.resolve_node_options(argv, options, other_args)
       arg_str = other_args.join(', ')
+
       if options.all
         unless argv.length == other_args.length
-          $stderr.puts "Error: #{arg_str} should be the only argument(s) - all "\
-            "nodes are being parsed."
-          exit
+          unless other_args.length == 0
+            $stderr.puts "Error: #{arg_str} should be the only argument(s) - "
+              "all nodes are being parsed."
+            exit
+          else
+            $stderr.puts "Error: There should be the no arguments - all "\
+              "nodes are being parsed."
+            exit
+          end
         end
+
       elsif options.group
         if argv.length < other_args.length
           $stderr.puts "Error: please provide #{arg_str}."
           exit
         end
-      elsif argv.length < other_args.length + 1
-        $stderr.puts "Error: Please provide #{arg_str} and at least one "\
-          "node."
-        exit
+
+      else
+        if argv.length < other_args.length + 1
+          unless other_args.length == 0
+            $stderr.puts "Error: Please provide #{arg_str} and at least one "\
+              "node."
+            exit
+          else
+            $stderr.puts "Error: Please provide at least one node."
+            exit
+          end
+        end
       end
 
       nodes = argv[other_args.length..-1]
@@ -126,13 +143,13 @@ module Inventoryware
       File.open(location, 'w') { |file| file.write(yaml_hash.to_yaml) }
     end
 
-    def self.select_nodes(nodes, options)
+    def self.select_nodes(nodes, options, return_missing = false)
       node_locations = []
       if options.all
         node_locations = find_all_nodes
       else
         if nodes
-          node_locations.push(*find_nodes(nodes))
+          node_locations.push(*find_nodes(nodes, return_missing = true))
         end
         if options.group
           node_locations.push(*find_nodes_in_groups(options.group.split(',')))
@@ -176,7 +193,7 @@ module Inventoryware
       return nodes
     end
 
-    def self.find_nodes(nodes)
+    def self.find_nodes(nodes, return_missing = false)
       nodes = expand_node_ranges(nodes)
       node_locations = []
       nodes.each do |node|
@@ -185,7 +202,12 @@ module Inventoryware
         unless check_file_readable?(node_yaml_location)
           $stderr.puts "File #{node_yaml} not found within "\
             "#{File.expand_path(YAML_DIR)}"
-          next
+          if return_missing
+            $stderr.puts "Creating..."
+          else
+            $stderr.puts "Skipping"
+            next
+          end
         end
         node_locations.append(node_yaml_location)
       end
