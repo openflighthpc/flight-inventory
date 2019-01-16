@@ -8,26 +8,27 @@ module Inventoryware
         node_locations = Utils::select_nodes(nodes, @options)
 
         fields = {
-          'site' => nil,
-          'room' => nil,
-          'rack' => nil,
-          'unit' => nil,
-          'chassis' => nil,
-          'slot' => nil
+          'site' => {'name' => nil, 'value' => nil},
+          'room' => {'name' => nil, 'value' => nil},
+          'rack' => {'name' => nil, 'value' => nil},
+          'start_unit' => {'name' => 'starting rack unit', 'value' => nil},
+          'chassis' => {'name' => nil, 'value' => nil},
+          'slot' => {'name' => nil, 'value' => nil}
         }
 
-        fields.keys.each do |field|
-          p "Enter a #{field} or press enter to skip"
+        fields.each do |field, hash|
+          name = hash['name'] ? hash['name'] : field
+          p "Enter a #{name} or press enter to skip"
           # TODO swap gets for use of highline gem?
           value = STDIN.gets.chomp
-          fields[field] = value if value
+          hash['value'] = value unless value == ''
         end
 
         node_locations.each do |location|
           node_data = Utils::read_node_or_create(location)
-          fields.each do |key, value|
-            unless value.empty?
-              node_data['mutable'][key] = value
+          fields.each do |field, hash|
+            if hash['value']
+              node_data['mutable'][field] = hash['value']
             end
           end
           Utils::output_node_yaml(node_data, location)
