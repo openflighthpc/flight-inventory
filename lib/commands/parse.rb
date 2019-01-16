@@ -6,8 +6,9 @@ module Inventoryware
     class Parse < Command
       def run
         unless @argv.length() == 1
-          $stderr.puts "Error: The data source should be the only argument."
-          exit
+          raise ArgumentError, <<-ERROR
+The data source should be the only argument.
+          ERROR
         end
 
         XmlHasher.configure do |config|
@@ -47,8 +48,9 @@ module Inventoryware
           contents = [data_source]
         end
         if contents.empty?
-          $stderr.puts "No .zip files found at #{data_source}"
-          exit
+          raise ArgumentError, <<-ERROR
+No .zip files found at #{data_source}
+          ERROR
         end
         return contents
       end

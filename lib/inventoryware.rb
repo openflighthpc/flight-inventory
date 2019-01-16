@@ -38,6 +38,7 @@ require 'require_all'
 
 require_rel 'command'
 require_rel 'erb_utils'
+require_rel 'exceptions'
 require_rel 'commands/*.rb'
 require_rel 'lsblk_parser'
 require_rel 'utils'
@@ -56,8 +57,6 @@ module Inventoryware
   program :name, 'Inventoryware'
   program :version, '0.0.1'
   program :description, 'Parser of hardware information into unified formats.'
-
-  # suppress_trace_class UserError
 
   # Display the help if there is no input arguments
   ARGV.push '--help' if ARGV.empty?

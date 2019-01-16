@@ -12,8 +12,9 @@ module Inventoryware
         template = @argv[0]
 
         unless Utils::check_file_readable?(template)
-          $stderr.puts "Error: Template at #{template} inaccessible"
-          exit
+          raise ArgumentError, <<-ERROR
+Template at #{template} inaccessible
+          ERROR
         end
 
         out_file = nil
@@ -22,8 +23,9 @@ module Inventoryware
         #   execution - it may be that this would be better changed
         if @options.location
           unless Utils::check_file_writable?(@options.location)
-            $stderr.puts "Error: Invalid destination '#{@options.location}'"
-            exit
+            raise ArgumentError, <<-ERROR
+Invalid destination '#{@options.location}'
+            ERROR
           end
           out_file = @options.location
         end

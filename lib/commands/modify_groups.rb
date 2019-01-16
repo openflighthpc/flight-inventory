@@ -7,8 +7,9 @@ module Inventoryware
         nodes = Utils::resolve_node_options(@argv, @options, other_args)
 
         if @options.primary and @options.remove
-          $stderr.puts "Error: cannot remove a primary group"
-          exit
+          raise ArgumentError, <<-ERROR
+Cannot remove a primary group
+          ERROR
         end
 
         #TODO DRY up? group is defined twice

@@ -52,9 +52,10 @@ module Inventoryware
 
     def self.exit_unless_dir(path)
       unless File.directory?(path)
-        $stderr.puts "Error: Directory #{File.expand_path(path)} not found - "\
-          "please create it before continuing."
-        exit
+        raise FileSysError, <<-ERROR
+Directory #{File.expand_path(path)} not found.
+Please create it before continuing."
+        ERROR
       end
       return true
     end
@@ -91,31 +92,33 @@ module Inventoryware
       if options.all
         unless argv.length == other_args.length
           unless other_args.length == 0
-            $stderr.puts "Error: #{arg_str} should be the only argument(s) - "
-              "all nodes are being parsed."
-            exit
+            raise ArgumentError, <<-ERROR
+#{arg_str} should be the only argument(s) - all nodes are being parsed.
+            ERROR
           else
-            $stderr.puts "Error: There should be the no arguments - all "\
-              "nodes are being parsed."
-            exit
+            raise ArgumentError, <<-ERROR
+There should be the no arguments - all nodes are being parsed.
+            ERROR
           end
         end
 
       elsif options.group
         if argv.length < other_args.length
-          $stderr.puts "Error: please provide #{arg_str}."
-          exit
+          raise ArgumentError, <<-ERROR
+Please provide #{arg_str}.
+          ERROR
         end
 
       else
         if argv.length < other_args.length + 1
           unless other_args.length == 0
-            $stderr.puts "Error: Please provide #{arg_str} and at least one "\
-              "node."
-            exit
+            raise ArgumentError, <<-ERROR
+Please provide #{arg_str} and at least one node.
+            ERROR
           else
-            $stderr.puts "Error: Please provide at least one node."
-            exit
+            raise ArgumentError, <<-ERROR
+Please provide at least one node.
+            ERROR
           end
         end
       end
@@ -127,17 +130,18 @@ module Inventoryware
       begin
         node_data = YAML.load_file(node_location)
       rescue Psych::SyntaxError
-        $stderr.puts "Error: parsing yaml in #{node_location} - aborting"
-        exit
+        raise InventorywareError <<-ERROR
+Error parsing yaml in #{node_location} - aborting
+        ERROR
       end
       return node_data
     end
 
     def self.output_node_yaml(node_data, location)
       unless check_file_writable?(location)
-        $stderr.puts "Error: output file #{location} not accessible "\
-          "- aborting"
-        exit
+        raise FileSysError, <<-ERROR
+Output file #{location} not accessible - aborting
+        ERROR
       end
       yaml_hash = {node_data['name'] => node_data}
       File.open(location, 'w') { |file| file.write(yaml_hash.to_yaml) }
@@ -175,8 +179,9 @@ module Inventoryware
     def self.find_all_nodes()
       node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
       if node_locations.empty?
-        $stderr.puts "Error: No node data found in #{YAML_DIR}"
-        exit
+        raise FileSysError, <<-ERROR
+No node data found in #{File.expand_path(YAML_DIR)}
+        ERROR
       end
       return node_locations
     end
