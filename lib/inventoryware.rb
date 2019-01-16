@@ -55,7 +55,7 @@ module Inventoryware
   ALL_FILES = REQ_FILES + OTHER_FILES
 
   program :name, 'Inventoryware'
-  program :version, '0.0.1'
+  program :version, '1.0.0'
   program :description, 'Parser of hardware information into unified formats.'
 
   # Display the help if there is no input arguments
