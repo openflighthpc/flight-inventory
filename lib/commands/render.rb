@@ -77,6 +77,11 @@ Invalid destination '#{@options.location}'
         # check, will loading all output cause issues with memory size?
         # probably fine - 723 nodes was 350Kb
         node_locations.each do |location|
+          unless Utils::check_file_readable?(location)
+            $stderr.puts "No node exists at #{File.expand_path(location)} - "\
+              "Skipping"
+            next
+          end
           out += parse_yaml(location, eruby, render_env)
           # this message is output through stderr in order to not interfere
           # with the output of the rendered template
