@@ -196,7 +196,7 @@ Output file #{location} not accessible - aborting
         node_locations = find_all_nodes
       else
         if nodes
-          node_locations.push(*find_nodes(nodes, return_missing = true))
+          node_locations.push(*find_nodes(nodes, return_missing))
         end
         if options.group
           node_locations.push(*find_nodes_in_groups(options.group.split(',')))
@@ -258,7 +258,7 @@ Output file #{location} not accessible - aborting
           if return_missing
             $stderr.puts "Creating..."
           else
-            $stderr.puts "Skipping"
+            $stderr.puts "Skipping."
             next
           end
         end
