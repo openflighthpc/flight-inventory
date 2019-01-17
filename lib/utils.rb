@@ -83,7 +83,22 @@ Please create it before continuing."
           nodes.delete(node)
         end
       end
-      nodes = nodes + new_nodes
+      nodes.push(*new_nodes)
+      return expand_asterisks(nodes)
+    end
+
+    def self.expand_asterisks(nodes)
+      new_nodes = []
+      nodes.each do |node|
+        if node.match(/\*/)
+          node_names = Dir.glob(File.join(YAML_DIR, node)).map { |file|
+            File.basename(file, '.yaml')
+          }
+          new_nodes.push(*node_names)
+        end
+      end
+      nodes.delete_if { |node| node.match(/\*/) }
+      nodes.push(*new_nodes)
       return nodes
     end
 
