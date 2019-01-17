@@ -189,9 +189,7 @@ Output file #{location} not accessible - aborting
     def self.find_all_nodes()
       node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
       if node_locations.empty?
-        raise FileSysError, <<-ERROR
-No node data found in #{File.expand_path(YAML_DIR)}
-        ERROR
+        $stderr.puts "No node data found in #{File.expand_path(YAML_DIR)}"
       end
       return node_locations
     end
