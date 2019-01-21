@@ -27,11 +27,11 @@ ZIP="$BINDIR/zip"
 print_help() {
     echo "Gather Data - Collect physical and logical system configuration information"
     echo ""
-    echo "./gather-data.sh -p PRIMARY_GROUP [-g comma,separate,secondary,groups] [-t check_type] [-v]"
+    echo "./gather-data.sh [-p PRIMARY_GROUP] [-g comma,separate,secondary,groups] [-t check_type] [-v]"
     echo ""
     echo "Options:"
     echo "  -h, --help          Show this help page"
-    echo "  -p, --primary       Primary group for the node [REQUIRED]"
+    echo "  -p, --primary       Primary group for the node"
     echo "  -g, --groups        Comma-separated list of secondary groups for the node"
     echo "  -t, --type          Type of check to run (physical or logical), if not provided"
     echo "                      then both types will be collected"
@@ -107,12 +107,6 @@ done
 #
 # Validation
 #
-if [ -z $PRIGROUP ] ; then
-    echo -e "ERROR: Must provide a primary group\n"
-    print_help
-    exit 1
-fi
-
 if [ ! -z $VERBOSE ] ; then
     echo "PRIGROUP = $PRIGROUP"
     echo "SECGROUPS = $SECGROUPS"

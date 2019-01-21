@@ -135,8 +135,14 @@ Please provide at least one node.
       begin
         node_data = YAML.load_file(node_location)
       rescue Psych::SyntaxError
-        raise InventorywareError <<-ERROR
+        raise ParseError, <<-ERROR
 Error parsing yaml in #{node_location} - aborting
+        ERROR
+      end
+      # condition for if the .yaml is empty
+      unless node_data
+        raise ParseError, <<-ERROR
+Yaml in #{node_location} is empty - aborting
         ERROR
       end
       return node_data
@@ -181,6 +187,7 @@ Output file #{location} not accessible - aborting
           node_locations.push(*find_nodes_in_groups(options.group.split(',')))
         end
       end
+      #TODO move uniq & sorting here?
       return node_locations
     end
 
@@ -189,9 +196,7 @@ Output file #{location} not accessible - aborting
     def self.find_all_nodes()
       node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
       if node_locations.empty?
-        raise FileSysError, <<-ERROR
-No node data found in #{File.expand_path(YAML_DIR)}
-        ERROR
+        $stderr.puts "No node data found in #{File.expand_path(YAML_DIR)}"
       end
       return node_locations
     end
@@ -207,17 +212,17 @@ No node data found in #{File.expand_path(YAML_DIR)}
         found = []
         File.open(location) do |file|
           contents = file.read
-          m = contents.match(/primary_group: (.*?)$/)[1]
-          found.append(m) unless m.empty?
-          m = contents.match(/secondary_groups: (.*?)$/)[1]
-          found = found + (m.split(',')) unless m.empty?
+          m = contents.match(/primary_group: (.*?)$/)
+          found.append(m[1]) if m
+          m = contents.match(/secondary_groups: (.*?)$/)
+          found = found + (m[1].split(',')) if m
         end
         unless (found & groups).empty?
           nodes.append(location)
         end
       end
       if nodes.empty?
-        $stderr.puts "No nodes found in #{groups.join(', ')}."
+        $stderr.puts "No nodes found in #{groups.join(' or ')}."
       end
       return nodes
     end
