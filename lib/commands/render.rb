@@ -38,29 +38,16 @@ Template at #{template} inaccessible
           ERROR
         end
 
-        out_file = nil
-        # confirm file location exists
-        # decided against creating location if it did not exist as it requires sudo
-        #   execution - it may be that this would be better changed
-        if @options.output
-          unless Utils::check_file_writable?(@options.output)
-            raise ArgumentError, <<-ERROR
-Invalid destination '#{@options.output}'
-            ERROR
-          end
-          out_file = @options.output
-        end
-
         node_locations = Utils::select_nodes(nodes, @options)
         node_locations = node_locations.uniq
         node_locations = node_locations.sort_by do |location|
           File.basename(location)
         end
 
-        output(node_locations, template, @options.output)
+        output(node_locations, template, @options.location)
       end
 
-      def output(node_locations, template, out_location)
+      def output(node_locations, template, out_dest)
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
 
@@ -73,9 +60,20 @@ Invalid destination '#{@options.output}'
           render_env.instance_eval(File.read(file))
         end
 
+        args = [node_locations, eruby, render_env]
+        if out_dest
+          output_render(*args.push(out_dest))
+        else
+          template_name = File.basename(template, File.extname(template))
+          save_renders(*(args.push(template_name)))
+        end
+      end
+
+      def output_render(node_locations, eruby, render_env, out_dest)
         out = ""
         # check, will loading all output cause issues with memory size?
         # probably fine - 723 nodes was 350Kb
+        #TODO dry up this iterator
         node_locations.each do |location|
           unless Utils::check_file_readable?(location)
             $stderr.puts "No node exists at #{File.expand_path(location)} - "\
@@ -88,17 +86,22 @@ Invalid destination '#{@options.output}'
           $stderr.puts "Rendered #{File.basename(location)}"
         end
 
-        if out_location
-          File.open(out_location, 'w') do |file|
-            file.write(out)
-          end
-        else
-          # '$stdout' here is just for clarity
-          $stdout.puts out
+        # Confirm file location exists.
+        # I decided against creating location if it did not exist as it
+        # requires sudo execution - it may be that this would be better
+        # changed.
+        unless Utils::check_file_writable?(out_dest)
+          raise ArgumentError, <<-ERROR
+Invalid destination '#{out_dest}'
+          ERROR
+        end
+        File.open(out_dest, 'w') do |file|
+          file.write(out)
         end
       end
 
       # fill the template for a single node
+      #TODO rename to fill template?
       def parse_yaml(node_location, eruby, render_env)
         # `.values[0]` ignores the name of the node & gets just its data
         node_data = Utils::read_node_yaml(node_location).values[0]
