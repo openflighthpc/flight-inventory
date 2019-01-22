@@ -88,6 +88,7 @@ Output file #{out_dest} not accessible - aborting
           File.open(out_dest, 'w') do |file|
             file.write(out)
           end
+          puts "Rendered #{node_name} to #{out_dest}"
         end
       end
 
@@ -103,9 +104,7 @@ Output file #{out_dest} not accessible - aborting
             next
           end
           out += fill_template(location, eruby, render_env)
-          # this message is output through stderr in order to not interfere
-          # with the output of the rendered template
-          $stderr.puts "Rendered #{File.basename(location)}"
+          puts "Rendered #{File.basename(location, '.yaml')}"
         end
 
         # Confirm file location exists.
