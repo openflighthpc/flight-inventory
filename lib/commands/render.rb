@@ -70,13 +70,7 @@ Template at #{template} inaccessible
       end
 
       def save_renders(node_locations, eruby, render_env, template_name)
-        #TODO dry up this iterator
         node_locations.each do |location|
-          unless Utils::check_file_readable?(location)
-            $stderr.puts "No node exists at #{File.expand_path(location)} - "\
-              "Skipping"
-            next
-          end
           out = fill_template(location, eruby, render_env)
           node_name = File.basename(location, '.yaml')
           out_dest = File.join(RENDERS_DIR, "#{node_name}_#{template_name}")
@@ -96,13 +90,7 @@ Output file #{out_dest} not accessible - aborting
         out = ""
         # check, will loading all output cause issues with memory size?
         # probably fine - 723 nodes was 350Kb
-        #TODO dry up this iterator
         node_locations.each do |location|
-          unless Utils::check_file_readable?(location)
-            $stderr.puts "No node exists at #{File.expand_path(location)} - "\
-              "Skipping"
-            next
-          end
           out += fill_template(location, eruby, render_env)
           puts "Rendered #{File.basename(location, '.yaml')}"
         end
