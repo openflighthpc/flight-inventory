@@ -50,7 +50,6 @@ require 'yaml'
 module Inventoryware
   LIB_DIR = File.dirname(__FILE__)
   STORE_DIR = File.join(LIB_DIR, '../store')
-  #TODO create .gitignores for these
   YAML_DIR = File.join(STORE_DIR, 'yaml')
   RENDERS_DIR = File.join(STORE_DIR, 'renders')
   REQ_FILES = ["lshw-xml", "lsblk-a-P"]
