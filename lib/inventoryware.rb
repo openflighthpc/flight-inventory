@@ -88,8 +88,9 @@ module Inventoryware
   command :render do |c|
     cli_syntax(c, 'TEMPLATE NODE(S)')
     c.description = "Render nodes' data as an eRuby template"
-    c.option '-l', '--location LOCATION',
-        "Output the rendered template to the specified location"
+    c.option '-o', '--output [LOCATION]',
+      "Output the rendered template to the specified location.\n"\
+      "Leave value blank to render to stdout"
     c = add_node_options(c)
     action(c, Commands::Render)
   end

@@ -42,13 +42,13 @@ Template at #{template} inaccessible
         # confirm file location exists
         # decided against creating location if it did not exist as it requires sudo
         #   execution - it may be that this would be better changed
-        if @options.location
-          unless Utils::check_file_writable?(@options.location)
+        if @options.output
+          unless Utils::check_file_writable?(@options.output)
             raise ArgumentError, <<-ERROR
-Invalid destination '#{@options.location}'
+Invalid destination '#{@options.output}'
             ERROR
           end
-          out_file = @options.location
+          out_file = @options.output
         end
 
         node_locations = Utils::select_nodes(nodes, @options)
@@ -57,10 +57,10 @@ Invalid destination '#{@options.location}'
           File.basename(location)
         end
 
-        output(node_locations, template, out_file)
+        output(node_locations, template, @options.output)
       end
 
-      def output(node_locations, template, out_file)
+      def output(node_locations, template, out_location)
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
 
@@ -88,8 +88,8 @@ Invalid destination '#{@options.location}'
           $stderr.puts "Rendered #{File.basename(location)}"
         end
 
-        if out_file
-          File.open(out_file, 'w') do |file|
+        if out_location
+          File.open(out_location, 'w') do |file|
             file.write(out)
           end
         else
