@@ -77,7 +77,7 @@ Template at #{template} inaccessible
               "Skipping"
             next
           end
-          out = parse_yaml(location, eruby, render_env)
+          out = fill_template(location, eruby, render_env)
           node_name = File.basename(location, '.yaml')
           out_dest = File.join(RENDERS_DIR, "#{node_name}_#{template_name}")
           unless Utils::check_file_writable?(out_dest)
@@ -102,7 +102,7 @@ Output file #{out_dest} not accessible - aborting
               "Skipping"
             next
           end
-          out += parse_yaml(location, eruby, render_env)
+          out += fill_template(location, eruby, render_env)
           # this message is output through stderr in order to not interfere
           # with the output of the rendered template
           $stderr.puts "Rendered #{File.basename(location)}"
@@ -123,8 +123,7 @@ Invalid destination '#{out_dest}'
       end
 
       # fill the template for a single node
-      #TODO rename to fill template?
-      def parse_yaml(node_location, eruby, render_env)
+      def fill_template(node_location, eruby, render_env)
         # `.values[0]` ignores the name of the node & gets just its data
         node_data = Utils::read_node_yaml(node_location).values[0]
         render_env.instance_variable_set(:@node_data, node_data)
