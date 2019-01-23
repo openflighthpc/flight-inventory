@@ -146,4 +146,22 @@ module Inventoryware
     c.description = "List all filled templates the system has stored"
     action(c, Commands::Lists::Renders)
   end
+
+  command :show do |c|
+    cli_syntax(c)
+    c.description = "View stored files"
+    c.sub_command_group = true
+  end
+
+  command :'show node' do |c|
+    cli_syntax(c, 'NODE')
+    c.description = "View the .yaml for a node"
+    action(c, Commands::Shows::Node)
+  end
+
+  command :'show render' do |c|
+    cli_syntax(c, 'RENDER')
+    c.description = "View a rendered template"
+    action(c, Commands::Shows::Render)
+  end
 end
