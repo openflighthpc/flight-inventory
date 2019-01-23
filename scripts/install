@@ -66,9 +66,6 @@ cat << EOF > /opt/flight/libexec/commands/inventory
 # For more information on the Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
-GEM_HOME=\${flight_ROOT}/core/embedded/lib/ruby/gems/2.5.0
-PATH=\${flight_ROOT}/core/embedded/bin:\$PATH
-GEM_PATH=\${flight_ROOT}/core/embedded/lib/ruby/gems/2.5.0
-cd $alces_INSTALL_DIR/inventoryware
-flexec ruby lib/inventoryware.rb "\$@"
+cd $alces_INSTALL_DIR/inventoryware/lib
+flexec bundle exec ./inventoryware.rb "\$@"
 EOF
