@@ -39,7 +39,7 @@ require 'require_all'
 require_rel 'command'
 require_rel 'erb_utils'
 require_rel 'exceptions'
-require_rel 'commands/*.rb'
+require_rel 'commands/**/*.rb'
 require_rel 'lsblk_parser'
 require_rel 'utils'
 
@@ -107,7 +107,7 @@ module Inventoryware
     c.description = "Modify some nodes' data"
     c.hidden = true
     c = add_node_options(c)
-    action(c, Commands::ModifyOther)
+    action(c, Commands::Modifiers::Other)
   end
 
   command :'modify location' do |c|
@@ -116,7 +116,7 @@ module Inventoryware
       "achieved through modify"
     c.hidden = true
     c = add_node_options(c)
-    action(c, Commands::ModifyLocation)
+    action(c, Commands::Modifiers::Location)
   end
 
   command :'modify groups' do |c|
@@ -126,6 +126,6 @@ module Inventoryware
     c = add_node_options(c)
     c.option '-p', '--primary', "Modify the nodes' primary groups"
     c.option '-r', '--remove', "Remove the nodes from this group"
-    action(c, Commands::ModifyGroups)
+    action(c, Commands::Modifiers::Groups)
   end
 end
