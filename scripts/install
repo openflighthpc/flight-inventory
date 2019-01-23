@@ -27,6 +27,13 @@ alces_VERSION="${alces_VERSION:-2019.1.0}"
 # DON'T EDIT ANYTHING UNDER HERE
 #==============================================================================
 
+# Check for Flight Core
+if [ ! -x /opt/flight/bin/bundle ]; then
+    echo "Unable to install; no Flight Core environment was found."
+    exit 1
+fi
+
+# Create install dir
 mkdir -p $alces_INSTALL_DIR
 cd $alces_INSTALL_DIR
 
