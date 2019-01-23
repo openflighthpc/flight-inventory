@@ -96,17 +96,25 @@ module Inventoryware
     action(c, Commands::Render)
   end
 
+  command :modify do |c|
+    cli_syntax(c)
+    c.description = 'Change mutable node data'
+    c.sub_command_group = true
+  end
+
   command :'modify other' do |c|
     cli_syntax(c, 'FIELD=VALUE NODE(S)')
     c.description = "Modify some nodes' data"
+    c.hidden = true
     c = add_node_options(c)
     action(c, Commands::ModifyOther)
   end
 
   command :'modify location' do |c|
     cli_syntax(c, 'NODE(S)')
-    c.description = "Specify some nodes' location - can also be"\
-      " acheived through modify"
+    c.description = "Specify some nodes' location - can also be "\
+      "achieved through modify"
+    c.hidden = true
     c = add_node_options(c)
     action(c, Commands::ModifyLocation)
   end
@@ -114,6 +122,7 @@ module Inventoryware
   command :'modify groups' do |c|
     cli_syntax(c, 'GROUP NODE(S)')
     c.description = "Modify nodes' groups"
+    c.hidden = true
     c = add_node_options(c)
     c.option '-p', '--primary', "Modify the nodes' primary groups"
     c.option '-r', '--remove', "Remove the nodes from this group"
