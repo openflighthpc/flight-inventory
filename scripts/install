@@ -33,14 +33,29 @@ if [ ! -x /opt/flight/bin/bundle ]; then
     exit 1
 fi
 
+
+# Detect whether script is being curled or run locally from within `scripts` directory
+SCRIPT_PARENT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+SCRIPT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+SCRIPT_BASE=$(basename $SCRIPT_PATH)
+
+if [[ $SCRIPT_BASE != "scripts" ]] ; then 
+    CLONE=true
+else
+    CLONE=""
+    alces_INSTALL_DIR=$SCRIPT_PATH
+fi
+
 # Create install dir
 mkdir -p $alces_INSTALL_DIR
 cd $alces_INSTALL_DIR
 
-# Install tool
-git clone https://github.com/alces-software/inventoryware
-cd inventoryware
-git checkout $alces_VERSION
+if [ ! -z $CLONE ] ; then
+    # Install tool
+    git clone https://github.com/alces-software/inventoryware
+    cd inventoryware
+    git checkout $alces_VERSION
+fi
 
 # Install dependencies
 flexec bundle install --path=vendor --without development test

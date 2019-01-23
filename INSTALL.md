@@ -16,6 +16,8 @@ The script is located at `lib/inventoryware.rb`
 
 Inventoryware can be installed as a tool to the flight-core environment.
 
+### Automated Installation
+
 - Install Flight Core (if not already installed)
 
 ```
@@ -42,5 +44,15 @@ curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scrip
 
 ```
 flight inventory
+```
+
+### Local Installation
+
+Instead of depending on an upstream location, Inventoryware can be installed from a local copy of the repository in the following manner.
+
+- Execute the install script from inside the `inventoryware` directory
+
+```
+bash scripts/install
 ```
 
