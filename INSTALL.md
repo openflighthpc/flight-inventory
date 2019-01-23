@@ -35,3 +35,12 @@ curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scrip
 # Installation with variables
 curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scripts/install |alces_INSTALL_DIR=/my/install/path/ alces_VERSION=dev-release /bin/bash
 ```
+
+- Now logout and in again or source `/etc/profile.d/alces-flight.sh`
+
+- Inventoryware can now be run as follows
+
+```
+flight inventory
+```
+
