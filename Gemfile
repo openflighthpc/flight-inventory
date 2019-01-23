@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'commander'
+gem 'commander', git: 'https://github.com/alces-software/commander'
 gem 'erubis'
 gem 'require_all'
 gem 'rubyzip'
