@@ -128,4 +128,22 @@ module Inventoryware
     c.option '-r', '--remove', "Remove the nodes from this group"
     action(c, Commands::Modifiers::Groups)
   end
+
+  command :list do |c|
+    cli_syntax(c)
+    c.description = 'List stored data'
+    c.sub_command_group = true
+  end
+
+  command :'list nodes' do |c|
+    cli_syntax(c)
+    c.description = "List all nodes the system is maintaining .yaml data on"
+    action(c, Commands::Lists::Nodes)
+  end
+
+  command :'list renders' do |c|
+    cli_syntax(c)
+    c.description = "List all filled templates the system has stored"
+    action(c, Commands::Lists::Renders)
+  end
 end
