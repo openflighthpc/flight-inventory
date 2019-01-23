@@ -1,0 +1,73 @@
+#!/bin/bash
+#==============================================================================
+# Copyright (C) 2019 Stephen F. Norledge and Alces Software Ltd.
+#
+# This file/package is part of Inventoryware.
+#
+# Inventoryware is free software: you can redistribute it and/or
+# modify it under the terms of the GNU Affero General Public License
+# as published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+#
+# Inventoryware is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this package.  If not, see <http://www.gnu.org/licenses/>.
+#
+# For more information on the Inventoryware, please visit:
+# https://github.com/alces-software/inventoryware
+#==============================================================================
+alces_INSTALL_DIR="${alces_INSTALL_DIR:-/opt/flight/tools}"
+alces_VERSION="${alces_VERSION:-2019.1.0}"
+
+#==============================================================================
+# DON'T EDIT ANYTHING UNDER HERE
+#==============================================================================
+
+cd $alces_INSTALL_DIR
+
+# Install tool
+git clone https://github.com/alces-software/inventoryware
+cd inventoryware
+git checkout $alces_VERSION
+
+# Install dependencies
+flexec bundle install --path=vendor --without development test
+
+# Setup command file
+cat << EOF > /opt/flight/libexec/commands/inventory
+: '
+: NAME: inventory
+: SYNOPSIS: A tool for collecting and parsing cluster inventory data
+: VERSION: $alces_VERSION
+: '
+#==============================================================================
+# Copyright (C) 2019 Stephen F. Norledge and Alces Software Ltd.
+#
+# This file/package is part of Inventoryware.
+#
+# Inventoryware is free software: you can redistribute it and/or
+# modify it under the terms of the GNU Affero General Public License
+# as published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+#
+# Inventoryware is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this package.  If not, see <http://www.gnu.org/licenses/>.
+#
+# For more information on the Inventoryware, please visit:
+# https://github.com/alces-software/inventoryware
+#==============================================================================
+GEM_HOME=\${flight_ROOT}/core/embedded/lib/ruby/gems/2.5.0
+PATH=\${flight_ROOT}/core/embedded/bin:\$PATH
+GEM_PATH=\${flight_ROOT}/core/embedded/lib/ruby/gems/2.5.0
+cd $alces_INSTALL_DIR/inventoryware
+flexec ruby lib/inventoryware.rb "\$@"
+EOF

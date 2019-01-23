@@ -43,15 +43,7 @@ constraints for those fields; for groups please use `modify groups`.
 
 ## Installation
 
-Inventoryware requires a recent version of `ruby` (2.5.1<=) and `bundler`.
-The following will install from source using `git`:
-```
-git clone https://github.com/alces-software/inventoryware.git
-cd inventoryware
-bundle install
-```
-
-The script is located at `lib/inventoryware.rb`
+For installation instructions please read INSTALL.md
 
 ## Development
 
