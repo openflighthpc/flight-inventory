@@ -27,6 +27,7 @@ alces_VERSION="${alces_VERSION:-2019.1.0}"
 # DON'T EDIT ANYTHING UNDER HERE
 #==============================================================================
 
+mkdir -p $alces_INSTALL_DIR
 cd $alces_INSTALL_DIR
 
 # Install tool
