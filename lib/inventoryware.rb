@@ -138,12 +138,14 @@ module Inventoryware
   command :'list nodes' do |c|
     cli_syntax(c)
     c.description = "List all nodes the system is maintaining .yaml data on"
+    c.hidden = true
     action(c, Commands::Lists::Nodes)
   end
 
   command :'list renders' do |c|
     cli_syntax(c)
     c.description = "List all filled templates the system has stored"
+    c.hidden = true
     action(c, Commands::Lists::Renders)
   end
 
@@ -156,12 +158,14 @@ module Inventoryware
   command :'show node' do |c|
     cli_syntax(c, 'NODE')
     c.description = "View the .yaml for a node"
+    c.hidden = true
     action(c, Commands::Shows::Node)
   end
 
   command :'show render' do |c|
     cli_syntax(c, 'RENDER')
     c.description = "View a rendered template"
+    c.hidden = true
     action(c, Commands::Shows::Render)
   end
 
@@ -174,12 +178,14 @@ module Inventoryware
   command :'delete node' do |c|
     cli_syntax(c, 'NODE')
     c.description = "Delete the .yaml for a node"
+    c.hidden = true
     action(c, Commands::Deletes::Node)
   end
 
   command :'delete render' do |c|
     cli_syntax(c, 'RENDER')
     c.description = "Delete a rendered template"
+    c.hidden = true
     action(c, Commands::Deletes::Render)
   end
 end
