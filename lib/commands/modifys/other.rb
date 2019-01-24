@@ -22,20 +22,27 @@
 
 module Inventoryware
   module Commands
-    module Modifiers
-      class Groups < Command
+    module Modifys
+      class Other < Command
         def run
-          other_args = ["group"]
+          other_args = ["modification"]
           nodes = Utils::resolve_node_options(@argv, @options, other_args)
 
-          if @options.primary and @options.remove
+          #TODO DRY up? modification is defined twice
+          modification = @argv[0]
+          unless modification.match(/=/)
             raise ArgumentError, <<-ERROR
-  Cannot remove a primary group
+  Invalid modification - must contain an '='.
             ERROR
           end
+          field, value = modification.split('=')
 
-          #TODO DRY up? group is defined twice
-          group = @argv[0]
+          protected_fields = ['primary_group', 'secondary_groups']
+          if protected_fields.include?(field)
+            raise ArgumentError, <<-ERROR
+  Cannot modify '#{field}' this way.
+            ERROR
+          end
 
           node_locations = Utils::select_nodes(nodes,
                                                @options,
@@ -43,17 +50,10 @@ module Inventoryware
 
           node_locations.each do |location|
             node_data = Utils::read_node_or_create(location)
-            if @options.primary
-              node_data['mutable']['primary_group'] = group
+            if value
+              node_data['mutable'][field] = value
             else
-              sec = node_data['mutable'].fetch('secondary_groups', nil)&.split(',')
-              if @options.remove and sec.include?(group)
-                sec.delete(group)
-              elsif not @options.remove
-                sec ? sec << group : sec = [group]
-                sec.uniq!
-              end
-              node_data['mutable']['secondary_groups'] = sec.join(',')
+              node_data['mutable'].delete(field)
             end
             Utils::output_node_yaml(node_data, location)
           end

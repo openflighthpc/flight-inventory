@@ -22,38 +22,34 @@
 
 module Inventoryware
   module Commands
-    module Modifiers
-      class Other < Command
+    module Modifys
+      class Location < Command
         def run
-          other_args = ["modification"]
+          other_args = []
           nodes = Utils::resolve_node_options(@argv, @options, other_args)
+          node_locations = Utils::select_nodes(nodes, @options)
 
-          #TODO DRY up? modification is defined twice
-          modification = @argv[0]
-          unless modification.match(/=/)
-            raise ArgumentError, <<-ERROR
-  Invalid modification - must contain an '='.
-            ERROR
+          fields = {
+            'site' => {'name' => nil, 'value' => nil},
+            'room' => {'name' => nil, 'value' => nil},
+            'rack' => {'name' => nil, 'value' => nil},
+            'start_unit' => {'name' => 'starting rack unit', 'value' => nil},
+          }
+
+          # Get input REPL style
+          fields.each do |field, hash|
+            name = hash['name'] ? hash['name'] : field
+            value = ask("Enter a #{name} or press enter to skip")
+            hash['value'] = value unless value == ''
           end
-          field, value = modification.split('=')
 
-          protected_fields = ['primary_group', 'secondary_groups']
-          if protected_fields.include?(field)
-            raise ArgumentError, <<-ERROR
-  Cannot modify '#{field}' this way.
-            ERROR
-          end
-
-          node_locations = Utils::select_nodes(nodes,
-                                               @options,
-                                               return_missing = true)
-
+          # save data
           node_locations.each do |location|
             node_data = Utils::read_node_or_create(location)
-            if value
-              node_data['mutable'][field] = value
-            else
-              node_data['mutable'].delete(field)
+            fields.each do |field, hash|
+              if hash['value']
+                node_data['mutable'][field] = hash['value']
+              end
             end
             Utils::output_node_yaml(node_data, location)
           end
