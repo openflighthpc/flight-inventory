@@ -26,7 +26,7 @@ module Inventoryware
       class Delete < Command
         def run
           found = Utils::find_file(@argv[0], &search)
-          if found
+          if found and agree("Delete #{File.expand_path(found)}?")
             FileUtils.rm found
           end
         end
