@@ -124,6 +124,12 @@ module Inventoryware
     action(c, Commands::List)
   end
 
+  command :edit do |c|
+    cli_syntax(c, 'NODE')
+    c.description = "Edit a node's .yaml file"
+    action(c, Commands::Edit)
+  end
+
   command :show do |c|
     cli_syntax(c)
     c.description = "View stored files"
