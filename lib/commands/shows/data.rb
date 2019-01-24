@@ -23,7 +23,7 @@
 module Inventoryware
   module Commands
     module Shows
-      class Node < Show
+      class Data < Show
         def search
           Proc.new { |val| Dir.glob(File.join(YAML_DIR, "#{val}*.*")) }
         end

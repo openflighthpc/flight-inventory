@@ -139,11 +139,11 @@ module Inventoryware
     c.sub_command_group = true
   end
 
-  command :'show node' do |c|
+  command :'show data' do |c|
     cli_syntax(c, 'NODE')
     c.description = "View the .yaml for a node"
     c.hidden = true
-    action(c, Commands::Shows::Node)
+    action(c, Commands::Shows::Data)
   end
 
   command :'show render' do |c|
