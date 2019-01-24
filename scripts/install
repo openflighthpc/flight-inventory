@@ -35,7 +35,7 @@ fi
 
 
 # Detect whether script is being curled or run locally from within `scripts` directory
-SCRIPT_PARENT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+SCRIPT_PARENT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 SCRIPT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 SCRIPT_BASE=$(basename $SCRIPT_PATH)
 
@@ -43,7 +43,7 @@ if [[ $SCRIPT_BASE != "scripts" ]] ; then
     CLONE=true
 else
     CLONE=""
-    alces_INSTALL_DIR=$SCRIPT_PATH
+    alces_INSTALL_DIR=$SCRIPT_PARENT_PATH
 fi
 
 # Create install dir
