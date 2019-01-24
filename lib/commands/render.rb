@@ -60,52 +60,29 @@ Template at #{template} inaccessible
           render_env.instance_eval(File.read(file))
         end
 
-        args = [node_locations, eruby, render_env]
-        if out_dest
-          output_render(*args.push(out_dest))
-        else
-          template_name = File.basename(template, File.extname(template))
-          save_renders(*(args.push(template_name)))
-        end
-      end
-
-      def save_renders(node_locations, eruby, render_env, template_name)
-        node_locations.each do |location|
-          out = fill_template(location, eruby, render_env)
-          node_name = File.basename(location, '.yaml')
-          out_dest = File.join(RENDERS_DIR, "#{node_name}_#{template_name}")
-          unless Utils::check_file_writable?(out_dest)
-            raise FileSysError, <<-ERROR
-Output file #{out_dest} not accessible - aborting
-            ERROR
-          end
-          File.open(out_dest, 'w') do |file|
-            file.write(out)
-          end
-          puts "Rendered #{node_name} to #{out_dest}"
-        end
-      end
-
-      def output_render(node_locations, eruby, render_env, out_dest)
         out = ""
         # check, will loading all output cause issues with memory size?
         # probably fine - 723 nodes was 350Kb
         node_locations.each do |location|
           out += fill_template(location, eruby, render_env)
-          puts "Rendered #{File.basename(location, '.yaml')}"
+          $stderr.puts "Rendered #{File.basename(location, '.yaml')}"
         end
 
-        # Confirm file location exists.
-        # I decided against creating location if it did not exist as it
-        # requires sudo execution - it may be that this would be better
-        # changed.
-        unless Utils::check_file_writable?(out_dest)
-          raise ArgumentError, <<-ERROR
-Invalid destination '#{out_dest}'
-          ERROR
-        end
-        File.open(out_dest, 'w') do |file|
-          file.write(out)
+        if out_dest
+          # Confirm file location exists.
+          # I decided against creating location if it did not exist as it
+          # requires sudo execution - it may be that this would be better
+          # changed.
+          unless Utils::check_file_writable?(out_dest)
+            raise ArgumentError, <<-ERROR
+  Invalid destination '#{out_dest}'
+            ERROR
+          end
+          File.open(out_dest, 'w') do |file|
+            file.write(out)
+          end
+        else
+          $stdout.puts out
         end
       end
 
