@@ -25,24 +25,15 @@ module Inventoryware
     module Shows
       class Show < Command
         def run
-          @value = @argv[0]
-          found = find_target(@value)
-          if found.empty?
-            puts "No files found for '#{@value}'"
-          elsif found.length > 1
-            puts "Ambiguous search term '#{@value}' - possible results are:"
-            found.map! { |p| File.basename(p) }
-            found.each_slice(3).each { |p| puts p.join("  ") }
-            puts "Please refine your search"
-          else
-            File.open (found[0]) do |file|
+          found = Utils::find_file(@argv[0], &search)
+          if found
+            File.open (found) do |file|
               puts file.read
             end
           end
-
         end
 
-        def find_target
+        def search
           raise NotImplementedError
         end
       end

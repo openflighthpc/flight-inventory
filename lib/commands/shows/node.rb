@@ -24,8 +24,8 @@ module Inventoryware
   module Commands
     module Shows
       class Node < Show
-        def find_target(value)
-          Dir.glob(File.join(YAML_DIR, "#{value}*.*"))
+        def search
+          Proc.new { |val| Dir.glob(File.join(YAML_DIR, "#{val}*.*")) }
         end
       end
     end

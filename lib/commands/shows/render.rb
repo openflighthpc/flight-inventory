@@ -24,8 +24,8 @@ module Inventoryware
   module Commands
     module Shows
       class Render < Show
-        def find_target(value)
-          Dir.glob(File.join(RENDERS_DIR, "#{value}*.*"))
+        def search
+          Proc.new { |val| Dir.glob(File.join(RENDERS_DIR, "#{val}*.*")) }
         end
       end
     end
