@@ -131,22 +131,8 @@ module Inventoryware
 
   command :list do |c|
     cli_syntax(c)
-    c.description = 'List stored data'
-    c.sub_command_group = true
-  end
-
-  command :'list nodes' do |c|
-    cli_syntax(c)
     c.description = "List all nodes the system is maintaining .yaml data on"
-    c.hidden = true
-    action(c, Commands::Lists::Nodes)
-  end
-
-  command :'list renders' do |c|
-    cli_syntax(c)
-    c.description = "List all filled templates the system has stored"
-    c.hidden = true
-    action(c, Commands::Lists::Renders)
+    action(c, Commands::List)
   end
 
   command :show do |c|

@@ -22,18 +22,14 @@
 
 module Inventoryware
   module Commands
-    module Lists
-      class List < Command
-        def run
-          #TODO format this to have as many results fit on one line as poss.
-          #puts files.join("  ")
-          files = Dir.glob(target_files).map! { |file| File.basename(file) }
-          files.each_slice(3).each { |grp| puts grp.join("  ") }
+    class List < Command
+      def run
+        #TODO format this to have as many results fit on one line as poss.
+        #puts files.join("  ")
+        files = Dir.glob(File.join(YAML_DIR, '*.yaml')).map! do |file|
+          File.basename(file)
         end
-
-        def target_files
-          raise NotImplementedError
-        end
+        files.each_slice(3).each { |grp| puts grp.join("  ") }
       end
     end
   end
