@@ -39,9 +39,7 @@ module Inventoryware
           # Get input REPL style
           fields.each do |field, hash|
             name = hash['name'] ? hash['name'] : field
-            p "Enter a #{name} or press enter to skip"
-            # TODO swap gets for use of highline gem?
-            value = STDIN.gets.chomp
+            value = ask("Enter a #{name} or press enter to skip")
             hash['value'] = value unless value == ''
           end
 
