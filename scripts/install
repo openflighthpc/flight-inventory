@@ -53,9 +53,10 @@ cd $alces_INSTALL_DIR
 if [ ! -z $CLONE ] ; then
     # Install tool
     git clone https://github.com/alces-software/inventoryware
-    cd inventoryware
-    git checkout $alces_VERSION
 fi
+
+cd inventoryware
+git checkout $alces_VERSION
 
 # Install dependencies
 flexec bundle install --path=vendor --without development test
