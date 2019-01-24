@@ -50,6 +50,12 @@ flight inventory
 
 Instead of depending on an upstream location, Inventoryware can be installed from a local copy of the repository in the following manner.
 
+- Install Flight Core (if not already installed)
+
+```
+yum install https://s3-eu-west-1.amazonaws.com/alces-flight/rpms/flight-core-0.1.0%2B20190121150201-1.el7.x86_64.rpm
+```
+
 - Execute the install script from inside the `inventoryware` directory
 
 ```
