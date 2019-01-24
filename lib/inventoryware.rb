@@ -170,22 +170,8 @@ module Inventoryware
   end
 
   command :delete do |c|
-    cli_syntax(c)
-    c.description = "Delete stored files"
-    c.sub_command_group = true
-  end
-
-  command :'delete node' do |c|
     cli_syntax(c, 'NODE')
     c.description = "Delete the .yaml for a node"
-    c.hidden = true
-    action(c, Commands::Deletes::Node)
-  end
-
-  command :'delete render' do |c|
-    cli_syntax(c, 'RENDER')
-    c.description = "Delete a rendered template"
-    c.hidden = true
-    action(c, Commands::Deletes::Render)
+    action(c, Commands::Delete)
   end
 end

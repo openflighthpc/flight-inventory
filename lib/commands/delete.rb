@@ -22,17 +22,12 @@
 
 module Inventoryware
   module Commands
-    module Deletes
-      class Delete < Command
-        def run
-          found = Utils::find_file(@argv[0], &search)
-          if found and agree("Delete #{File.expand_path(found)}?")
-            FileUtils.rm found
-          end
-        end
-
-        def search
-          raise NotImplementedError
+    class Delete < Command
+      def run
+        search = Proc.new { |val| Dir.glob(File.join(YAML_DIR, "#{val}*.*")) }
+        found = Utils::find_file(@argv[0], &search)
+        if found and agree("Delete #{File.expand_path(found)}?")
+          FileUtils.rm found
         end
       end
     end
