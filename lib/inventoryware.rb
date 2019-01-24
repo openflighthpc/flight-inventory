@@ -146,13 +146,6 @@ module Inventoryware
     action(c, Commands::Shows::Data)
   end
 
-  command :'show render' do |c|
-    cli_syntax(c, 'RENDER')
-    c.description = "View a rendered template"
-    c.hidden = true
-    action(c, Commands::Shows::Render)
-  end
-
   command :delete do |c|
     cli_syntax(c, 'NODE')
     c.description = "Delete the .yaml for a node"

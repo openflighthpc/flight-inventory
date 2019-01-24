@@ -23,9 +23,17 @@
 module Inventoryware
   module Commands
     module Shows
-      class Data < Show
-        def search
-          Proc.new { |val| Dir.glob(File.join(YAML_DIR, "#{val}*.*")) }
+      class Data < Command
+        def run
+          search = Proc.new do |val|
+            Dir.glob(File.join(YAML_DIR, "#{val}*.*"))
+          end
+          found = Utils::find_file(@argv[0], &search)
+          if found
+            File.open (found) do |file|
+              puts file.read
+            end
+          end
         end
       end
     end
