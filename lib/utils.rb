@@ -164,8 +164,11 @@ Please provide at least one node.
 
     # returns the yaml hash of a file at the given location
     def self.read_node_yaml(node_location)
+      node_data = nil
       begin
-        node_data = YAML.load_file(node_location)
+        File.open(node_location) do |f|
+          node_data = YAML.safe_load(f)
+        end
       rescue Psych::SyntaxError
         raise ParseError, <<-ERROR
 Error parsing yaml in #{node_location} - aborting
