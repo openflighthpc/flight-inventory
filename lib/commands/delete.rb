@@ -24,10 +24,23 @@ module Inventoryware
   module Commands
     class Delete < Command
       def run
-        search = Proc.new { |val| Dir.glob(File.join(YAML_DIR, "#{val}*.*")) }
-        found = Utils::find_file(@argv[0], &search)
-        if found and agree("Delete #{File.expand_path(found)}?")
-          FileUtils.rm found
+        other_args = []
+        nodes = Utils::resolve_node_options(@argv, @options, other_args)
+        node_locations = Utils::select_nodes(nodes, @options)
+
+        unless node_locations.empty?
+          prefix = "You are about to delete"
+          node_locations.map! { |loc| File.expand_path(loc) }
+          if node_locations.length > 1
+            node_msg = "#{prefix}:\n#{node_locations.join("\n")}\nProceed?"
+          else
+            node_msg = "#{prefix} #{node_locations[0]} - proceed?"
+          end
+          if agree(node_msg)
+            node_locations.each { |node| FileUtils.rm node }
+          end
+        else
+          puts "No nodes found"
         end
       end
     end
