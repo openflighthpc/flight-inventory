@@ -31,7 +31,7 @@ module Inventoryware
         end
         found = Utils::find_file(@argv[0], &search)
         if found
-          TTY::Editor.open(found)
+          TTY::Editor.open(found, command: :rvim)
         end
       end
     end
