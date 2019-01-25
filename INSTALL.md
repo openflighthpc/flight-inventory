@@ -38,14 +38,6 @@ curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scrip
 curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scripts/install |alces_INSTALL_DIR=/my/install/path/ alces_VERSION=dev-release /bin/bash
 ```
 
-- Now logout and in again or source `/etc/profile.d/alces-flight.sh`
-
-- Inventoryware can now be run as follows
-
-```
-flight inventory
-```
-
 ### Local Installation
 
 Instead of depending on an upstream location, Inventoryware can be installed from a local copy of the repository in the following manner.
@@ -63,4 +55,20 @@ bash scripts/install
 ```
 
 *Note: Local installations will use the currently checked out branch instead of using the latest release. To override this do `alces_VERSION=branchname bash scripts/install`.*
+
+### Post Installation
+
+- Now logout and in again or source `/etc/profile.d/alces-flight.sh`
+
+- Inventoryware can now be run as follows
+
+```
+flight inventory
+```
+
+- Alternatively, a sandbox environment for Inventoryware can be entered as follows
+
+```
+flight shell inventory
+```
 
