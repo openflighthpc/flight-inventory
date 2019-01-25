@@ -92,7 +92,7 @@ module Inventoryware
   end
 
   command :'modify other' do |c|
-    cli_syntax(c, 'FIELD=VALUE NODE(S)')
+    cli_syntax(c, 'FIELD=VALUE [NODE(S)]')
     c.description = "Modify some nodes' data"
     c.hidden = true
     c = add_node_options(c)
@@ -100,7 +100,7 @@ module Inventoryware
   end
 
   command :'modify location' do |c|
-    cli_syntax(c, 'NODE(S)')
+    cli_syntax(c, '[NODE(S)]')
     c.description = "Specify some nodes' location - can also be "\
       "achieved through modify"
     c.hidden = true
@@ -109,7 +109,7 @@ module Inventoryware
   end
 
   command :'modify groups' do |c|
-    cli_syntax(c, 'GROUP NODE(S)')
+    cli_syntax(c, 'GROUP [NODE(S)]')
     c.description = "Modify nodes' groups"
     c.hidden = true
     c = add_node_options(c)
@@ -144,7 +144,7 @@ module Inventoryware
   end
 
   command :'show document' do |c|
-    cli_syntax(c, 'TEMPLATE NODE(S)')
+    cli_syntax(c, 'TEMPLATE [NODE(S)]')
     c.description = "Create a document using nodes' data and an eRuby template"
     c.option '-l', '--location LOCATION',
       "Output the rendered template to the specified location."
