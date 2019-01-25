@@ -82,7 +82,7 @@ Invalid destination '#{out_dest}'
             File.open(out_dest, 'w') do |file|
               file.write(out)
             end
-          else
+          elsif not out.empty?
             $stdout.puts out
           end
         end
