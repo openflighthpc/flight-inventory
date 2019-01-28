@@ -11,7 +11,7 @@ def select_bios
   #   to `erb_utils` as it will be repeated for all sub-template rendering but
   #   I need more usage examples to confirm this.
   while not product.empty?
-    template = render_sub_template('bios', product.join('_'))
+    template = render_sub_template('bios', product.join('-'))
     if template
       return template
     end
