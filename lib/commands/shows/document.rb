@@ -58,6 +58,8 @@ Template at #{template} inaccessible
             end
           end
 
+          erb_utils = File.join(LIB_DIR, 'erb_utils.rb')
+          render_env.instance_eval(File.read(erb_utils))
           Dir[File.join(HELPERS_DIR, '*.rb')].each do |file|
             render_env.instance_eval(File.read(file))
           end
