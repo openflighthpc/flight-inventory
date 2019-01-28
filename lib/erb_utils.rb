@@ -75,3 +75,14 @@ def format_data_value(orig_value, grouping, suffix)
     "#{value} #{prefix}#{suffix}"
   end
 end
+
+# works off a provided directory and the names of the files in that directory
+# all subtemplates are to be held in a specific directory of `templates/`
+def render_sub_template(subdir, name)
+  paths = Dir.glob(File.join(TEMPLATES_DIR, subdir, "#{name}.*"))
+  if paths.empty?
+    return false
+  else
+    return Erubis::Eruby.new(File.read(paths[0])).result(binding)
+  end
+end
