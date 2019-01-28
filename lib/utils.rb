@@ -180,7 +180,7 @@ Error parsing yaml in #{node_location} - aborting
 Yaml in #{node_location} is empty - aborting
         ERROR
       end
-      return node_data
+      return node_data.values[0]
     end
 
     # outputs the node data to the specified location
@@ -197,7 +197,7 @@ Output file #{location} not accessible - aborting
     # reads a node's yaml but creats one if it doesn't exist
     def self.read_node_or_create(location)
       if Utils::check_file_readable?(location)
-        node_data = Utils.read_node_yaml(location).values[0]
+        node_data = Utils.read_node_yaml(location)
       else
         node_data = {
           'name' => File.basename(location, '.yaml'),

@@ -156,7 +156,7 @@ No .zip files found at #{data_source}
         out_file = File.join(YAML_DIR, yaml_out_name)
 
         if Utils::check_file_readable?(out_file)
-          old_data = Utils::read_node_yaml(out_file).values[0]
+          old_data = Utils::read_node_yaml(out_file)
           # NB: this prioritses 'node_data' - new values will override old ones
           node_data = merge_recursively(old_data, node_data)
         end
@@ -166,6 +166,7 @@ No .zip files found at #{data_source}
         puts "#{node_name}.zip imported to #{File.expand_path(out_file)}"
       end
 
+      #TODO test this method with distinct & deep hashes
       def merge_recursively(a, b)
         a.merge(b) do |key, a_item, b_item|
           if a_item.is_a?(Hash) and b_item.is_a?(Hash)
