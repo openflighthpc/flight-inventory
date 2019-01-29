@@ -8,10 +8,6 @@
     ## BIOS Version
 
     <%= find_hashes_with_key_value(@node_hash, 'id', 'firmware')&.first['version'] %>
-    <% if select_bios %>
-    <%=%>
-    <%= select_bios %>
-    <% end %>
 
     ## System Serial Number
 
@@ -46,5 +42,13 @@
     |--------|------|
     <% node_data['lsblk']['disk']&.each do |disk, values| %>
     | <%= disk %> | <%= values['SIZE'] %> |
+    <% end %>
+
+    # BIOS Information
+
+    <%= find_hashes_with_key_value(node_data, 'id', 'firmware')&.first['version'] %>
+    <% if select_bios %>
+    <%=%>
+    <%= select_bios %>
     <% end %>
 
