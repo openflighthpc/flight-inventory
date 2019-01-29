@@ -42,7 +42,7 @@ SCRIPT_BASE=$(basename $SCRIPT_PATH)
 
 if [[ $SCRIPT_BASE != "scripts" ]] ; then 
     CLONE=true
-    CHECKOUT=""
+    CHECKOUT=true
 else
     CLONE=""
     alces_INSTALL_DIR=$SCRIPT_PARENT_PATH
