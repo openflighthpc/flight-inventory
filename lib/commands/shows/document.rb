@@ -32,8 +32,14 @@ module Inventoryware
 
           #TODO DRY up definition of arguments? template is declared twice
           template = @argv[0]
-
-          unless Utils::check_file_readable?(template)
+          paths = Dir.glob(File.join(TEMPLATES_DIR, "#{template}*"))
+          if paths.length == 1
+            template = paths[0]
+          elsif paths.length > 1
+            raise ArgumentError, <<-ERROR
+Ambiguous search term '#{template}'
+            ERROR
+          elsif not Utils::check_file_readable?(template)
             raise ArgumentError, <<-ERROR
 Template at #{template} inaccessible
             ERROR
