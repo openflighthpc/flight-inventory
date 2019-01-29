@@ -4,6 +4,10 @@
   secondary_group: <%= node_data['mutable']['secondary_groups'] %>
   info: |
     # System
+    
+    ## Model
+    
+    <%= node_data['lshw']['list']['node']['product'] %>
 
     ## BIOS Version
 
@@ -44,11 +48,15 @@
     | <%= disk %> | <%= values['SIZE'] %> |
     <% end %>
 
+    <% unless node_data['mutable']['notes'].nil? -%>
+    # Notes
+
+    <%= node_data['mutable']['notes'].split("\n").join("\n    ") %>
+    <% end -%>
+
+    <% if select_bios %>
     # BIOS Information
 
-    <%= find_hashes_with_key_value(node_data, 'id', 'firmware')&.first['version'] %>
-    <% if select_bios %>
-    <%=%>
-    <%= select_bios %>
+    <%= select_bios.split("\n").join("\n    ") %>
     <% end %>
 
