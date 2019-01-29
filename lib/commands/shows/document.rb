@@ -57,7 +57,10 @@ Template at #{template} inaccessible
               attr_reader :node_data
             end
           end
-          Dir[File.join(LIB_DIR, '..', 'plugins', '*.rb')].each do |file|
+
+          erb_utils = File.join(LIB_DIR, 'erb_utils.rb')
+          render_env.instance_eval(File.read(erb_utils))
+          Dir[File.join(HELPERS_DIR, '*.rb')].each do |file|
             render_env.instance_eval(File.read(file))
           end
 
