@@ -53,7 +53,7 @@ module Inventoryware
     # raise an error if given path isn't a directory
     def self.exit_unless_dir(path)
       unless File.directory?(path)
-        raise FileSysError, <<-ERROR
+        raise FileSysError, <<-ERROR.chomp
 Directory #{File.expand_path(path)} not found.
 Please create it before continuing."
         ERROR
@@ -70,11 +70,11 @@ Please create it before continuing."
       if options.all
         unless argv.length == other_args.length
           unless other_args.length == 0
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
 #{arg_str} should be the only argument(s) - all nodes are being parsed.
             ERROR
           else
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
 There should be the no arguments - all nodes are being parsed.
             ERROR
           end
@@ -82,7 +82,7 @@ There should be the no arguments - all nodes are being parsed.
 
       elsif options.group
         if argv.length < other_args.length
-          raise ArgumentError, <<-ERROR
+          raise ArgumentError, <<-ERROR.chomp
 Please provide #{arg_str}.
           ERROR
         end
@@ -90,11 +90,11 @@ Please provide #{arg_str}.
       else
         if argv.length < other_args.length + 1
           unless other_args.length == 0
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
 Please provide #{arg_str} and at least one node.
             ERROR
           else
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
 Please provide at least one node.
             ERROR
           end
@@ -112,13 +112,13 @@ Please provide at least one node.
           node_data = YAML.safe_load(f)
         end
       rescue Psych::SyntaxError
-        raise ParseError, <<-ERROR
+        raise ParseError, <<-ERROR.chomp
 Error parsing yaml in #{node_location} - aborting
         ERROR
       end
       # condition for if the .yaml is empty
       unless node_data
-        raise ParseError, <<-ERROR
+        raise ParseError, <<-ERROR.chomp
 Yaml in #{node_location} is empty - aborting
         ERROR
       end
@@ -128,7 +128,7 @@ Yaml in #{node_location} is empty - aborting
     # outputs the node data to the specified location
     def self.output_node_yaml(node_data, location)
       unless check_file_writable?(location)
-        raise FileSysError, <<-ERROR
+        raise FileSysError, <<-ERROR.chomp
 Output file #{location} not accessible - aborting
         ERROR
       end

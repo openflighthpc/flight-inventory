@@ -31,7 +31,7 @@ module Inventoryware
           #TODO DRY up? modification is defined twice
           modification = @argv[0]
           unless modification.match(/=/)
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
   Invalid modification - must contain an '='.
             ERROR
           end
@@ -39,7 +39,7 @@ module Inventoryware
 
           protected_fields = ['primary_group', 'secondary_groups']
           if protected_fields.include?(field)
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
   Cannot modify '#{field}' this way.
             ERROR
           end

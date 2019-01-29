@@ -36,11 +36,11 @@ module Inventoryware
           if paths.length == 1
             template = paths[0]
           elsif paths.length > 1
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
 Ambiguous search term '#{template}'
             ERROR
           elsif not Utils::check_file_readable?(template)
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
 Template at #{template} inaccessible
             ERROR
           end
@@ -84,7 +84,7 @@ Template at #{template} inaccessible
             # requires sudo execution - it may be that this would be better
             # changed.
             unless Utils::check_file_writable?(out_dest)
-              raise ArgumentError, <<-ERROR
+              raise ArgumentError, <<-ERROR.chomp
 Invalid destination '#{out_dest}'
               ERROR
             end
