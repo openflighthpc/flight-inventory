@@ -61,47 +61,6 @@ Please create it before continuing."
       return true
     end
 
-    # given a list of nodes, expand each elem that is a range
-    def self.expand_node_ranges(nodes)
-      new_nodes = []
-      nodes.each do |node|
-        if node.match(/.*\[[0-9]+.*[0-9]+\]$/)
-          m = node.match(/^(.*)\[(.*)\]$/)
-          prefix = m[1]
-          suffix = m[2]
-          ranges = suffix.split(',')
-          ranges.each do |range|
-            if range.match(/-/)
-              num_1, num_2 = range.split('-')
-              (num_1.to_i .. num_2.to_i).each do |num|
-                new_nodes << "#{prefix}#{num.to_s.rjust(num_1.length, '0')}"
-              end
-            else
-              new_nodes << "#{prefix}#{range}"
-            end
-          end
-          nodes.delete(node)
-        end
-      end
-      nodes.push(*new_nodes)
-      return expand_asterisks(nodes)
-    end
-
-    def self.expand_asterisks(nodes)
-      new_nodes = []
-      nodes.each do |node|
-        if node.match(/\*/)
-          node_names = Dir.glob(File.join(YAML_DIR, node)).map { |file|
-            File.basename(file, '.yaml')
-          }
-          new_nodes.push(*node_names)
-        end
-      end
-      nodes.delete_if { |node| node.match(/\*/) }
-      nodes.push(*new_nodes)
-      return nodes
-    end
-
     # Errors for each way that arguments and nodes can be given incorrectly
     # 'other_args' in an array of all non-node arguments for the command
     #TODO make this method less awful
@@ -143,23 +102,6 @@ Please provide at least one node.
       end
 
       nodes = argv[other_args.length..-1]
-    end
-
-
-    def self.find_file(search_val, &glob)
-      results = yield(search_val)
-        if results.empty?
-          puts "No files found for '#{search_val}'"
-          return nil
-        elsif results.length > 1
-          puts "Ambiguous search term '#{search_val}' - possible results are:"
-          results.map! { |p| File.basename(p, File.extname(p)) }
-          results.each_slice(3).each { |p| puts p.join("  ") }
-          puts "Please refine your search"
-          return nil
-        else
-          return results[0]
-        end
     end
 
     # returns the yaml hash of a file at the given location
@@ -206,85 +148,6 @@ Output file #{location} not accessible - aborting
         }
       end
       return node_data
-    end
-
-    # given a set of nodes and relevant options returns an expanded list
-    #   of all the necessary nodes
-    def self.select_nodes(nodes, options, return_missing = false)
-      node_locations = []
-      if options.all
-        node_locations = find_all_nodes
-      else
-        if nodes
-          node_locations.push(*find_nodes(nodes, return_missing))
-        end
-        if options.group
-          node_locations.push(*find_nodes_in_groups(options.group.split(',')))
-        end
-      end
-      #TODO move uniq & sorting here?
-      return node_locations
-    end
-
-    private
-    # retrieves all .yaml files in the storage dir
-    def self.find_all_nodes()
-      node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
-      if node_locations.empty?
-        $stderr.puts "No node data found in #{File.expand_path(YAML_DIR)}"
-      end
-      return node_locations
-    end
-
-    # retreives all nodes in the given groups
-    # this quite an intensive method of way to go about searching the yaml
-    # each file is converted to a sting and then searched
-    # seems fine as it stands but if speed becomes an issue could stand to
-    #   be changed
-    def self.find_nodes_in_groups(groups)
-      nodes = []
-      find_all_nodes().each do |location|
-        found = []
-        File.open(location) do |file|
-          contents = file.read
-          m = contents.match(/primary_group: (.*?)$/)
-          found.append(m[1]) if m
-          m = contents.match(/secondary_groups: (.*?)$/)
-          found = found + (m[1].split(',')) if m
-        end
-        unless (found & groups).empty?
-          nodes.append(location)
-        end
-      end
-      if nodes.empty?
-        $stderr.puts "No nodes found in #{groups.join(' or ')}."
-      end
-      return nodes
-    end
-
-    # retreives the .yaml file for each of the given nodes
-    # expands node ranges if they exist
-    # if return missing is passed, returns paths to the .yamls of non-existent
-    #   nodes
-    def self.find_nodes(nodes, return_missing = false)
-      nodes = expand_node_ranges(nodes)
-      node_locations = []
-      nodes.each do |node|
-        node_yaml = "#{node}.yaml"
-        node_yaml_location = File.join(YAML_DIR, node_yaml)
-        unless check_file_readable?(node_yaml_location)
-          $stderr.puts "File #{node_yaml} not found within "\
-            "#{File.expand_path(YAML_DIR)}"
-          if return_missing
-            $stderr.puts "Creating..."
-          else
-            $stderr.puts "Skipping."
-            next
-          end
-        end
-        node_locations.append(node_yaml_location)
-      end
-      return node_locations
     end
   end
 end
