@@ -104,10 +104,14 @@ Invalid destination '#{out_dest}'
 
           begin
             return eruby.result(ctx)
-          rescue
-            raise ParseError, <<-ERROR.chomp
+          rescue StandardError => e
+            unless @options.debug
+              raise ParseError, <<-ERROR.chomp
 Error filling template using #{File.basename(node_location)}
-            ERROR
+              ERROR
+            else
+              raise e
+            end
           end
         end
       end

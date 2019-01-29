@@ -158,7 +158,8 @@ module Inventoryware
     cli_syntax(c, 'TEMPLATE [NODE(S)]')
     c.description = "Create a document using nodes' data and an eRuby template"
     c.option '-l', '--location LOCATION',
-      "Output the rendered template to the specified location."
+      "Output the rendered template to the specified location"
+    c.option '-d', '--debug', "View errors while rendering the template"
     c = add_node_options(c)
     c.hidden = true
     action(c, Commands::Shows::Document)
