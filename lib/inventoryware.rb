@@ -121,6 +121,13 @@ module Inventoryware
     action(c, Commands::Modifys::Groups)
   end
 
+  command :'modify notes' do |c|
+    cli_syntax(c, 'NODE')
+    c.description = "Modify a node's miscellaneous notes"
+    c.hidden = true
+    action(c, Commands::Modifys::Notes)
+  end
+
   command :list do |c|
     cli_syntax(c)
     c.description = "List all nodes the system is maintaining .yaml data on"

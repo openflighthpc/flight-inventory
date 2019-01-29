@@ -98,8 +98,7 @@ Invalid destination '#{out_dest}'
 
         # fill the template for a single node
         def fill_template(node_location, eruby, render_env)
-          # `.values[0]` ignores the name of the node & gets just its data
-          node_data = Utils::read_node_yaml(node_location).values[0]
+          node_data = Utils::read_node_yaml(node_location)
           render_env.instance_variable_set(:@node_data, node_data)
           ctx = render_env.instance_eval { binding }
 
