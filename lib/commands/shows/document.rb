@@ -108,6 +108,7 @@ Invalid destination '#{out_dest}'
             unless @options.debug
               raise ParseError, <<-ERROR.chomp
 Error filling template using #{File.basename(node_location)}
+Use '--debug' for more information
               ERROR
             else
               raise e
