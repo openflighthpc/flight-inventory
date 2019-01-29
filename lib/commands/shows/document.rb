@@ -102,7 +102,13 @@ Invalid destination '#{out_dest}'
           render_env.instance_variable_set(:@node_data, node_data)
           ctx = render_env.instance_eval { binding }
 
-          return eruby.result(ctx)
+          begin
+            return eruby.result(ctx)
+          rescue
+            raise ParseError, <<-ERROR.chomp
+Error filling template using #{File.basename(node_location)}
+            ERROR
+          end
         end
       end
     end
