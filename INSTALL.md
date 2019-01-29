@@ -24,6 +24,8 @@ Inventoryware can be installed as a tool to the flight-core environment.
 yum install https://s3-eu-west-1.amazonaws.com/alces-flight/rpms/flight-core-0.1.0%2B20190121150201-1.el7.x86_64.rpm
 ```
 
+- **Note: If Flight Core has just been installed then logout and in again or source `/etc/profile.d/alces-flight.sh`**
+
 - The installation script (located at `scripts/install`) has variables that can be optionally set in the curl command.
     - `alces_INSTALL_DIR` - The directory to clone the tool into
     - `alces_VERSION` - The version of the tool to install
