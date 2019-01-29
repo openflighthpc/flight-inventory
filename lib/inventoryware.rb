@@ -39,7 +39,7 @@ require 'require_all'
 require_rel 'command'
 require_rel 'erb_utils'
 require_rel 'exceptions'
-require_rel 'commands/*.rb'
+require_rel 'commands/**/*.rb'
 require_rel 'lsblk_parser'
 require_rel 'utils'
 
@@ -85,36 +85,77 @@ module Inventoryware
     action(c, Commands::Parse)
   end
 
-  command :render do |c|
-    cli_syntax(c, 'TEMPLATE NODE(S)')
-    c.description = "Render nodes' data as an eRuby template"
-    c.option '-l', '--location LOCATION',
-        "Output the rendered template to the specified location"
-    c = add_node_options(c)
-    action(c, Commands::Render)
+  command :modify do |c|
+    cli_syntax(c)
+    c.description = 'Change mutable node data'
+    c.sub_command_group = true
   end
 
   command :'modify other' do |c|
-    cli_syntax(c, 'FIELD=VALUE NODE(S)')
+    cli_syntax(c, 'FIELD=VALUE [NODE(S)]')
     c.description = "Modify some nodes' data"
+    c.hidden = true
     c = add_node_options(c)
-    action(c, Commands::ModifyOther)
+    action(c, Commands::Modifys::Other)
   end
 
   command :'modify location' do |c|
-    cli_syntax(c, 'NODE(S)')
-    c.description = "Specify some nodes' location - can also be"\
-      " acheived through modify"
+    cli_syntax(c, '[NODE(S)]')
+    c.description = "Specify some nodes' location - can also be "\
+      "achieved through modify"
+    c.hidden = true
     c = add_node_options(c)
-    action(c, Commands::ModifyLocation)
+    action(c, Commands::Modifys::Location)
   end
 
   command :'modify groups' do |c|
-    cli_syntax(c, 'GROUP NODE(S)')
+    cli_syntax(c, 'GROUP [NODE(S)]')
     c.description = "Modify nodes' groups"
+    c.hidden = true
     c = add_node_options(c)
     c.option '-p', '--primary', "Modify the nodes' primary groups"
     c.option '-r', '--remove', "Remove the nodes from this group"
-    action(c, Commands::ModifyGroups)
+    action(c, Commands::Modifys::Groups)
+  end
+
+  command :list do |c|
+    cli_syntax(c)
+    c.description = "List all nodes the system is maintaining .yaml data on"
+    action(c, Commands::List)
+  end
+
+  command :edit do |c|
+    cli_syntax(c, 'NODE')
+    c.description = "Edit a node's .yaml file"
+    action(c, Commands::Edit)
+  end
+
+  command :show do |c|
+    cli_syntax(c)
+    c.description = "View stored files"
+    c.sub_command_group = true
+  end
+
+  command :'show data' do |c|
+    cli_syntax(c, 'NODE')
+    c.description = "View the .yaml for a node"
+    c.hidden = true
+    action(c, Commands::Shows::Data)
+  end
+
+  command :'show document' do |c|
+    cli_syntax(c, 'TEMPLATE [NODE(S)]')
+    c.description = "Create a document using nodes' data and an eRuby template"
+    c.option '-l', '--location LOCATION',
+      "Output the rendered template to the specified location."
+    c = add_node_options(c)
+    c.hidden = true
+    action(c, Commands::Shows::Document)
+  end
+
+  command :delete do |c|
+    cli_syntax(c, '[NODE(S)]')
+    c.description = "Delete the .yaml for a node"
+    action(c, Commands::Delete)
   end
 end

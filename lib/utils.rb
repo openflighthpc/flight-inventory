@@ -145,10 +145,30 @@ Please provide at least one node.
       nodes = argv[other_args.length..-1]
     end
 
+
+    def self.find_file(search_val, &glob)
+      results = yield(search_val)
+        if results.empty?
+          puts "No files found for '#{search_val}'"
+          return nil
+        elsif results.length > 1
+          puts "Ambiguous search term '#{search_val}' - possible results are:"
+          results.map! { |p| File.basename(p, File.extname(p)) }
+          results.each_slice(3).each { |p| puts p.join("  ") }
+          puts "Please refine your search"
+          return nil
+        else
+          return results[0]
+        end
+    end
+
     # returns the yaml hash of a file at the given location
     def self.read_node_yaml(node_location)
+      node_data = nil
       begin
-        node_data = YAML.load_file(node_location)
+        File.open(node_location) do |f|
+          node_data = YAML.safe_load(f)
+        end
       rescue Psych::SyntaxError
         raise ParseError, <<-ERROR
 Error parsing yaml in #{node_location} - aborting

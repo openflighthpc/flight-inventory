@@ -22,39 +22,18 @@
 
 module Inventoryware
   module Commands
-    class ModifyGroups < Command
-      def run
-        other_args = ["group"]
-        nodes = Utils::resolve_node_options(@argv, @options, other_args)
-
-        if @options.primary and @options.remove
-          raise ArgumentError, <<-ERROR
-Cannot remove a primary group
-          ERROR
-        end
-
-        #TODO DRY up? group is defined twice
-        group = @argv[0]
-
-        node_locations = Utils::select_nodes(nodes,
-                                             @options,
-                                             return_missing = true)
-
-        node_locations.each do |location|
-          node_data = Utils::read_node_or_create(location)
-          if @options.primary
-            node_data['mutable']['primary_group'] = group
-          else
-            sec = node_data['mutable'].fetch('secondary_groups', nil)&.split(',')
-            if @options.remove and sec.include?(group)
-              sec.delete(group)
-            elsif not @options.remove
-              sec ? sec << group : sec = [group]
-              sec.uniq!
-            end
-            node_data['mutable']['secondary_groups'] = sec.join(',')
+    module Shows
+      class Data < Command
+        def run
+          search = Proc.new do |val|
+            Dir.glob(File.join(YAML_DIR, "#{val}*.*"))
           end
-          Utils::output_node_yaml(node_data, location)
+          found = Utils::find_file(@argv[0], &search)
+          if found
+            File.open (found) do |file|
+              puts file.read
+            end
+          end
         end
       end
     end

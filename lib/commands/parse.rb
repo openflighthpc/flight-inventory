@@ -123,7 +123,7 @@ No .zip files found at #{data_source}
 
       def process_dir(dir)
         node_name = File.basename(dir)
-        $stderr.puts "Importing #{node_name}.zip"
+        puts "Importing #{node_name}.zip"
 
         invalid = false
         file_locations = {}
@@ -136,7 +136,7 @@ No .zip files found at #{data_source}
         end
 
         if invalid
-          $stderr.puts "Skipping #{node_name}.zip"
+          puts "Skipping #{node_name}.zip"
           return false
         end
 
@@ -163,8 +163,7 @@ No .zip files found at #{data_source}
 
         Utils::output_node_yaml(node_data, out_file)
 
-        $stderr.puts "#{node_name}.zip imported to "\
-          "#{File.expand_path(out_file)}"
+        puts "#{node_name}.zip imported to #{File.expand_path(out_file)}"
       end
 
       def merge_recursively(a, b)
