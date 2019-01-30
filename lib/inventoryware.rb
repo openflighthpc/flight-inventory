@@ -79,9 +79,9 @@ module Inventoryware
   end
 
   def self.add_node_options(command)
-    command.option '--all', "Render all data in #{File.expand_path(YAML_DIR)}"
+    command.option '--all', "Select all data in #{File.expand_path(YAML_DIR)}"
     command.option '-g', '--group GROUP',
-      "Render all nodes in GROUP, commma-seperate values for multiple groups"
+      "Select all nodes in GROUP, commma-seperate values for multiple groups"
     return command
   end
 
