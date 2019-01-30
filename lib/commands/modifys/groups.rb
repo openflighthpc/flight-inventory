@@ -31,7 +31,7 @@ module Inventoryware
 
           if @options.primary and @options.remove
             raise ArgumentError, <<-ERROR.chomp
-  Cannot remove a primary group
+Cannot remove a primary group
             ERROR
           end
 

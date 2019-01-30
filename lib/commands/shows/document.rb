@@ -107,7 +107,7 @@ Invalid destination '#{out_dest}'
           rescue StandardError => e
             unless @options.debug
               raise ParseError, <<-ERROR.chomp
-Error filling template using #{File.basename(node_location)}
+Error filling template using #{File.basename(node_location)}.
 Use '--debug' for more information
               ERROR
             else

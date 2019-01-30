@@ -32,7 +32,7 @@ module Inventoryware
           modification = @argv[0]
           unless modification.match(/=/)
             raise ArgumentError, <<-ERROR.chomp
-  Invalid modification - must contain an '='.
+Invalid modification - must contain an '='
             ERROR
           end
           field, value = modification.split('=')
@@ -40,7 +40,7 @@ module Inventoryware
           protected_fields = ['primary_group', 'secondary_groups']
           if protected_fields.include?(field)
             raise ArgumentError, <<-ERROR.chomp
-  Cannot modify '#{field}' this way.
+Cannot modify '#{field}' this way
             ERROR
           end
 

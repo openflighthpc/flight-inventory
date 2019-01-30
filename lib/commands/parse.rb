@@ -29,7 +29,7 @@ module Inventoryware
       def run
         unless @argv.length() == 1
           raise ArgumentError, <<-ERROR.chomp
-The data source should be the only argument.
+The data source should be the only argument
           ERROR
         end
 

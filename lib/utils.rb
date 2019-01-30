@@ -55,7 +55,7 @@ module Inventoryware
       unless File.directory?(path)
         raise FileSysError, <<-ERROR.chomp
 Directory #{File.expand_path(path)} not found.
-Please create it before continuing."
+Please create it before continuing"
         ERROR
       end
       return true
@@ -71,11 +71,11 @@ Please create it before continuing."
         unless argv.length == other_args.length
           unless other_args.length == 0
             raise ArgumentError, <<-ERROR.chomp
-#{arg_str} should be the only argument(s) - all nodes are being parsed.
+#{arg_str} should be the only argument(s) - all nodes are being parsed
             ERROR
           else
             raise ArgumentError, <<-ERROR.chomp
-There should be the no arguments - all nodes are being parsed.
+There should be the no arguments - all nodes are being parsed
             ERROR
           end
         end
@@ -83,7 +83,7 @@ There should be the no arguments - all nodes are being parsed.
       elsif options.group
         if argv.length < other_args.length
           raise ArgumentError, <<-ERROR.chomp
-Please provide #{arg_str}.
+Please provide #{arg_str}
           ERROR
         end
 
@@ -91,11 +91,11 @@ Please provide #{arg_str}.
         if argv.length < other_args.length + 1
           unless other_args.length == 0
             raise ArgumentError, <<-ERROR.chomp
-Please provide #{arg_str} and at least one node.
+Please provide #{arg_str} and at least one node
             ERROR
           else
             raise ArgumentError, <<-ERROR.chomp
-Please provide at least one node.
+Please provide at least one node
             ERROR
           end
         end
