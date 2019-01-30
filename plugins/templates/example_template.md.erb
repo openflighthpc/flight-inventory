@@ -1,13 +1,13 @@
-<%= node_data.name %>:
-  name: <%= node_data.name %>
-  primary_group: <%= node_data.mutable.primary_group %>
-  secondary_group: <%= node_data.mutable.secondary_groups %>
+<%= @node_data.name %>:
+  name: <%= @node_data.name %>
+  primary_group: <%= @node_data.mutable.primary_group %>
+  secondary_group: <%= @node_data.mutable.secondary_groups %>
   info: |
     # System
     
     ## Model
     
-    <%= node_data.lshw.list.node.product %>
+    <%= @node_data.lshw.list.node.product %>
 
     ## BIOS Version
 
@@ -15,7 +15,7 @@
 
     ## System Serial Number
 
-    <%= node_data.lshw.list.node.serial %>
+    <%= @node_data.lshw.list.node.serial %>
 
     ## CPU(s)
 
@@ -44,14 +44,14 @@
 
     | Device | Size |
     |--------|------|
-    <% node_data.lsblk.disk.each do |disk, values| %>
+    <% @node_data.lsblk.disk.each do |disk, values| %>
     | <%= disk %> | <%= values.SIZE %> |
     <% end %>
 
-    <% unless node_data.mutable.notes.nil? -%>
+    <% unless @node_data.mutable.notes.nil? -%>
     # Notes
 
-    <%= node_data.mutable.notes.split("\n").join("\n    ") %>
+    <%= @node_data.mutable.notes.split("\n").join("\n    ") %>
     <% end -%>
 
     <% if select_bios %>
