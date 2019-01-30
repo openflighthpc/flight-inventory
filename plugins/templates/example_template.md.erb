@@ -3,15 +3,15 @@
   primary_group: <%= @node_data.mutable.primary_group %>
   secondary_group: <%= @node_data.mutable.secondary_groups %>
   info: |
-    # Contents
+    # Sections
     
     <% if @node_data.imported.nil? %>
     1. [System](#system)
     1. [Network Devices](#network-devices)
     1. [Disks](#disks)
     <% end %>
-    <% if select_bios %>1. [BIOS Information](#bios-information)<% end %>
     <% if @node_data.mutable.notes -%>1. [Notes](#notes)<% end -%>
+    <% if select_bios %>1. [BIOS Information](#bios-information)<% end %>
 
 <% if @node_data.imported.nil? %>
     # System <a name="system"></a>
@@ -59,15 +59,16 @@
     | <%= disk %> | <%= values.SIZE %> |
     <% end %>
 
-    <% if select_bios %>
-    # BIOS Information <a name="bios-information"></a>
-
-    <%= select_bios.split("\n").join("\n    ") %>
-    <% end %>
 <% end %>
     <% if @node_data.mutable.notes -%>
     # Notes <a name="notes"></a>
 
     <%= @node_data.mutable.notes.split("\n").join("\n    ") %>
     <% end -%>
+
+    <% if select_bios %>
+    # BIOS Information <a name="bios-information"></a>
+
+    <%= select_bios.split("\n").join("\n    ") %>
+    <% end %>
 
