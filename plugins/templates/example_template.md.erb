@@ -55,7 +55,7 @@
 
     | Device | Size |
     |--------|------|
-    <% @node_data.lsblk.disk.each_pair do |disk, values| %>
+    <% @node_data.lsblk.disk&.each_pair do |disk, values| %>
     | <%= disk %> | <%= values['SIZE'] %> |
     <% end %>
 
