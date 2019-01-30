@@ -7,7 +7,7 @@
 
     ## BIOS Version
 
-    <%= find_hashes_with_key_value(node_data, 'id', 'firmware')&.first['version'] %>
+    <%= find_hashes_with_key_value(@node_hash, 'id', 'firmware')&.first['version'] %>
     <% if select_bios %>
     <%=%>
     <%= select_bios %>
