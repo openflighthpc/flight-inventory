@@ -1,7 +1,6 @@
 def select_bios
   product = @node_data.lshw.list.node.product rescue ''
-  product.downcase!
-  product = product.split(' ')
+  product = product.downcase.split(' ')
 
   # we look for sub templates with increasingly short names
   #   we start with words 1 to n, then 1 to n-1 etc.
