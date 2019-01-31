@@ -36,11 +36,11 @@ module Inventoryware
           if paths.length == 1
             template = paths[0]
           elsif paths.length > 1
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
 Ambiguous search term '#{template}'
             ERROR
           elsif not Utils::check_file_readable?(template)
-            raise ArgumentError, <<-ERROR
+            raise ArgumentError, <<-ERROR.chomp
 Template at #{template} inaccessible
             ERROR
           end
@@ -84,7 +84,7 @@ Template at #{template} inaccessible
             # requires sudo execution - it may be that this would be better
             # changed.
             unless Utils::check_file_writable?(out_dest)
-              raise ArgumentError, <<-ERROR
+              raise ArgumentError, <<-ERROR.chomp
 Invalid destination '#{out_dest}'
               ERROR
             end
@@ -102,7 +102,18 @@ Invalid destination '#{out_dest}'
           render_env.instance_variable_set(:@node_data, node_data)
           ctx = render_env.instance_eval { binding }
 
-          return eruby.result(ctx)
+          begin
+            return eruby.result(ctx)
+          rescue StandardError => e
+            unless @options.debug
+              raise ParseError, <<-ERROR.chomp
+Error filling template using #{File.basename(node_location)}.
+Use '--debug' for more information
+              ERROR
+            else
+              raise e
+            end
+          end
         end
       end
     end

@@ -28,8 +28,8 @@ module Inventoryware
     class Parse < Command
       def run
         unless @argv.length() == 1
-          raise ArgumentError, <<-ERROR
-The data source should be the only argument.
+          raise ArgumentError, <<-ERROR.chomp
+The data source should be the only argument
           ERROR
         end
 
@@ -70,7 +70,7 @@ The data source should be the only argument.
           contents = [data_source]
         end
         if contents.empty?
-          raise ArgumentError, <<-ERROR
+          raise ArgumentError, <<-ERROR.chomp
 No .zip files found at #{data_source}
           ERROR
         end

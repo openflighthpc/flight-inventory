@@ -65,6 +65,8 @@ module Inventoryware
   # Display the help if there is no input arguments
   ARGV.push '--help' if ARGV.empty?
 
+  suppress_trace_class InventorywareError
+
   def self.action(command, klass)
     command.action do |args, options|
       klass.new(args, options).run!
@@ -77,9 +79,9 @@ module Inventoryware
   end
 
   def self.add_node_options(command)
-    command.option '--all', "Render all data in #{File.expand_path(YAML_DIR)}"
+    command.option '--all', "Select all data in #{File.expand_path(YAML_DIR)}"
     command.option '-g', '--group GROUP',
-      "Render all nodes in GROUP, commma-seperate values for multiple groups"
+      "Select all nodes in GROUP, commma-seperate values for multiple groups"
     return command
   end
 
@@ -158,7 +160,8 @@ module Inventoryware
     cli_syntax(c, 'TEMPLATE [NODE(S)]')
     c.description = "Create a document using nodes' data and an eRuby template"
     c.option '-l', '--location LOCATION',
-      "Output the rendered template to the specified location."
+      "Output the rendered template to the specified location"
+    c.option '-d', '--debug', "View errors while rendering the template"
     c = add_node_options(c)
     c.hidden = true
     action(c, Commands::Shows::Document)

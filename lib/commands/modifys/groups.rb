@@ -30,8 +30,8 @@ module Inventoryware
           nodes = Utils::resolve_node_options(@argv, @options, other_args)
 
           if @options.primary and @options.remove
-            raise ArgumentError, <<-ERROR
-  Cannot remove a primary group
+            raise ArgumentError, <<-ERROR.chomp
+Cannot remove a primary group
             ERROR
           end
 
