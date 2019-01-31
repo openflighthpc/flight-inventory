@@ -31,10 +31,10 @@
     ## CPU(s)
 
     <% cpus.each do |cpu| %>
-    ### <%= cpu.id %>
+    ### <%= cpu.id.upcase %>
 
-    model: <%= cpu.model %>
-    slot: <%= cpu.slot %>
+    Model: <%= cpu.model %>
+    Slot: <%= cpu.slot %>
 
     <% end %>
     ## RAM
