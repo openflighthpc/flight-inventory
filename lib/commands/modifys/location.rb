@@ -23,14 +23,9 @@
 module Inventoryware
   module Commands
     module Modifys
-      class Location < Command
+      class Location < MultiNodeCommand
         def run
-          other_args = []
-          Utils::resolve_node_options(@argv, @options, other_args)
-
-          nodes = @argv.dig(0)
-
-          node_locations = Utils::select_nodes(nodes, @options)
+          node_locations = find_nodes(true)
 
           fields = {
             'site' => {'name' => nil, 'value' => nil},

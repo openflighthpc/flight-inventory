@@ -22,11 +22,9 @@
 
 module Inventoryware
   module Commands
-    class Delete < Command
+    class Delete < MultiNodeCommand
       def run
-        Utils::resolve_node_options(@argv, @options, [])
-        nodes = @argv.dig(0)
-        node_locations = Utils::select_nodes(nodes, @options)
+        node_locations = find_nodes(false)
 
         unless node_locations.empty?
           prefix = "You are about to delete"

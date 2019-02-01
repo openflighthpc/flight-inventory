@@ -26,13 +26,9 @@ require 'recursive-open-struct'
 module Inventoryware
   module Commands
     module Shows
-      class Document < Command
+      class Document < MultiNodeCommand
         def run
-          other_args = ["template"]
-          Utils::resolve_node_options(@argv, @options, other_args)
-
           template = @argv[0]
-          nodes = @argv.dig(1)
 
           paths = Dir.glob(File.join(TEMPLATES_DIR, "#{template}*"))
           if paths.length == 1
@@ -47,7 +43,7 @@ Template at #{template} inaccessible
             ERROR
           end
 
-          node_locations = Utils::select_nodes(nodes, @options)
+          node_locations = find_nodes(false, 'template')
           node_locations = node_locations.uniq
           node_locations = node_locations.sort_by do |location|
             File.basename(location)
