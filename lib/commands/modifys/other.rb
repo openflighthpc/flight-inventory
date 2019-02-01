@@ -26,7 +26,9 @@ module Inventoryware
       class Other < Command
         def run
           other_args = ["modification"]
-          nodes = Utils::resolve_node_options(@argv, @options, other_args)
+          Utils::resolve_node_options(@argv, @options, other_args)
+
+          nodes = @argv.dig(1)
 
           #TODO DRY up? modification is defined twice
           modification = @argv[0]

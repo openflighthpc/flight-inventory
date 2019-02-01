@@ -27,7 +27,7 @@ module Inventoryware
       class Groups < Command
         def run
           other_args = ["group"]
-          nodes = Utils::resolve_node_options(@argv, @options, other_args)
+          Utils::resolve_node_options(@argv, @options, other_args)
 
           if @options.primary and @options.remove
             raise ArgumentError, <<-ERROR.chomp
@@ -35,8 +35,8 @@ Cannot remove a primary group
             ERROR
           end
 
-          #TODO DRY up? group is defined twice
           group = @argv[0]
+          nodes = @argv.dig(1)
 
           node_locations = Utils::select_nodes(nodes,
                                                @options,

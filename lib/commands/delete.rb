@@ -24,8 +24,8 @@ module Inventoryware
   module Commands
     class Delete < Command
       def run
-        other_args = []
-        nodes = Utils::resolve_node_options(@argv, @options, other_args)
+        Utils::resolve_node_options(@argv, @options, [])
+        nodes = @argv.dig(0)
         node_locations = Utils::select_nodes(nodes, @options)
 
         unless node_locations.empty?

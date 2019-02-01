@@ -26,7 +26,10 @@ module Inventoryware
       class Location < Command
         def run
           other_args = []
-          nodes = Utils::resolve_node_options(@argv, @options, other_args)
+          Utils::resolve_node_options(@argv, @options, other_args)
+
+          nodes = @argv.dig(0)
+
           node_locations = Utils::select_nodes(nodes, @options)
 
           fields = {

@@ -29,10 +29,11 @@ module Inventoryware
       class Document < Command
         def run
           other_args = ["template"]
-          nodes = Utils::resolve_node_options(@argv, @options, other_args)
+          Utils::resolve_node_options(@argv, @options, other_args)
 
-          #TODO DRY up definition of arguments? template is declared twice
           template = @argv[0]
+          nodes = @argv.dig(1)
+
           paths = Dir.glob(File.join(TEMPLATES_DIR, "#{template}*"))
           if paths.length == 1
             template = paths[0]
