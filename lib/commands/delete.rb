@@ -32,9 +32,9 @@ module Inventoryware
           prefix = "You are about to delete"
           node_locations.map! { |loc| File.expand_path(loc) }
           if node_locations.length > 1
-            node_msg = "#{prefix}:\n#{node_locations.join("\n")}\nProceed?"
+            node_msg = "#{prefix}:\n#{node_locations.join("\n")}\nProceed? (y/n)"
           else
-            node_msg = "#{prefix} #{node_locations[0]} - proceed?"
+            node_msg = "#{prefix} #{node_locations[0]} - proceed? (y/n)"
           end
           if agree(node_msg)
             node_locations.each { |node| FileUtils.rm node }
