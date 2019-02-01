@@ -62,8 +62,7 @@ Please create it before continuing"
     end
 
     # Errors for each way that arguments and nodes can be given incorrectly
-    # 'other_args' in an array of all non-node arguments for the command
-    #TODO make this method less awful
+    # 'other_args' is an array of all non-node arguments for the command
     def self.resolve_node_options(argv, options, other_args)
       arg_str = other_args.join(', ')
 
@@ -75,33 +74,11 @@ Please create it before continuing"
             ERROR
           else
             raise ArgumentError, <<-ERROR.chomp
-There should be the no arguments - all nodes are being parsed
-            ERROR
-          end
-        end
-
-      elsif options.group
-        if argv.length < other_args.length
-          raise ArgumentError, <<-ERROR.chomp
-Please provide #{arg_str}
-          ERROR
-        end
-
-      else
-        if argv.length < other_args.length + 1
-          unless other_args.length == 0
-            raise ArgumentError, <<-ERROR.chomp
-Please provide #{arg_str} and at least one node
-            ERROR
-          else
-            raise ArgumentError, <<-ERROR.chomp
-Please provide at least one node
+There should be no arguments - all nodes are being parsed
             ERROR
           end
         end
       end
-
-      nodes = argv[other_args.length..-1]
     end
 
     # returns the yaml hash of a file at the given location
