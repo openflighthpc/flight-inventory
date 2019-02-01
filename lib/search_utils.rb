@@ -20,6 +20,8 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
+require 'nodeattr_utils'
+
 module Inventoryware
   module Utils
     # return a single file from glob, error if >/< than 1 found
@@ -98,7 +100,7 @@ module Inventoryware
     # if return missing is passed, returns paths to the .yamls of non-existent
     #   nodes
     def self.find_nodes(nodes, return_missing = false)
-      nodes = expand_node_ranges(nodes)
+      nodes = expand_asterisks(NodeattrUtils::NodeParser.expand(nodes))
       node_locations = []
       nodes.each do |node|
         node_yaml = "#{node}.yaml"
@@ -116,32 +118,6 @@ module Inventoryware
         node_locations.append(node_yaml_location)
       end
       return node_locations
-    end
-
-    # given a list of nodes, expand each elem that is a range
-    def self.expand_node_ranges(nodes)
-      new_nodes = []
-      nodes.each do |node|
-        if node.match(/.*\[[0-9]+.*[0-9]+\]$/)
-          m = node.match(/^(.*)\[(.*)\]$/)
-          prefix = m[1]
-          suffix = m[2]
-          ranges = suffix.split(',')
-          ranges.each do |range|
-            if range.match(/-/)
-              num_1, num_2 = range.split('-')
-              (num_1.to_i .. num_2.to_i).each do |num|
-                new_nodes << "#{prefix}#{num.to_s.rjust(num_1.length, '0')}"
-              end
-            else
-              new_nodes << "#{prefix}#{range}"
-            end
-          end
-          nodes.delete(node)
-        end
-      end
-      nodes.push(*new_nodes)
-      return expand_asterisks(nodes)
     end
 
     def self.expand_asterisks(nodes)
