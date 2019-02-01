@@ -28,7 +28,7 @@ module Inventoryware
 
         nodes = @argv.dig(other_args.length)
 
-        node_locations = Utils::select_nodes(nodes,
+        node_locations = Utils::locate_nodes(nodes,
                                              @options,
                                              return_missing)
       end

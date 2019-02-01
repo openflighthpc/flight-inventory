@@ -43,7 +43,7 @@ module Inventoryware
 
     # given a set of nodes and relevant options returns an expanded list
     #   of all the necessary nodes
-    def self.select_nodes(nodes, options, return_missing = false)
+    def self.locate_nodes(nodes, options, return_missing = false)
       node_locations = []
       if options.all
         node_locations = find_all_nodes
