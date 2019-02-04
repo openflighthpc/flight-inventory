@@ -86,3 +86,7 @@ def render_sub_template(subdir, name)
     return Erubis::Eruby.new(File.read(paths[0])).result(binding)
   end
 end
+
+def imported?
+  @node_hash.key?('lshw') and @node_hash.key?('lsblk')
+end
