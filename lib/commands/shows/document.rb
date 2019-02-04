@@ -28,19 +28,23 @@ module Inventoryware
     module Shows
       class Document < MultiNodeCommand
         def run
-          template = @argv[0]
+          template_arg = @argv[0]
 
-          paths = Dir.glob(File.join(TEMPLATES_DIR, "#{template}*"))
-          if paths.length == 1
-            template = paths[0]
-          elsif paths.length > 1
+          found = Utils::find_file(template_arg, TEMPLATES_DIR)
+
+          if found.length == 1
+            template = found[0]
+          elsif found.length > 1
             raise ArgumentError, <<-ERROR.chomp
-Ambiguous search term '#{template}'
+Please refine your search and try again.
             ERROR
-          elsif not Utils::check_file_readable?(template)
-            raise ArgumentError, <<-ERROR.chomp
-Template at #{template} inaccessible
-            ERROR
+          else
+            if not Utils::check_file_readable?(template_arg)
+              raise ArgumentError, <<-ERROR.chomp
+Template at #{template_arg} inaccessible
+              ERROR
+            end
+            template = template_arg
           end
 
           node_locations = find_nodes(false, 'template')
