@@ -5,7 +5,7 @@
   info: |
     # Sections
     
-    <% if @node_data.imported.nil? %>
+    <% if imported? %>
     1. [System](#system)
     1. [Network Devices](#network-devices)
     1. [Disks](#disks)
@@ -13,7 +13,7 @@
     <% if @node_data.mutable.notes -%>1. [Notes](#notes)<% end -%>
     <% if select_bios %>1. [BIOS Information](#bios-information)<% end %>
 
-<% if @node_data.imported.nil? %>
+<% if imported? %>
     # System <a name="system"></a>
     
     ## Model

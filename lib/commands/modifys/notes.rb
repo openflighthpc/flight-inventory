@@ -28,24 +28,21 @@ module Inventoryware
     module Modifys
       class Notes < Command
         def run
-          search = Proc.new do |val|
-            Dir.glob(File.join(YAML_DIR, "#{val}*.*"))
-          end
-          found = Utils::find_file(@argv[0], &search)
+          name = @argv[0]
+          location = File.join(YAML_DIR, "#{name}.yaml")
+          # create if it doesn't exist
 
-          if found
-            node_data = Utils::read_node_yaml(found)
-            notes = node_data['mutable'].fetch('notes', '')
-            tmp_file = Tempfile.new('inv_ware_file_')
-            begin
-              TTY::Editor.open(tmp_file.path, content: notes, command: :rvim)
-              node_data['mutable']['notes'] = tmp_file.read
-            ensure
-              tmp_file.close
-              tmp_file.unlink
-            end
-            Utils::output_node_yaml(node_data, found)
+          node_data = Utils::read_node_or_create(location)
+          notes = node_data['mutable'].fetch('notes', '')
+          tmp_file = Tempfile.new('inv_ware_file_')
+          begin
+            TTY::Editor.open(tmp_file.path, content: notes, command: :rvim)
+            node_data['mutable']['notes'] = tmp_file.read.strip
+          ensure
+            tmp_file.close
+            tmp_file.unlink
           end
+          Utils::output_node_yaml(node_data, location)
         end
       end
     end

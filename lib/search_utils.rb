@@ -24,21 +24,17 @@ require 'nodeattr_utils'
 
 module Inventoryware
   module Utils
-    # return a single file from glob, error if >/< than 1 found
-    def self.find_file(search_val, &glob)
-      results = yield(search_val)
+    # return a single file from glob, print error if >/< than 1 found
+    def self.find_file(search_val, dir)
+      results = Dir.glob(File.join(dir, "#{search_val}*"))
         if results.empty?
-          puts "No files found for '#{search_val}'"
-          return nil
+          puts "No files found for '#{search_val}' in #{File.expand_path(dir)}"
         elsif results.length > 1
           puts "Ambiguous search term '#{search_val}' - possible results are:"
           results.map! { |p| File.basename(p, File.extname(p)) }
           results.each_slice(3).each { |p| puts p.join("  ") }
-          puts "Please refine your search"
-          return nil
-        else
-          return results[0]
         end
+        return results
     end
 
     # given a set of nodes and relevant options returns an expanded list

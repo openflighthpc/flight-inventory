@@ -26,13 +26,13 @@ module Inventoryware
   module Commands
     class Edit < Command
       def run
-        search = Proc.new do |val|
-          Dir.glob(File.join(YAML_DIR, "#{val}*.*"))
-        end
-        found = Utils::find_file(@argv[0], &search)
-        if found
-          TTY::Editor.open(found, command: :rvim)
-        end
+        name = @argv[0]
+        location = File.join(YAML_DIR, "#{name}.yaml")
+        # create if it doesn't exist
+        Utils::output_node_yaml(Utils::read_node_or_create(location), location)
+        # maybe don't create unless saved? i.e. don't create the file above
+        # instead save as closing
+        TTY::Editor.open(location, command: :rvim)
       end
     end
   end
