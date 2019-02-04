@@ -1,4 +1,11 @@
 GIT
+  remote: git://github.com/alces-software/nodeattr_utils.git
+  revision: 7dcd6f48eb24aaced2c3dc5bfc7b6e0a2174407f
+  ref: 7dcd6f4
+  specs:
+    nodeattr_utils (0.1.0)
+
+GIT
   remote: https://github.com/alces-software/commander
   revision: 4090e181cf280f228543e35ad21af219a6d2f626
   specs:
@@ -26,6 +33,7 @@ GEM
     pry-byebug (3.6.0)
       byebug (~> 10.0)
       pry (~> 0.10)
+    recursive-open-struct (1.1.0)
     require_all (2.0.0)
     rubyzip (1.2.2)
     timers (4.3.0)
@@ -57,8 +65,10 @@ PLATFORMS
 DEPENDENCIES
   commander!
   erubis
+  nodeattr_utils!
   pry
   pry-byebug
+  recursive-open-struct
   require_all
   rubyzip
   tty-editor

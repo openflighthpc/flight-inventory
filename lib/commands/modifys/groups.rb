@@ -20,29 +20,20 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-#TODO extract shared `Modifys` code to top level 'modify.rb' command file
 module Inventoryware
   module Commands
     module Modifys
-      class Groups < Command
+      class Groups < MultiNodeCommand
         def run
-          other_args = ["group"]
-          nodes = Utils::resolve_node_options(@argv, @options, other_args)
-
           if @options.primary and @options.remove
             raise ArgumentError, <<-ERROR.chomp
 Cannot remove a primary group
             ERROR
           end
 
-          #TODO DRY up? group is defined twice
           group = @argv[0]
 
-          node_locations = Utils::select_nodes(nodes,
-                                               @options,
-                                               return_missing = true)
-
-          node_locations.each do |location|
+          find_nodes(true, "group").each do |location|
             node_data = Utils::read_node_or_create(location)
             if @options.primary
               node_data['mutable']['primary_group'] = group

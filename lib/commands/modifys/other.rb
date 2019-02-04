@@ -23,13 +23,10 @@
 module Inventoryware
   module Commands
     module Modifys
-      class Other < Command
+      class Other < MultiNodeCommand
         def run
-          other_args = ["modification"]
-          nodes = Utils::resolve_node_options(@argv, @options, other_args)
-
-          #TODO DRY up? modification is defined twice
           modification = @argv[0]
+
           unless modification.match(/=/)
             raise ArgumentError, <<-ERROR.chomp
 Invalid modification - must contain an '='
@@ -44,11 +41,7 @@ Cannot modify '#{field}' this way
             ERROR
           end
 
-          node_locations = Utils::select_nodes(nodes,
-                                               @options,
-                                               return_missing = true)
-
-          node_locations.each do |location|
+          find_nodes(true, "modification").each do |location|
             node_data = Utils::read_node_or_create(location)
             if value
               node_data['mutable'][field] = value

@@ -22,36 +22,15 @@
 
 module Inventoryware
   module Commands
-    module Modifys
-      class Location < MultiNodeCommand
-        def run
-          node_locations = find_nodes(true)
+    class MultiNodeCommand < Command
+      def find_nodes(return_missing, *other_args)
+        Utils::resolve_node_options(@argv, @options, other_args)
 
-          fields = {
-            'site' => {'name' => nil, 'value' => nil},
-            'room' => {'name' => nil, 'value' => nil},
-            'rack' => {'name' => nil, 'value' => nil},
-            'start_unit' => {'name' => 'starting rack unit', 'value' => nil},
-          }
+        nodes = @argv.dig(other_args.length)
 
-          # Get input REPL style
-          fields.each do |field, hash|
-            name = hash['name'] ? hash['name'] : field
-            value = ask("Enter a #{name} or press enter to skip")
-            hash['value'] = value unless value == ''
-          end
-
-          # save data
-          node_locations.each do |location|
-            node_data = Utils::read_node_or_create(location)
-            fields.each do |field, hash|
-              if hash['value']
-                node_data['mutable'][field] = hash['value']
-              end
-            end
-            Utils::output_node_yaml(node_data, location)
-          end
-        end
+        node_locations = Utils::locate_nodes(nodes,
+                                             @options,
+                                             return_missing)
       end
     end
   end
