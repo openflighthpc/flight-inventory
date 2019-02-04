@@ -21,6 +21,7 @@
 #==============================================================================
 
 require 'erubis'
+require 'recursive-open-struct'
 
 module Inventoryware
   module Commands
@@ -98,8 +99,14 @@ Invalid destination '#{out_dest}'
 
         # fill the template for a single node
         def fill_template(node_location, eruby, render_env)
-          node_data = Utils::read_node_yaml(node_location)
+          node_hash = Utils::read_node_yaml(node_location)
+          node_data = RecursiveOpenStruct.new(
+                        node_hash,
+                        recurse_over_arrays: true,
+                        preserve_original_keys: true
+                      )
           render_env.instance_variable_set(:@node_data, node_data)
+          render_env.instance_variable_set(:@node_hash, node_hash)
           ctx = render_env.instance_eval { binding }
 
           begin
