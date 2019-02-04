@@ -121,7 +121,6 @@ Output file #{location} not accessible - aborting
         node_data = {
           'name' => File.basename(location, '.yaml'),
           'mutable' => {},
-          'imported' => false
         }
       end
       return node_data
