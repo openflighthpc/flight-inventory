@@ -52,9 +52,8 @@ require 'yaml'
 module Inventoryware
   LIB_DIR = File.dirname(__FILE__)
   YAML_DIR = File.join(LIB_DIR, '../store')
-  PLUGINS_DIR = File.join(LIB_DIR, '../plugins')
   TEMPLATES_DIR = File.join(LIB_DIR, '../templates')
-  HELPERS_DIR = File.join(PLUGINS_DIR, 'helpers')
+  HELPERS_DIR = File.join(LIB_DIR, '../helpers')
 
   REQ_FILES = ["lshw-xml", "lsblk-a-P"]
   OTHER_FILES = ["groups"]
