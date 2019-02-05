@@ -20,31 +20,14 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-require 'tempfile'
-require 'tty-editor'
-
-#TODO dry up shared code with modify notes
 module Inventoryware
   module Commands
     module Modifys
-      class Map < Command
-        def run
-          name = @argv[0]
-          location = File.join(YAML_DIR, "#{name}.yaml")
-
-          node_data = Utils::read_node_or_create(location)
-
+      class Map < CreateNodeCommand
+        def action(node_data, location)
           map = map_to_string(node_data['mutable']['map'])
-          tmp_file = Tempfile.new('inv_ware_file_')
-          begin
-            TTY::Editor.open(tmp_file.path,
-                             content: map,
-                             command: :"rvim +'set number'")
-            node_data['mutable']['map'] = string_to_map(tmp_file.read)
-          ensure
-            tmp_file.close
-            tmp_file.unlink
-          end
+          map = string_to_map(edit_with_tmp_file(map, :"rvim +'set number'"))
+          node_data['mutable']['map'] = map
           Utils::output_node_yaml(node_data, location)
         end
 

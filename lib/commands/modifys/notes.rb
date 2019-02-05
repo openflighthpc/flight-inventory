@@ -20,28 +20,14 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-require 'tempfile'
-require 'tty-editor'
-
 module Inventoryware
   module Commands
     module Modifys
-      class Notes < Command
-        def run
-          name = @argv[0]
-          location = File.join(YAML_DIR, "#{name}.yaml")
-          # create if it doesn't exist
-
-          node_data = Utils::read_node_or_create(location)
+      class Notes < CreateNodeCommand
+        def action(node_data, location)
           notes = node_data['mutable'].fetch('notes', '')
-          tmp_file = Tempfile.new('inv_ware_file_')
-          begin
-            TTY::Editor.open(tmp_file.path, content: notes, command: :rvim)
-            node_data['mutable']['notes'] = tmp_file.read.strip
-          ensure
-            tmp_file.close
-            tmp_file.unlink
-          end
+          notes = edit_with_tmp_file(notes, :rvim).strip
+          node_data['mutable']['notes'] = notes
           Utils::output_node_yaml(node_data, location)
         end
       end
