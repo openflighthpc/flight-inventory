@@ -126,6 +126,13 @@ module Inventoryware
     action(c, Commands::Modifys::Groups)
   end
 
+  command :'modify map' do |c|
+    cli_syntax(c, 'NODE')
+    c.description = "Modify a node's mapping"
+    c.hidden = true
+    action(c, Commands::Modifys::Map)
+  end
+
   command :'modify notes' do |c|
     cli_syntax(c, 'NODE')
     c.description = "Modify a node's miscellaneous notes"
