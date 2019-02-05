@@ -6,13 +6,26 @@ The commands' syntax is as follows:
 ```
 parse DATA_LOCATION
 
-render TEMPLATE_LOCATION [NODE_NAME(S) -g GROUPS,HERE | --all] [-l DESTINATION]
+delete [NODE_NAME(S) -g GROUPS,HERE | --all]
+
+edit NODE
+
+list
 
 modify groups GROUP [NODE_NAME(S) -g GROUPS,HERE | --all] [-p | -r]
 
 modify location [NODE_NAME(S) -g GROUPS,HERE | --all]
 
+modify notes NODE
+
+modify map NODE
+
 modify other FIELD=[VALUE] [NODE_NAME(S) -g GROUPS,HERE | --all]
+
+show data NODE
+
+show document TEMPLATE_LOCATION [NODE_NAME(S) -g GROUPS,HERE | --all] [-l DESTINATION]
+
 ```
 
 The `parse` command processes zips at the specified location into yaml stored in the `store/`
@@ -22,13 +35,11 @@ and any nested zips are processed. Only bottom level .zips are processed so don'
 data to be sibling to a .zip. Each zip must contain a lshw-xml and a lsblk-a-P file. A `groups`
 file will be processed if it exists.
 
-The following commands all allow specification of nodes in the same way. Either n nodes follow or
-`--all` can be passed to process all .yaml files in the `store/` directory. Additionally groups can
-be selected with the `-g` option in which case all nodes in the specified groups will be processed.
+`delete` removes the specified nodes' files after a confirmation message.
 
-The `render` command fills eRuby templates using stored data. The first argument is the template to
-be filled, see 'Templates' section for details. The output will be passed to stdout unless a
-destination is specified with the `-l` option.
+`edit` opens the node's file in an editor for manual input.
+
+`list` lists all nodes with files in the store.
 
 The `modify groups` command adds GROUP to the specified nodes' secondary groups. If -p is set their
 primary group is set to GROUP. If -r is set GROUP will be removed from the nodes' secondary groups.
@@ -40,6 +51,28 @@ The `modify other` command allows the setting and un-setting of arbitrary fields
 FIELD is set to VALUE and if VALUE is blank the field is removed from the nodes' data.
 A node's location data can be set via this method however it's groups cannot due to the special
 constraints for those fields; for groups please use `modify groups`.
+
+`modify notes` opens an editor for a node's 'notes' section. This is general data store that maintains text
+formatting.
+
+The `modify map` command opens an editor for a node's 'map' section. A 'map' is a key:value store where all
+the keys are numerical and represent port numbers and the values are text. The lines of the editor refer to
+the keys of the map, the editor has it's line numbers set to 'on' to aid entry.
+
+`show data` displays the selected node's .yaml file in the terminal.
+
+The `show document` command fills eRuby templates using stored data. The first argument is the template to
+be filled, see 'Templates' section for details. First the argument's value will be used to search the
+templates directory then, if nothing is found, it'll be used as a path The output will be passed to stdout
+unless a destination is specified with the `-l` option.
+
+All commands that allow specification of more than one node do so in the same way. Either nodes names
+are given, separated by commas, or `--all` can be passed to process all .yaml files in the `store/`
+directory. Additionally groups can be selected with the `-g` option in which case all nodes in the
+specified groups will be processed.
+
+For all the editing and modifying commands a file will be created for each node if it doesn't already
+exist.
 
 ## Installation
 
@@ -61,11 +94,11 @@ This will keep your working directory synced to `/tmp/inventoryware`
 
 ## Templates
 
-Templates accepted by Inventoryware are .erb templates filled using Erubis. The relevant data
-is stored in a large hash called `node_data`. There are helper methods for navigation and
-formatting this data in `lib/erb_utils.rb`. Additionally, in order to the accommodate all possible
-domains of use, the system will dynamically read any code stored in the top level `plugins/`
-directory and utilise that for filling the specified template.
+Templates accepted by Inventoryware are .erb templates filled using Erubis. The data is accessible through
+a large recursive OpenStruct called `@node_data`. The data is also available in a hash called `@node_hash`.
+There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally, in
+order to the accommodate all possible domains of use, the system will dynamically read any code stored in
+the top level `plugins/` directory and utilise that for filling the specified template.
 
 # License
 
