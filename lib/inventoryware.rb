@@ -79,7 +79,7 @@ module Inventoryware
     command.syntax = s
   end
 
-  def self.add_node_options(command)
+  def self.add_multi_node_options(command)
     command.option '--all', "Select all data in #{File.expand_path(YAML_DIR)}"
     command.option '-g', '--group GROUP',
       "Select all nodes in GROUP, commma-seperate values for multiple groups"
@@ -102,7 +102,7 @@ module Inventoryware
     cli_syntax(c, 'FIELD=VALUE [NODE(S)]')
     c.description = "Modify some nodes' data"
     c.hidden = true
-    c = add_node_options(c)
+    c = add_multi_node_options(c)
     action(c, Commands::Modifys::Other)
   end
 
@@ -111,7 +111,7 @@ module Inventoryware
     c.description = "Specify some nodes' location - can also be "\
       "achieved through modify"
     c.hidden = true
-    c = add_node_options(c)
+    c = add_multi_node_options(c)
     action(c, Commands::Modifys::Location)
   end
 
@@ -119,7 +119,7 @@ module Inventoryware
     cli_syntax(c, 'GROUP [NODE(S)]')
     c.description = "Modify nodes' groups"
     c.hidden = true
-    c = add_node_options(c)
+    c = add_multi_node_options(c)
     c.option '-p', '--primary', "Modify the nodes' primary groups"
     c.option '-r', '--remove', "Remove the nodes from this group"
     action(c, Commands::Modifys::Groups)
@@ -170,7 +170,7 @@ module Inventoryware
     c.option '-l', '--location LOCATION',
       "Output the rendered template to the specified location"
     c.option '-d', '--debug', "View errors while rendering the template"
-    c = add_node_options(c)
+    c = add_multi_node_options(c)
     c.hidden = true
     action(c, Commands::Shows::Document)
   end
