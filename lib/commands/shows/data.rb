@@ -23,13 +23,10 @@
 module Inventoryware
   module Commands
     module Shows
-      class Data < Command
-        def run
-          found = Utils::find_file(@argv[0], YAML_DIR)
-          if found.length == 1
-            File.open (found[0]) do |file|
-              puts file.read
-            end
+      class Data < SingleNodeCommand
+        def action(_, location)
+          File.open(location) do |file|
+            puts file.read
           end
         end
       end
