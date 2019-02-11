@@ -20,8 +20,6 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-require 'nodeattr_utils'
-
 module Inventoryware
   module Utils
     # return a single file from glob, print error if >/< than 1 found

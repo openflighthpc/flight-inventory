@@ -20,6 +20,8 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
+require 'nodeattr_utils'
+
 module Inventoryware
   module Commands
     class MultiNodeCommand < Command
