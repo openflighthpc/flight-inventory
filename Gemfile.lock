@@ -1,7 +1,6 @@
 GIT
   remote: git://github.com/alces-software/nodeattr_utils.git
-  revision: 7dcd6f48eb24aaced2c3dc5bfc7b6e0a2174407f
-  ref: 7dcd6f4
+  revision: f5a390bd8701db67ee83284b0c4a900a97de2adf
   specs:
     nodeattr_utils (0.1.0)
 
