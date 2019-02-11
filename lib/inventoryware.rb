@@ -178,6 +178,7 @@ module Inventoryware
   command :delete do |c|
     cli_syntax(c, '[NODE(S)]')
     c.description = "Delete the .yaml for a node"
+    c = add_multi_node_options(c)
     action(c, Commands::Delete)
   end
 end
