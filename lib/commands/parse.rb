@@ -127,9 +127,9 @@ No .zip files found at #{data_source}
 
         invalid = false
         file_locations = {}
-        ALL_FILES.each do |file|
+        Config.all_files.each do |file|
           file_locations[file] = Dir.glob(File.join(dir, "#{file}*"))&.first
-          if not file_locations[file] and REQ_FILES.include?(file)
+          if not file_locations[file] and Config.req_files.include?(file)
             $stderr.puts "Warning: File #{file} required in #{node_name}.zip but not found."
             invalid = true
           end
@@ -151,9 +151,9 @@ No .zip files found at #{data_source}
         # extract data from lsblk
         node_data['lsblk'] = LsblkParser.new(file_locations['lsblk-a-P']).hashify()
 
-        Utils::exit_unless_dir(YAML_DIR)
+        Utils::exit_unless_dir(Config.yaml_dir)
         yaml_out_name = "#{node_name}.yaml"
-        out_file = File.join(YAML_DIR, yaml_out_name)
+        out_file = File.join(Config.yaml_dir, yaml_out_name)
 
         if Utils::check_file_readable?(out_file)
           old_data = Utils::read_node_yaml(out_file)

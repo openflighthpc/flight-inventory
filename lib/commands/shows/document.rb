@@ -30,7 +30,7 @@ module Inventoryware
         def run
           template_arg = @argv[0]
 
-          found = Utils::find_file(template_arg, TEMPLATES_DIR)
+          found = Utils::find_file(template_arg, Config.templates_dir)
 
           if found.length == 1
             template = found[0]
@@ -66,7 +66,7 @@ Template at #{template_arg} inaccessible
             end
           end
 
-          Dir[File.join(HELPERS_DIR, '*.rb')].each do |file|
+          Dir[File.join(Config.helpers_dir, '*.rb')].each do |file|
             render_env.instance_eval(File.read(file))
           end
 

@@ -20,12 +20,38 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-# all subtemplates are to be held in a specific directory of `templates/`
-def render_sub_template(subdir, name)
-  paths = Dir.glob(File.join(Config.templates_dir, subdir, "#{name}.*"))
-  if paths.empty?
-    return false
-  else
-    return Erubis::Eruby.new(File.read(paths[0])).result(binding)
+module Inventoryware
+  class Config
+    class << self
+      def instance
+        @instance ||= Config.new
+      end
+
+      def method_missing(s, *a, &b)
+        if instance.respond_to?(s)
+          instance.send(s)
+        else
+          raise
+        end
+      end
+
+      def respond_to_missing?(s)
+        instance.respond_to?(s)
+      end
+    end
+
+    attr_reader :root_dir, :yaml_dir, :templates_dir, :helpers_dir, :req_files,
+      :other_files, :all_files
+
+    def initialize
+      @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+      @yaml_dir = File.join(@root_dir, 'store')
+      @templates_dir = File.join(@root_dir, 'templates')
+      @helpers_dir = File.join(@root_dir, 'helpers')
+
+      @req_files = ["lshw-xml", "lsblk-a-P"]
+      @other_files = ["groups"]
+      @all_files = @req_files + @other_files
+    end
   end
 end

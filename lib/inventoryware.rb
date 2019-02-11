@@ -37,6 +37,7 @@ end
 require 'require_all'
 
 require_rel 'command'
+require_rel 'config'
 require_rel 'exceptions'
 # force import of super classes first
 require_rel 'commands/multi_node_command'
@@ -50,15 +51,6 @@ require 'ostruct'
 require 'yaml'
 
 module Inventoryware
-  ROOT_DIR = File.join(File.dirname(__FILE__), '..')
-  YAML_DIR = File.join(ROOT_DIR, 'store')
-  TEMPLATES_DIR = File.join(ROOT_DIR, 'templates')
-  HELPERS_DIR = File.join(ROOT_DIR, 'helpers')
-
-  REQ_FILES = ["lshw-xml", "lsblk-a-P"]
-  OTHER_FILES = ["groups"]
-  ALL_FILES = REQ_FILES + OTHER_FILES
-
   program :name, 'Inventoryware'
   program :version, '1.0.0'
   program :description, 'Parser of hardware information into unified formats.'
@@ -80,7 +72,7 @@ module Inventoryware
   end
 
   def self.add_multi_node_options(command)
-    command.option '--all', "Select all data in #{File.expand_path(YAML_DIR)}"
+    command.option '--all', "Select all data in #{File.expand_path(Config.yaml_dir)}"
     command.option '-g', '--group GROUP',
       "Select all nodes in GROUP, commma-seperate values for multiple groups"
     return command

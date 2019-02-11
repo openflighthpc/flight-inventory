@@ -73,9 +73,10 @@ There should be no arguments - all nodes are being parsed
 
       # retrieves all .yaml files in the storage dir
       def find_all_nodes()
-        node_locations = Dir.glob(File.join(YAML_DIR, '*.yaml'))
+        node_locations = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
         if node_locations.empty?
-          $stderr.puts "No node data found in #{File.expand_path(YAML_DIR)}"
+          $stderr.puts "No node data found "\
+            "in #{File.expand_path(Config.yaml_dir)}"
         end
         return node_locations
       end
@@ -115,10 +116,10 @@ There should be no arguments - all nodes are being parsed
         node_locations = []
         nodes.each do |node|
           node_yaml = "#{node}.yaml"
-          node_yaml_location = File.join(YAML_DIR, node_yaml)
+          node_yaml_location = File.join(Config.yaml_dir, node_yaml)
           unless Utils::check_file_readable?(node_yaml_location)
             $stderr.puts "File #{node_yaml} not found within "\
-              "#{File.expand_path(YAML_DIR)}"
+              "#{File.expand_path(Config.yaml_dir)}"
             if return_missing
               $stderr.puts "Creating..."
             else
@@ -135,7 +136,7 @@ There should be no arguments - all nodes are being parsed
         new_nodes = []
         nodes.each do |node|
           if node.match(/\*/)
-            node_names = Dir.glob(File.join(YAML_DIR, node)).map { |file|
+            node_names = Dir.glob(File.join(Config.yaml_dir, node)).map { |file|
               File.basename(file, '.yaml')
             }
             new_nodes.push(*node_names)

@@ -37,10 +37,10 @@ Issue with argument name, please only provide a single node
         end
 
         if @options.create
-          location = File.join(YAML_DIR, "#{name}.yaml")
+          location = File.join(Config.yaml_dir, "#{name}.yaml")
           node_data = Utils::read_node_or_create(location)
         else
-          found = Utils::find_file(name, YAML_DIR)
+          found = Utils::find_file(name, Config.yaml_dir)
           unless found.length == 1
             raise ArgumentError, <<-ERROR.chomp
 Please refine your search
