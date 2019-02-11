@@ -109,6 +109,7 @@ module Inventoryware
     c.description = "Modify some nodes' data"
     c.hidden = true
     c = add_multi_node_options(c)
+    c = add_create_option(c)
     action(c, Commands::Modifys::Other)
   end
 
@@ -118,6 +119,7 @@ module Inventoryware
       "achieved through modify"
     c.hidden = true
     c = add_multi_node_options(c)
+    c = add_create_option(c)
     action(c, Commands::Modifys::Location)
   end
 
@@ -126,6 +128,7 @@ module Inventoryware
     c.description = "Modify nodes' groups"
     c.hidden = true
     c = add_multi_node_options(c)
+    c = add_create_option(c)
     c.option '-p', '--primary', "Modify the nodes' primary groups"
     c.option '-r', '--remove', "Remove the nodes from this group"
     action(c, Commands::Modifys::Groups)

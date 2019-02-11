@@ -25,12 +25,12 @@ require 'nodeattr_utils'
 module Inventoryware
   module Commands
     class MultiNodeCommand < Command
-      def find_nodes(return_missing, *other_args)
-        resolve_node_options(@argv, @options, other_args)
+      def find_nodes(*args)
+        resolve_node_options(@argv, @options, args)
 
-        nodes = @argv.dig(other_args.length)
+        nodes = @argv.dig(args.length)
 
-        node_locations = locate_nodes(nodes, @options, return_missing)
+        node_locations = locate_nodes(nodes, @options)
       end
 
       private
@@ -56,13 +56,13 @@ There should be no arguments - all nodes are being parsed
 
       # given a set of nodes and relevant options returns an expanded list
       #   of all the necessary nodes
-      def locate_nodes(nodes, options, return_missing = false)
+      def locate_nodes(nodes, options)
         node_locations = []
         if options.all
           node_locations = find_all_nodes
         else
           if nodes
-            node_locations.push(*find_single_nodes(nodes, return_missing))
+            node_locations.push(*find_single_nodes(nodes, !!options.create))
           end
           if options.group
             node_locations.push(*find_nodes_in_groups(options.group.split(',')))

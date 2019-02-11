@@ -47,7 +47,7 @@ Template at #{template_arg} inaccessible
             template = template_arg
           end
 
-          node_locations = find_nodes(false, 'template')
+          node_locations = find_nodes('template')
           node_locations = node_locations.uniq
           node_locations = node_locations.sort_by do |location|
             File.basename(location)

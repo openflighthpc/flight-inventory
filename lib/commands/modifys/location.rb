@@ -25,7 +25,7 @@ module Inventoryware
     module Modifys
       class Location < MultiNodeCommand
         def run
-          node_locations = find_nodes(true)
+          node_locations = find_nodes()
 
           fields = {
             'site' => {'name' => nil, 'value' => nil},

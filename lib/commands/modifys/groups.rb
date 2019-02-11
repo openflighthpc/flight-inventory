@@ -33,7 +33,7 @@ Cannot remove a primary group
 
           group = @argv[0]
 
-          find_nodes(true, "group").each do |location|
+          find_nodes("group").each do |location|
             node_data = Utils::read_node_or_create(location)
             if @options.primary
               node_data['mutable']['primary_group'] = group

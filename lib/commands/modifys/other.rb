@@ -41,7 +41,7 @@ Cannot modify '#{field}' this way
             ERROR
           end
 
-          find_nodes(true, "modification").each do |location|
+          find_nodes("modification").each do |location|
             node_data = Utils::read_node_or_create(location)
             if value
               node_data['mutable'][field] = value
