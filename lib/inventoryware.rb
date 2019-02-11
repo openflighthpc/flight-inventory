@@ -153,7 +153,7 @@ module Inventoryware
 
   command :show do |c|
     cli_syntax(c)
-    c.description = "View stored files"
+    c.description = "View data"
     c.sub_command_group = true
   end
 
