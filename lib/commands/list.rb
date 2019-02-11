@@ -27,7 +27,7 @@ module Inventoryware
         #TODO format this to have as many results fit on one line as poss.
         #puts files.join("  ")
         files = Dir.glob(File.join(YAML_DIR, '*.yaml')).map! do |file|
-          File.basename(file)
+          File.basename(file, '.yaml')
         end
         files.each_slice(3).each { |grp| puts grp.join("  ") }
       end
