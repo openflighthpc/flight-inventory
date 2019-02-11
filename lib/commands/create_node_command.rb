@@ -35,8 +35,20 @@ module Inventoryware
 Issue with argument name, please only provide a single node
           ERROR
         end
-        location = File.join(YAML_DIR, "#{name}.yaml")
-        node_data = Utils::read_node_or_create(location)
+
+        if @options.create
+          location = File.join(YAML_DIR, "#{name}.yaml")
+          node_data = Utils::read_node_or_create(location)
+        else
+          found = Utils::find_file(name, YAML_DIR)
+          unless found.length == 1
+            raise ArgumentError, <<-ERROR.chomp
+Please refine your search
+            ERROR
+          end
+          location = found[0]
+          node_data = Utils::read_node_yaml(location)
+        end
 
         action(node_data, location)
       end

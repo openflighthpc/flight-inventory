@@ -86,6 +86,12 @@ module Inventoryware
     return command
   end
 
+  def self.add_create_option(command)
+    command.option '-c', '--create',
+      "Create specified node(s) if they don't already exist"
+    return command
+  end
+
   command :parse do |c|
     cli_syntax(c, 'DATA_SOURCE')
     c.description = 'Parse hardware information into yaml'
@@ -129,6 +135,7 @@ module Inventoryware
     cli_syntax(c, 'NODE')
     c.description = "Modify a node's mapping"
     c.hidden = true
+    c = add_create_option(c)
     action(c, Commands::Modifys::Map)
   end
 
@@ -136,6 +143,7 @@ module Inventoryware
     cli_syntax(c, 'NODE')
     c.description = "Modify a node's miscellaneous notes"
     c.hidden = true
+    c = add_create_option(c)
     action(c, Commands::Modifys::Notes)
   end
 
@@ -148,6 +156,7 @@ module Inventoryware
   command :edit do |c|
     cli_syntax(c, 'NODE')
     c.description = "Edit a node's .yaml file"
+    c = add_create_option(c)
     action(c, Commands::Edit)
   end
 
