@@ -21,9 +21,9 @@
 #==============================================================================
 
 module Inventoryware
-  class InventorywareError < RuntimeError; end
+  InventorywareError = Class.new(RuntimeError)
 
-  class FileSysError < InventorywareError; end
-  class ParseError < InventorywareError; end
-  class ArgumentError < InventorywareError; end
+  FileSysError = Class.new(InventorywareError)
+  ParseError = Class.new(InventorywareError)
+  ArgumentError = Class.new(InventorywareError)
 end
