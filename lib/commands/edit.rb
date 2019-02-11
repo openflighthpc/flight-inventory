@@ -22,7 +22,7 @@
 
 module Inventoryware
   module Commands
-    class Edit < CreateNodeCommand
+    class Edit < SingleNodeCommand
       def action(node_data, location)
         # output to create the node's file if it doesn't yet exist
         Utils::output_node_yaml(node_data, location)

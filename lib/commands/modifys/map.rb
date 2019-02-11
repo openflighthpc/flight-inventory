@@ -23,7 +23,7 @@
 module Inventoryware
   module Commands
     module Modifys
-      class Map < CreateNodeCommand
+      class Map < SingleNodeCommand
         def action(node_data, location)
           map = map_to_string(node_data['mutable']['map'])
           map = string_to_map(edit_with_tmp_file(map, :"rvim +'set number'"))

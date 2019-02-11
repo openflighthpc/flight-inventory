@@ -26,7 +26,7 @@ require 'tty-editor'
 
 module Inventoryware
   module Commands
-    class CreateNodeCommand < Command
+    class SingleNodeCommand < Command
       def run
         name = @argv[0]
         # error to prevent confusion if attempting to provide >1 node

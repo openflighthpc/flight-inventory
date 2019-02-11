@@ -23,7 +23,7 @@
 module Inventoryware
   module Commands
     module Modifys
-      class Notes < CreateNodeCommand
+      class Notes < SingleNodeCommand
         def action(node_data, location)
           notes = node_data['mutable'].fetch('notes', '')
           notes = edit_with_tmp_file(notes, :rvim).strip
