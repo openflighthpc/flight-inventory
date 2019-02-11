@@ -20,6 +20,7 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
+require 'nodeattr_utils'
 require 'tempfile'
 require 'tty-editor'
 
@@ -28,6 +29,12 @@ module Inventoryware
     class CreateNodeCommand < Command
       def run
         name = @argv[0]
+        # error to prevent confusion if attempting to provide >1 node
+        if NodeattrUtils::NodeParser.expand(name).length > 1
+          raise ArgumentError, <<-ERROR.chomp
+Issue with argument name, please only provide a single node
+          ERROR
+        end
         location = File.join(YAML_DIR, "#{name}.yaml")
         node_data = Utils::read_node_or_create(location)
 
