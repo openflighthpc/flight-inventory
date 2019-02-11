@@ -61,26 +61,6 @@ Please create it before continuing"
       return true
     end
 
-    # Errors for each way that arguments and nodes can be given incorrectly
-    # 'other_args' is an array of all non-node arguments for the command
-    def self.resolve_node_options(argv, options, other_args)
-      arg_str = other_args.join(', ')
-
-      if options.all
-        unless argv.length == other_args.length
-          unless other_args.length == 0
-            raise ArgumentError, <<-ERROR.chomp
-#{arg_str} should be the only argument(s) - all nodes are being parsed
-            ERROR
-          else
-            raise ArgumentError, <<-ERROR.chomp
-There should be no arguments - all nodes are being parsed
-            ERROR
-          end
-        end
-      end
-    end
-
     # returns the yaml hash of a file at the given location
     def self.read_node_yaml(node_location)
       node_data = nil
