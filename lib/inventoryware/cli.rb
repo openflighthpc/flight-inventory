@@ -21,19 +21,6 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-lib_dir = File.dirname(__FILE__)
-ENV['BUNDLE_GEMFILE'] ||= File.join(lib_dir, '..', 'Gemfile')
-
-require 'rubygems'
-require 'bundler'
-
-if ENV['INVWARE_DEBUG']
-  Bundler.setup(:default, :development)
-  require 'pry-byebug'
-else
-  Bundler.setup(:default)
-end
-
 require 'require_all'
 
 require_rel 'command'
