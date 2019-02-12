@@ -45,7 +45,7 @@ module Inventoryware
 
     def initialize
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
-      @yaml_dir = File.join(@root_dir, 'store')
+      @yaml_dir = File.join(@root_dir, 'var/store')
       @templates_dir = File.join(@root_dir, 'templates')
       @helpers_dir = File.join(@root_dir, 'helpers')
 
