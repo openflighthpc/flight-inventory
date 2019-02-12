@@ -44,7 +44,7 @@ module Inventoryware
   # Display the help if there is no input arguments
   ARGV.push '--help' if ARGV.empty?
 
-  suppress_trace_class InventorywareError
+  silent_trace!
 
   def self.action(command, klass)
     command.action do |args, options|
