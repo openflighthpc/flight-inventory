@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 lib_dir = File.join(__FILE__, '../../lib')
 $LOAD_PATH << lib_dir
 ENV['BUNDLE_GEMFILE'] ||= File.join(__FILE__, '../../Gemfile')
