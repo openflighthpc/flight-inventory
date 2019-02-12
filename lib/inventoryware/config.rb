@@ -44,7 +44,7 @@ module Inventoryware
       :other_files, :all_files
 
     def initialize
-      @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+      @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
       @yaml_dir = File.join(@root_dir, 'store')
       @templates_dir = File.join(@root_dir, 'templates')
       @helpers_dir = File.join(@root_dir, 'helpers')
