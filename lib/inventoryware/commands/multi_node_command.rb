@@ -111,8 +111,9 @@ There should be no arguments - all nodes are being parsed
       # expands node ranges if they exist
       # if return missing is passed, returns paths to the .yamls of non-existent
       #   nodes
-      def find_single_nodes(nodes, return_missing = false)
-        nodes = expand_asterisks(NodeattrUtils::NodeParser.expand(nodes))
+      def find_single_nodes(node_str, return_missing = false)
+        nodes = expand_asterisks(NodeattrUtils::NodeParser.expand(node_str))
+        $stderr.puts "No nodes found for '#{node_str}'" if nodes.empty?
         node_locations = []
         nodes.each do |node|
           node_yaml = "#{node}.yaml"
