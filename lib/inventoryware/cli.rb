@@ -28,6 +28,7 @@ require_rel 'config'
 require_rel 'exceptions'
 # force import of super classes first
 require_rel 'commands/multi_node_command'
+require_rel 'commands/single_node_command'
 require_rel 'commands/**/*.rb'
 require_rel 'lsblk_parser'
 require_rel 'utils'
