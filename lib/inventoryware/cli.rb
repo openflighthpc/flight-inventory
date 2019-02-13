@@ -20,7 +20,6 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 require 'inventoryware/commands'
-require 'inventoryware/config'
 
 require 'commander'
 require 'ostruct'
@@ -51,21 +50,21 @@ module Inventoryware
     end
 
     def self.add_multi_node_options(command)
-      command.option '--all', "Select all data in #{File.expand_path(Config.yaml_dir)}"
+      command.option '--all', "Select all nodes"
       command.option '-g', '--group GROUP',
-                     "Select all nodes in GROUP, commma-seperate values for multiple groups"
+                     "Select nodes in GROUP, specify commma-separated list for multiple groups"
       return command
     end
 
     def self.add_create_option(command)
       command.option '-c', '--create',
-                     "Create specified node(s) if they don't already exist"
+                     "Create specified node(s) if they don't exist"
       return command
     end
 
     command :parse do |c|
       cli_syntax(c, 'DATA_SOURCE')
-      c.description = 'Parse hardware information into yaml'
+      c.description = 'Parse and store inventory information'
       action(c, Commands::Parse)
     end
 
@@ -77,7 +76,7 @@ module Inventoryware
 
     command :'modify other' do |c|
       cli_syntax(c, 'FIELD=VALUE [NODE(S)]')
-      c.description = "Modify some nodes' data"
+      c.description = "Modify arbitrary data for one or more nodes"
       c.hidden = true
       c = add_multi_node_options(c)
       c = add_create_option(c)
@@ -86,8 +85,7 @@ module Inventoryware
 
     command :'modify location' do |c|
       cli_syntax(c, '[NODE(S)]')
-      c.description = "Specify some nodes' location - can also be "\
-                      "achieved through modify"
+      c.description = "Modify location data for one or more nodes"
       c.hidden = true
       c = add_multi_node_options(c)
       c = add_create_option(c)
@@ -96,18 +94,18 @@ module Inventoryware
 
     command :'modify groups' do |c|
       cli_syntax(c, 'GROUP [NODE(S)]')
-      c.description = "Modify nodes' groups"
+      c.description = "Modify group data for one or more nodes"
       c.hidden = true
       c = add_multi_node_options(c)
       c = add_create_option(c)
-      c.option '-p', '--primary', "Modify the nodes' primary groups"
-      c.option '-r', '--remove', "Remove the nodes from this group"
+      c.option '-p', '--primary', "Modify the primary group of one or more nodes"
+      c.option '-r', '--remove', "Remove one or more nodes from this group"
       action(c, Commands::Modifys::Groups)
     end
 
     command :'modify map' do |c|
       cli_syntax(c, 'NODE')
-      c.description = "Modify a node's mapping"
+      c.description = "Modify mapping data for a node"
       c.hidden = true
       c = add_create_option(c)
       action(c, Commands::Modifys::Map)
@@ -115,7 +113,7 @@ module Inventoryware
 
     command :'modify notes' do |c|
       cli_syntax(c, 'NODE')
-      c.description = "Modify a node's miscellaneous notes"
+      c.description = "Modify miscellaneous notes for a node"
       c.hidden = true
       c = add_create_option(c)
       action(c, Commands::Modifys::Notes)
@@ -123,13 +121,13 @@ module Inventoryware
 
     command :list do |c|
       cli_syntax(c)
-      c.description = "List all nodes the system is maintaining .yaml data on"
+      c.description = "List all nodes that have stored data"
       action(c, Commands::List)
     end
 
     command :edit do |c|
       cli_syntax(c, 'NODE')
-      c.description = "Edit a node's .yaml file"
+      c.description = "Edit stored data for a node"
       c = add_create_option(c)
       action(c, Commands::Edit)
     end
@@ -142,17 +140,17 @@ module Inventoryware
 
     command :'show data' do |c|
       cli_syntax(c, 'NODE')
-      c.description = "View the .yaml for a node"
+      c.description = "View stored data for a node"
       c.hidden = true
       action(c, Commands::Shows::Data)
     end
 
     command :'show document' do |c|
       cli_syntax(c, 'TEMPLATE [NODE(S)]')
-      c.description = "Create a document using nodes' data and an eRuby template"
+      c.description = "Render a document template for one or more nodes"
       c.option '-l', '--location LOCATION',
                "Output the rendered template to the specified location"
-      c.option '-d', '--debug', "View errors while rendering the template"
+      c.option '-d', '--debug', "Display rendering errors"
       c = add_multi_node_options(c)
       c.hidden = true
       action(c, Commands::Shows::Document)
@@ -160,7 +158,7 @@ module Inventoryware
 
     command :delete do |c|
       cli_syntax(c, '[NODE(S)]')
-      c.description = "Delete the .yaml for a node"
+      c.description = "Delete the stored data for one or more nodes"
       c = add_multi_node_options(c)
       action(c, Commands::Delete)
     end
