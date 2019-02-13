@@ -28,9 +28,13 @@ module Inventoryware
         if results.empty?
           puts "No files found for '#{search_val}' in #{File.expand_path(dir)}"
         elsif results.length > 1
+          file_names = results.map { |p| File.basename(p, File.extname(p)) }
+          # if the results include just the search val, return that path
+          if file_names.include?(search_val)
+            return results.select { |p| p[/#{search_val}\..*$/] }
+          end
           puts "Ambiguous search term '#{search_val}' - possible results are:"
-          results.map! { |p| File.basename(p, File.extname(p)) }
-          results.each_slice(3).each { |p| puts p.join("  ") }
+          file_names.each_slice(3).each { |p| puts p.join("  ") }
         end
       return results
     end
