@@ -51,8 +51,7 @@ module Inventoryware
         command.syntax = [
           PROGRAM_NAME,
           command.name,
-          args_str,
-          '[options]'
+          args_str
         ].compact.join(' ')
       end
 
