@@ -24,11 +24,11 @@ module Inventoryware
   module Commands
     module Modifys
       class Notes < SingleNodeCommand
-        def action(node_data, location)
-          notes = node_data['mutable'].fetch('notes', '')
+        def action(node)
+          notes = node.data['mutable'].fetch('notes', '')
           notes = edit_with_tmp_file(notes, :rvim).strip
-          node_data['mutable']['notes'] = notes
-          Utils::output_node_yaml(node_data, location)
+          node.data['mutable']['notes'] = notes
+          node.save
         end
       end
     end

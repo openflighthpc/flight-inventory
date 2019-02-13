@@ -43,13 +43,14 @@ module Inventoryware
 
           # save data
           node_locations.each do |location|
-            node_data = Utils::read_node_or_create(location)
+            node = Node.new(location)
+            node.create_if_non_existent
             fields.each do |field, hash|
               if hash['value']
-                node_data['mutable'][field] = hash['value']
+                node.data['mutable'][field] = hash['value']
               end
             end
-            Utils::output_node_yaml(node_data, location)
+            node.save
           end
         end
       end

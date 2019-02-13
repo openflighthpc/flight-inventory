@@ -31,6 +31,7 @@ require_rel 'commands/multi_node_command'
 require_rel 'commands/single_node_command'
 require_rel 'commands/**/*.rb'
 require_rel 'lsblk_parser'
+require_rel 'node'
 require_rel 'utils'
 
 require 'commander/import'

@@ -74,7 +74,7 @@ Template at #{template_arg} inaccessible
           # check, will loading all output cause issues with memory size?
           # probably fine - 723 nodes was 350Kb
           node_locations.each do |location|
-            out += fill_template(location, eruby, render_env)
+            out += fill_template(Node.new(location), eruby, render_env)
             $stderr.puts "Rendered #{File.basename(location, '.yaml')}"
           end
 
@@ -97,8 +97,8 @@ Invalid destination '#{out_dest}'
         end
 
         # fill the template for a single node
-        def fill_template(node_location, eruby, render_env)
-          node_hash = Utils::read_node_yaml(node_location)
+        def fill_template(node, eruby, render_env)
+          node_hash = node.data
           node_data = RecursiveOpenStruct.new(
                         node_hash,
                         recurse_over_arrays: true,

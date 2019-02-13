@@ -23,12 +23,12 @@
 module Inventoryware
   module Commands
     class Edit < SingleNodeCommand
-      def action(node_data, location)
+      def action(node)
         # output to create the node's file if it doesn't yet exist
-        Utils::output_node_yaml(node_data, location)
+        node.save
         # maybe don't create unless saved? i.e. don't create the file above
         # instead save as closing
-        TTY::Editor.open(location, command: :rvim)
+        TTY::Editor.open(node.location, command: :rvim)
       end
     end
   end

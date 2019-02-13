@@ -156,12 +156,15 @@ No .zip files found at #{data_source}
         out_file = File.join(Config.yaml_dir, yaml_out_name)
 
         if Utils::check_file_readable?(out_file)
-          old_data = Utils::read_node_yaml(out_file)
+          old_node = Node.new(out_file)
+          old_data = old_node.open
           # NB: this prioritses 'node_data' - new values will override old ones
           node_data = merge_recursively(old_data, node_data)
         end
 
-        Utils::output_node_yaml(node_data, out_file)
+        node = Node.new(out_file)
+        node.data = node_data
+        node.save
 
         puts "#{node_name}.zip imported to #{File.expand_path(out_file)}"
       end

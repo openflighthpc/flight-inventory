@@ -38,7 +38,8 @@ Issue with argument name, please only provide a single node
 
         if @options.create
           location = File.join(Config.yaml_dir, "#{name}.yaml")
-          node_data = Utils::read_node_or_create(location)
+          node = Node.new(location)
+          node.create_if_non_existent
         else
           found = Utils::find_file(name, Config.yaml_dir)
           unless found.length == 1
@@ -46,11 +47,10 @@ Issue with argument name, please only provide a single node
 Please refine your search
             ERROR
           end
-          location = found[0]
-          node_data = Utils::read_node_yaml(location)
+          node = Node.new(found[0])
         end
 
-        action(node_data, location)
+        action(node)
       end
 
       def action

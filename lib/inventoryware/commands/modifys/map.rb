@@ -24,11 +24,11 @@ module Inventoryware
   module Commands
     module Modifys
       class Map < SingleNodeCommand
-        def action(node_data, location)
-          map = map_to_string(node_data['mutable']['map'])
+        def action(node)
+          map = map_to_string(node.data['mutable']['map'])
           map = string_to_map(edit_with_tmp_file(map, :"rvim +'set number'"))
-          node_data['mutable']['map'] = map
-          Utils::output_node_yaml(node_data, location)
+          node.data['mutable']['map'] = map
+          node.save
         end
 
         # takes a hash with numerical keys

@@ -34,20 +34,21 @@ Cannot remove a primary group
           group = @argv[0]
 
           find_nodes("group").each do |location|
-            node_data = Utils::read_node_or_create(location)
+            node= Node.new(location)
+            node.create_if_non_existent
             if @options.primary
-              node_data['mutable']['primary_group'] = group
+              node.data['mutable']['primary_group'] = group
             else
-              sec = node_data['mutable'].fetch('secondary_groups', nil)&.split(',')
+              sec = node.data['mutable'].fetch('secondary_groups', nil)&.split(',')
               if @options.remove and sec.include?(group)
                 sec.delete(group)
               elsif not @options.remove
                 sec ? sec << group : sec = [group]
                 sec.uniq!
               end
-              node_data['mutable']['secondary_groups'] = sec.join(',')
+              node.data['mutable']['secondary_groups'] = sec.join(',')
             end
-            Utils::output_node_yaml(node_data, location)
+            node.save
           end
         end
       end

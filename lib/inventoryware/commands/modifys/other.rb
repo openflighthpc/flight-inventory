@@ -42,13 +42,14 @@ Cannot modify '#{field}' this way
           end
 
           find_nodes("modification").each do |location|
-            node_data = Utils::read_node_or_create(location)
+            node = Node.new(location)
+            node.create_if_non_existent
             if value
-              node_data['mutable'][field] = value
+              node.data['mutable'][field] = value
             else
-              node_data['mutable'].delete(field)
+              node.data['mutable'].delete(field)
             end
-            Utils::output_node_yaml(node_data, location)
+            node.save
           end
         end
       end

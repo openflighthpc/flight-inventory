@@ -24,8 +24,8 @@ module Inventoryware
   module Commands
     module Shows
       class Data < SingleNodeCommand
-        def action(_, location)
-          File.open(location) do |file|
+        def action(node)
+          File.open(node.location) do |file|
             puts file.read
           end
         end

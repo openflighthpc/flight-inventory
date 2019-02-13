@@ -21,44 +21,61 @@
 #==============================================================================
 
 module Inventoryware
-  module Utils
-    def self.check_zip_exists?(path)
-      (File.file?(path) && check_zip?(path))
+  class Node
+    def initialize(location)
+      @location = location
+      @name = File.basename(location, File.extname(location))
     end
 
-    def self.check_zip?(path)
-      File.extname(path) == ".zip"
+    def data
+      @data ||= open
     end
 
-    def self.check_file_writable?(path)
-      return false unless check_file_location?(path)
-      return false if File.exist?(path) and not File.writable?(path)
-      return true
+    def data=(value)
+      @data = value
     end
 
-    def self.check_file_readable?(path)
-      return false unless check_file_location?(path)
-      return false unless File.exists?(path)
-      return false unless File.readable?(path)
-      return true
-    end
-
-    def self.check_file_location?(path)
-      return false if File.directory?(path)
-      return false unless File.directory?(File.dirname(path))
-      return false if File.exists?(path) and not File.readable?(path)
-      return true
-    end
-
-    # raise an error if given path isn't a directory
-    def self.exit_unless_dir(path)
-      unless File.directory?(path)
-        raise FileSysError, <<-ERROR.chomp
-Directory #{File.expand_path(path)} not found.
-Please create it before continuing"
+    def open
+      node_data = nil
+      begin
+        File.open(@location) do |f|
+          node_data = YAML.safe_load(f)
+        end
+      rescue Psych::SyntaxError
+        raise ParseError, <<-ERROR.chomp
+Error parsing yaml in #{node_location} - aborting
         ERROR
       end
-      return true
+      # condition for if the .yaml is empty
+      unless node_data
+        raise ParseError, <<-ERROR.chomp
+Yaml in #{node_location} is empty - aborting
+        ERROR
+      end
+      @data = node_data.values[0]
+      return @data
     end
+
+    def save
+      unless Utils::check_file_writable?(@location)
+        raise FileSysError, <<-ERROR.chomp
+Output file #{@location} not accessible - aborting
+        ERROR
+      end
+      yaml_hash = {data['name'] => data}
+      File.open(@location, 'w') { |file| file.write(yaml_hash.to_yaml) }
+    end
+
+    def create_if_non_existent
+      unless Utils::check_file_readable?(@location)
+        @data = {
+          'name' => @name,
+          'mutable' => {},
+        }
+        save
+      end
+    end
+
+    attr_reader :location, :name
   end
 end
