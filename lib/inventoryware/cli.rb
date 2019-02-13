@@ -40,32 +40,36 @@ module Inventoryware
 
     silent_trace!
 
-    def self.action(command, klass)
-      command.action do |args, options|
-        klass.new(args, options).run!
+    class << self
+      def action(command, klass)
+        command.action do |args, options|
+          klass.new(args, options).run!
+        end
+      end
+
+      def cli_syntax(command, args_str = nil)
+        command.syntax = [
+          PROGRAM_NAME,
+          command.name,
+          args_str,
+          '[options]'
+        ].compact.join(' ')
+      end
+
+      def add_multi_node_options(command)
+        command.option '--all', "Select all nodes"
+        command.option '-g', '--group GROUP',
+                       "Select nodes in GROUP, specify commma-separated list for multiple groups"
+      end
+
+      def add_create_option(command)
+        command.option '-c', '--create',
+                       "Create specified node(s) if they don't exist"
       end
     end
 
-    def self.cli_syntax(command, args_str = '')
-      s = "#{PROGRAM_NAME} #{command.name} #{args_str}#{args_str.length == 0 ? '' : ' '}[options]"
-      command.syntax = s
-    end
-
-    def self.add_multi_node_options(command)
-      command.option '--all', "Select all nodes"
-      command.option '-g', '--group GROUP',
-                     "Select nodes in GROUP, specify commma-separated list for multiple groups"
-      return command
-    end
-
-    def self.add_create_option(command)
-      command.option '-c', '--create',
-                     "Create specified node(s) if they don't exist"
-      return command
-    end
-
     command :parse do |c|
-      cli_syntax(c, 'DATA_SOURCE')
+      cli_syntax(c, 'ZIPFILE')
       c.description = 'Parse and store inventory information'
       action(c, Commands::Parse)
     end
@@ -80,8 +84,8 @@ module Inventoryware
       cli_syntax(c, 'FIELD=VALUE [NODE(S)]')
       c.description = "Modify arbitrary data for one or more nodes"
       c.hidden = true
-      c = add_multi_node_options(c)
-      c = add_create_option(c)
+      add_multi_node_options(c)
+      add_create_option(c)
       action(c, Commands::Modifys::Other)
     end
 
@@ -89,8 +93,8 @@ module Inventoryware
       cli_syntax(c, '[NODE(S)]')
       c.description = "Modify location data for one or more nodes"
       c.hidden = true
-      c = add_multi_node_options(c)
-      c = add_create_option(c)
+      add_multi_node_options(c)
+      add_create_option(c)
       action(c, Commands::Modifys::Location)
     end
 
@@ -98,8 +102,8 @@ module Inventoryware
       cli_syntax(c, 'GROUP [NODE(S)]')
       c.description = "Modify group data for one or more nodes"
       c.hidden = true
-      c = add_multi_node_options(c)
-      c = add_create_option(c)
+      add_multi_node_options(c)
+      add_create_option(c)
       c.option '-p', '--primary', "Modify the primary group of one or more nodes"
       c.option '-r', '--remove', "Remove one or more nodes from this group"
       action(c, Commands::Modifys::Groups)
@@ -109,7 +113,7 @@ module Inventoryware
       cli_syntax(c, 'NODE')
       c.description = "Modify mapping data for a node"
       c.hidden = true
-      c = add_create_option(c)
+      add_create_option(c)
       action(c, Commands::Modifys::Map)
     end
 
@@ -117,7 +121,7 @@ module Inventoryware
       cli_syntax(c, 'NODE')
       c.description = "Modify miscellaneous notes for a node"
       c.hidden = true
-      c = add_create_option(c)
+      add_create_option(c)
       action(c, Commands::Modifys::Notes)
     end
 
@@ -130,7 +134,7 @@ module Inventoryware
     command :edit do |c|
       cli_syntax(c, 'NODE')
       c.description = "Edit stored data for a node"
-      c = add_create_option(c)
+      add_create_option(c)
       action(c, Commands::Edit)
     end
 
@@ -153,7 +157,7 @@ module Inventoryware
       c.option '-l', '--location LOCATION',
                "Output the rendered template to the specified location"
       c.option '-d', '--debug', "Display rendering errors"
-      c = add_multi_node_options(c)
+      add_multi_node_options(c)
       c.hidden = true
       action(c, Commands::Shows::Document)
     end
@@ -161,7 +165,7 @@ module Inventoryware
     command :delete do |c|
       cli_syntax(c, '[NODE(S)]')
       c.description = "Delete the stored data for one or more nodes"
-      c = add_multi_node_options(c)
+      add_multi_node_options(c)
       action(c, Commands::Delete)
     end
   end
