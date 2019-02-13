@@ -73,7 +73,7 @@ The data source should be the only argument
         contents = []
         if File.directory?(data_source)
           contents = Dir.glob(File.join(data_source, "**/*.zip"))
-        elsif Utils::check_zip_exists?(data_source)
+        elsif Utils.check_zip_exists?(data_source)
           contents = [data_source]
         end
         if contents.empty?
@@ -158,11 +158,11 @@ No .zip files found at #{data_source}
         # extract data from lsblk
         node_data['lsblk'] = LsblkParser.new(file_locations['lsblk-a-P']).hashify()
 
-        Utils::exit_unless_dir(Config.yaml_dir)
+        Utils.exit_unless_dir(Config.yaml_dir)
         yaml_out_name = "#{node_name}.yaml"
         out_file = File.join(Config.yaml_dir, yaml_out_name)
 
-        if Utils::check_file_readable?(out_file)
+        if Utils.check_file_readable?(out_file)
           old_node = Node.new(out_file)
           old_data = old_node.open
           # NB: this prioritses 'node_data' - new values will override old ones

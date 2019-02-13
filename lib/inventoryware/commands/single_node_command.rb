@@ -45,7 +45,7 @@ Issue with argument name, please only provide a single node
           node = Node.new(location)
           node.create_if_non_existent
         else
-          found = Utils::find_file(name, Config.yaml_dir)
+          found = Utils.find_file(name, Config.yaml_dir)
           unless found.length == 1
             raise ArgumentError, <<-ERROR.chomp
 Please refine your search

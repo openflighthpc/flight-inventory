@@ -121,7 +121,7 @@ There should be no arguments - all nodes are being parsed
         nodes.each do |node|
           node_yaml = "#{node}.yaml"
           node_yaml_location = File.join(Config.yaml_dir, node_yaml)
-          unless Utils::check_file_readable?(node_yaml_location)
+          unless Utils.check_file_readable?(node_yaml_location)
             $stderr.puts "File #{node_yaml} not found within "\
               "#{File.expand_path(Config.yaml_dir)}"
             if return_missing

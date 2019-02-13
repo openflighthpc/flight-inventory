@@ -59,7 +59,7 @@ Yaml in #{node_location} is empty - aborting
     end
 
     def save
-      unless Utils::check_file_writable?(@location)
+      unless Utils.check_file_writable?(@location)
         raise FileSysError, <<-ERROR.chomp
 Output file #{@location} not accessible - aborting
         ERROR
@@ -69,7 +69,7 @@ Output file #{@location} not accessible - aborting
     end
 
     def create_if_non_existent
-      unless Utils::check_file_readable?(@location)
+      unless Utils.check_file_readable?(@location)
         @data = {
           'name' => @name,
           'mutable' => {},

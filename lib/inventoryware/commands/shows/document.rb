@@ -35,7 +35,7 @@ module Inventoryware
         def run
           template_arg = @argv[0]
 
-          found = Utils::find_file(template_arg, Config.templates_dir)
+          found = Utils.find_file(template_arg, Config.templates_dir)
 
           if found.length == 1
             template = found[0]
@@ -44,7 +44,7 @@ module Inventoryware
 Please refine your search and try again.
             ERROR
           else
-            if not Utils::check_file_readable?(template_arg)
+            if not Utils.check_file_readable?(template_arg)
               raise ArgumentError, <<-ERROR.chomp
 Template at #{template_arg} inaccessible
               ERROR
@@ -88,7 +88,7 @@ Template at #{template_arg} inaccessible
             # I decided against creating location if it did not exist as it
             # requires sudo execution - it may be that this would be better
             # changed.
-            unless Utils::check_file_writable?(out_dest)
+            unless Utils.check_file_writable?(out_dest)
               raise ArgumentError, <<-ERROR.chomp
 Invalid destination '#{out_dest}'
               ERROR
