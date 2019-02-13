@@ -10,7 +10,9 @@ cd inventoryware
 bundle install
 ```
 
-The script is located at `lib/inventoryware.rb`
+The entry script is located at `bin/inventory`
+
+Note: Interactive editing requires `vim` be installed, this is available in most standard package repositories (yum/zypper/apt/etc).
 
 ### Flight Core
 
