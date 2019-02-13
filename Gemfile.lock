@@ -33,7 +33,6 @@ GEM
       byebug (~> 10.0)
       pry (~> 0.10)
     recursive-open-struct (1.1.0)
-    require_all (2.0.0)
     rubyzip (1.2.2)
     timers (4.3.0)
     tty-color (0.4.3)
@@ -68,7 +67,6 @@ DEPENDENCIES
   pry
   pry-byebug
   recursive-open-struct
-  require_all
   rubyzip
   tty-editor
   xmlhasher

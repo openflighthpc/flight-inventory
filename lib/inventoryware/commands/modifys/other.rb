@@ -19,6 +19,9 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/multi_node_command'
+require 'inventoryware/exceptions'
+require 'inventoryware/node'
 
 module Inventoryware
   module Commands

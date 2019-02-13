@@ -19,8 +19,15 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/command'
+require 'inventoryware/config'
+require 'inventoryware/exceptions'
+require 'inventoryware/lsblk_parser'
+require 'inventoryware/utils'
 
+require 'fileutils'
 require 'xmlhasher'
+require 'yaml'
 require 'zip'
 
 module Inventoryware

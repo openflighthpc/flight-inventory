@@ -19,30 +19,14 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
-require 'inventoryware/commands/multi_node_command'
-require 'fileutils'
-
-module Inventoryware
-  module Commands
-    class Delete < MultiNodeCommand
-      def run
-        node_locations = find_nodes(false)
-
-        unless node_locations.empty?
-          prefix = "You are about to delete"
-          node_locations.map! { |loc| File.expand_path(loc) }
-          if node_locations.length > 1
-            node_msg = "#{prefix}:\n#{node_locations.join("\n")}\nProceed? (y/n)"
-          else
-            node_msg = "#{prefix} #{node_locations[0]} - proceed? (y/n)"
-          end
-          if agree(node_msg)
-            node_locations.each { |node| FileUtils.rm node }
-          end
-        else
-          puts "No nodes found"
-        end
-      end
-    end
-  end
-end
+require 'inventoryware/commands/delete'
+require 'inventoryware/commands/edit'
+require 'inventoryware/commands/list'
+require 'inventoryware/commands/modifys/location'
+require 'inventoryware/commands/modifys/map'
+require 'inventoryware/commands/modifys/other'
+require 'inventoryware/commands/modifys/notes'
+require 'inventoryware/commands/modifys/groups'
+require 'inventoryware/commands/parse'
+require 'inventoryware/commands/shows/data'
+require 'inventoryware/commands/shows/document'

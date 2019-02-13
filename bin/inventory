@@ -10,3 +10,4 @@ require 'bundler'
 Bundler.setup(:default)
 
 require 'inventoryware/cli'
+Inventoryware::CLI.run!

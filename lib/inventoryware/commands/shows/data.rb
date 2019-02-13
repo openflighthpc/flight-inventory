@@ -19,6 +19,7 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/single_node_command'
 
 module Inventoryware
   module Commands

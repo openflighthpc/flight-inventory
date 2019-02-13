@@ -19,6 +19,9 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/command'
+require 'inventoryware/exceptions'
+require 'inventoryware/utils'
 
 require 'nodeattr_utils'
 
