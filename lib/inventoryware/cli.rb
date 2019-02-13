@@ -69,7 +69,7 @@ module Inventoryware
     end
 
     command :parse do |c|
-      cli_syntax(c, 'ZIPFILE')
+      cli_syntax(c, 'FILE')
       c.description = 'Parse and store inventory information'
       action(c, Commands::Parse)
     end
@@ -81,7 +81,7 @@ module Inventoryware
     end
 
     command :'modify other' do |c|
-      cli_syntax(c, 'FIELD=VALUE [NODE(S)]')
+      cli_syntax(c, 'KEY=VALUE [NODE...]')
       c.description = "Modify arbitrary data for one or more nodes"
       c.hidden = true
       add_multi_node_options(c)
@@ -90,7 +90,7 @@ module Inventoryware
     end
 
     command :'modify location' do |c|
-      cli_syntax(c, '[NODE(S)]')
+      cli_syntax(c, '[NODE...]')
       c.description = "Modify location data for one or more nodes"
       c.hidden = true
       add_multi_node_options(c)
@@ -99,7 +99,7 @@ module Inventoryware
     end
 
     command :'modify groups' do |c|
-      cli_syntax(c, 'GROUP [NODE(S)]')
+      cli_syntax(c, 'GROUP [NODE...]')
       c.description = "Modify group data for one or more nodes"
       c.hidden = true
       add_multi_node_options(c)
@@ -152,7 +152,7 @@ module Inventoryware
     end
 
     command :'show document' do |c|
-      cli_syntax(c, 'TEMPLATE [NODE(S)]')
+      cli_syntax(c, 'TEMPLATE [NODE...]')
       c.description = "Render a document template for one or more nodes"
       c.option '-l', '--location LOCATION',
                "Output the rendered template to the specified location"
@@ -163,7 +163,7 @@ module Inventoryware
     end
 
     command :delete do |c|
-      cli_syntax(c, '[NODE(S)]')
+      cli_syntax(c, '[NODE...]')
       c.description = "Delete the stored data for one or more nodes"
       add_multi_node_options(c)
       action(c, Commands::Delete)
