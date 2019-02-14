@@ -19,11 +19,14 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
-
-module Inventoryware
-  class InventorywareError < RuntimeError; end
-
-  class FileSysError < InventorywareError; end
-  class ParseError < InventorywareError; end
-  class ArgumentError < InventorywareError; end
-end
+require 'inventoryware/commands/delete'
+require 'inventoryware/commands/edit'
+require 'inventoryware/commands/list'
+require 'inventoryware/commands/modifys/location'
+require 'inventoryware/commands/modifys/map'
+require 'inventoryware/commands/modifys/other'
+require 'inventoryware/commands/modifys/notes'
+require 'inventoryware/commands/modifys/groups'
+require 'inventoryware/commands/parse'
+require 'inventoryware/commands/shows/data'
+require 'inventoryware/commands/shows/document'

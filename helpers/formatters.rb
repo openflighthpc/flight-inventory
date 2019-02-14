@@ -20,20 +20,6 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-#value' can be a regular expression or a plain old string
-def find_hashes_with_key_value(obj, key, value, store = [])
-  if obj.respond_to?(:key?) && obj.key?(key) && /#{value}/.match(obj[key])
-    store.push(obj)
-  else
-    obj.each do |elem|
-      if elem.is_a? Enumerable
-        find_hashes_with_key_value(elem, key, value, store)
-      end
-    end
-  end
-  return store
-end
-
 # convert decimal amount of bits to a human readable format
 def format_bits_value(bits_value)
   format_data_value(bits_value, 1000, 'bit/s')
@@ -74,19 +60,4 @@ def format_data_value(orig_value, grouping, suffix)
   else
     "#{value} #{prefix}#{suffix}"
   end
-end
-
-# works off a provided directory and the names of the files in that directory
-# all subtemplates are to be held in a specific directory of `templates/`
-def render_sub_template(subdir, name)
-  paths = Dir.glob(File.join(TEMPLATES_DIR, subdir, "#{name}.*"))
-  if paths.empty?
-    return false
-  else
-    return Erubis::Eruby.new(File.read(paths[0])).result(binding)
-  end
-end
-
-def imported?
-  @node_hash.key?('lshw') and @node_hash.key?('lsblk')
 end

@@ -20,17 +20,6 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-module Inventoryware
-  module Commands
-    class List < Command
-      def run
-        #TODO format this to have as many results fit on one line as poss.
-        #puts files.join("  ")
-        files = Dir.glob(File.join(YAML_DIR, '*.yaml')).map! do |file|
-          File.basename(file)
-        end
-        files.each_slice(3).each { |grp| puts grp.join("  ") }
-      end
-    end
-  end
+def imported?
+  @node_hash.key?('lshw') and @node_hash.key?('lsblk')
 end

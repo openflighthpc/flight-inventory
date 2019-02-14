@@ -19,24 +19,42 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/multi_node_command'
+require 'inventoryware/exceptions'
+require 'inventoryware/node'
 
 module Inventoryware
-  class Command
-    def initialize(argv, options)
-      @argv = argv.freeze
-      @options = OpenStruct.new(options.__hash__)
-    end
+  module Commands
+    module Modifys
+      class Groups < MultiNodeCommand
+        def run
+          if @options.primary and @options.remove
+            raise ArgumentError, <<-ERROR.chomp
+Cannot remove a primary group
+            ERROR
+          end
 
-    # this wrapper is here to later enable error handling &/ logging
-    def run!
-      run
-    rescue Exception => e
-      #handle_fatal_error(e)
-      raise e
-    end
+          group = @argv[0]
 
-    def run
-      raise NotImplementedError
+          find_nodes("group").each do |location|
+            node= Node.new(location)
+            node.create_if_non_existent
+            if @options.primary
+              node.data['mutable']['primary_group'] = group
+            else
+              sec = node.data['mutable'].fetch('secondary_groups', nil)&.split(',')
+              if @options.remove and sec.include?(group)
+                sec.delete(group)
+              elsif not @options.remove
+                sec ? sec << group : sec = [group]
+                sec.uniq!
+              end
+              node.data['mutable']['secondary_groups'] = sec.join(',')
+            end
+            node.save
+          end
+        end
+      end
     end
   end
 end

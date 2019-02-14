@@ -19,16 +19,17 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/single_node_command'
 
 module Inventoryware
   module Commands
-    class Edit < CreateNodeCommand
-      def action(node_data, location)
-        # output to create the node's file if it doesn't yet exist
-        Utils::output_node_yaml(node_data, location)
-        # maybe don't create unless saved? i.e. don't create the file above
-        # instead save as closing
-        TTY::Editor.open(location, command: :rvim)
+    module Shows
+      class Data < SingleNodeCommand
+        def action(node)
+          File.open(node.location) do |file|
+            puts file.read
+          end
+        end
       end
     end
   end

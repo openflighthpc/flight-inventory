@@ -20,37 +20,20 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-require 'tempfile'
-require 'tty-editor'
-
 module Inventoryware
-  module Commands
-    class CreateNodeCommand < Command
-      def run
-        name = @argv[0]
-        location = File.join(YAML_DIR, "#{name}.yaml")
-        node_data = Utils::read_node_or_create(location)
+  class Command
+    def initialize(argv, options)
+      @argv = argv.freeze
+      @options = OpenStruct.new(options.__hash__)
+    end
 
-        action(node_data, location)
-      end
+    # this wrapper is here to later enable error handling &/ logging
+    def run!
+      run
+    end
 
-      def action
-        raise NotImplementedError
-      end
-
-      def edit_with_tmp_file(text, command)
-        tmp_file = Tempfile.new('inv_ware_file_')
-        begin
-          TTY::Editor.open(tmp_file.path,
-                           content: text,
-                           command: command)
-          edited = tmp_file.read
-        ensure
-          tmp_file.close
-          tmp_file.unlink
-        end
-        return edited
-      end
+    def run
+      raise NotImplementedError
     end
   end
 end

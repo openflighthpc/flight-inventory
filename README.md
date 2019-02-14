@@ -8,19 +8,19 @@ parse DATA_LOCATION
 
 delete [NODE_NAME(S) -g GROUPS,HERE | --all]
 
-edit NODE
+edit NODE [-c]
 
 list
 
-modify groups GROUP [NODE_NAME(S) -g GROUPS,HERE | --all] [-p | -r]
+modify groups GROUP [NODE_NAME(S) -g GROUPS,HERE | --all] [-p | -r] [-c]
 
-modify location [NODE_NAME(S) -g GROUPS,HERE | --all]
+modify location [NODE_NAME(S) -g GROUPS,HERE | --all] [-c]
 
-modify notes NODE
+modify notes NODE [-c]
 
-modify map NODE
+modify map NODE [-c]
 
-modify other FIELD=[VALUE] [NODE_NAME(S) -g GROUPS,HERE | --all]
+modify other FIELD=[VALUE] [NODE_NAME(S) -g GROUPS,HERE | --all] [-c]
 
 show data NODE
 
@@ -63,7 +63,7 @@ the keys of the map, the editor has it's line numbers set to 'on' to aid entry.
 
 The `show document` command fills eRuby templates using stored data. The first argument is the template to
 be filled, see 'Templates' section for details. First the argument's value will be used to search the
-templates directory then, if nothing is found, it'll be used as a path The output will be passed to stdout
+`templates/` directory then, if nothing is found, it will be used as a path. The output will be passed to stdout
 unless a destination is specified with the `-l` option.
 
 All commands that allow specification of more than one node do so in the same way. Either nodes names
@@ -71,8 +71,8 @@ are given, separated by commas, or `--all` can be passed to process all .yaml fi
 directory. Additionally groups can be selected with the `-g` option in which case all nodes in the
 specified groups will be processed.
 
-For all the editing and modifying commands a file will be created for each node if it doesn't already
-exist.
+For all the editing and modifying commands if the `--create/-c` a file will be created for each node if it
+doesn't already exist.
 
 ## Installation
 
@@ -95,10 +95,10 @@ This will keep your working directory synced to `/tmp/inventoryware`
 ## Templates
 
 Templates accepted by Inventoryware are .erb templates filled using Erubis. The data is accessible through
-a large recursive OpenStruct called `@node_data`. The data is also available in a hash called `@node_hash`.
-There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally, in
-order to the accommodate all possible domains of use, the system will dynamically read any code stored in
-the top level `plugins/` directory and utilise that for filling the specified template.
+a large recursive OpenStruct called `@node_data`. The equivalent data is also available in a hash called
+`@node_hash`. There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally,
+in order to the accommodate all possible domains of use, the system will dynamically read any code stored in
+the top level `helpers/` directory and utilise that for filling the specified template.
 
 # License
 

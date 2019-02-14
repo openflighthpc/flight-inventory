@@ -19,37 +19,17 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/single_node_command'
 
 module Inventoryware
   module Commands
     module Modifys
-      class Other < MultiNodeCommand
-        def run
-          modification = @argv[0]
-
-          unless modification.match(/=/)
-            raise ArgumentError, <<-ERROR.chomp
-Invalid modification - must contain an '='
-            ERROR
-          end
-          field, value = modification.split('=')
-
-          protected_fields = ['primary_group', 'secondary_groups']
-          if protected_fields.include?(field)
-            raise ArgumentError, <<-ERROR.chomp
-Cannot modify '#{field}' this way
-            ERROR
-          end
-
-          find_nodes(true, "modification").each do |location|
-            node_data = Utils::read_node_or_create(location)
-            if value
-              node_data['mutable'][field] = value
-            else
-              node_data['mutable'].delete(field)
-            end
-            Utils::output_node_yaml(node_data, location)
-          end
+      class Notes < SingleNodeCommand
+        def action(node)
+          notes = node.data['mutable'].fetch('notes', '')
+          notes = edit_with_tmp_file(notes, :rvim).strip
+          node.data['mutable']['notes'] = notes
+          node.save
         end
       end
     end

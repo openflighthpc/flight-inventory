@@ -19,37 +19,18 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/single_node_command'
+require 'tty-editor'
 
 module Inventoryware
   module Commands
-    module Modifys
-      class Groups < MultiNodeCommand
-        def run
-          if @options.primary and @options.remove
-            raise ArgumentError, <<-ERROR.chomp
-Cannot remove a primary group
-            ERROR
-          end
-
-          group = @argv[0]
-
-          find_nodes(true, "group").each do |location|
-            node_data = Utils::read_node_or_create(location)
-            if @options.primary
-              node_data['mutable']['primary_group'] = group
-            else
-              sec = node_data['mutable'].fetch('secondary_groups', nil)&.split(',')
-              if @options.remove and sec.include?(group)
-                sec.delete(group)
-              elsif not @options.remove
-                sec ? sec << group : sec = [group]
-                sec.uniq!
-              end
-              node_data['mutable']['secondary_groups'] = sec.join(',')
-            end
-            Utils::output_node_yaml(node_data, location)
-          end
-        end
+    class Edit < SingleNodeCommand
+      def action(node)
+        # output to create the node's file if it doesn't yet exist
+        node.save
+        # maybe don't create unless saved? i.e. don't create the file above
+        # instead save as closing
+        TTY::Editor.open(node.location, command: :rvim)
       end
     end
   end

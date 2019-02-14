@@ -21,18 +21,37 @@
 #==============================================================================
 
 module Inventoryware
-  module Commands
-    module Shows
-      class Data < Command
-        def run
-          found = Utils::find_file(@argv[0], YAML_DIR)
-          if found.length == 1
-            File.open (found[0]) do |file|
-              puts file.read
-            end
-          end
+  class Config
+    class << self
+      def instance
+        @instance ||= Config.new
+      end
+
+      def method_missing(s, *a, &b)
+        if instance.respond_to?(s)
+          instance.send(s)
+        else
+          raise
         end
       end
+
+      def respond_to_missing?(s)
+        instance.respond_to?(s)
+      end
+    end
+
+    attr_reader :root_dir, :yaml_dir, :templates_dir, :helpers_dir, :req_files,
+      :other_files, :all_files
+
+    def initialize
+      @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
+      @yaml_dir = File.join(@root_dir, 'var/store')
+      @templates_dir = File.join(@root_dir, 'templates')
+      @helpers_dir = File.join(@root_dir, 'helpers')
+
+      @req_files = ["lshw-xml", "lsblk-a-P"]
+      @other_files = ["groups"]
+      @all_files = @req_files + @other_files
     end
   end
 end

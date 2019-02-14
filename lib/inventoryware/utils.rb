@@ -19,6 +19,7 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/exceptions'
 
 module Inventoryware
   module Utils
@@ -61,69 +62,21 @@ Please create it before continuing"
       return true
     end
 
-    # Errors for each way that arguments and nodes can be given incorrectly
-    # 'other_args' is an array of all non-node arguments for the command
-    def self.resolve_node_options(argv, options, other_args)
-      arg_str = other_args.join(', ')
-
-      if options.all
-        unless argv.length == other_args.length
-          unless other_args.length == 0
-            raise ArgumentError, <<-ERROR.chomp
-#{arg_str} should be the only argument(s) - all nodes are being parsed
-            ERROR
-          else
-            raise ArgumentError, <<-ERROR.chomp
-There should be no arguments - all nodes are being parsed
-            ERROR
+    # return a single file from glob, print error if >/< than 1 found
+    def self.find_file(search_val, dir)
+      results = Dir.glob(File.join(dir, "#{search_val}*"))
+        if results.empty?
+          puts "No files found for '#{search_val}' in #{File.expand_path(dir)}"
+        elsif results.length > 1
+          file_names = results.map { |p| File.basename(p, File.extname(p)) }
+          # if the results include just the search val, return that path
+          if file_names.include?(search_val)
+            return results.select { |p| p[/#{search_val}\..*$/] }
           end
+          puts "Ambiguous search term '#{search_val}' - possible results are:"
+          file_names.each_slice(3).each { |p| puts p.join("  ") }
         end
-      end
-    end
-
-    # returns the yaml hash of a file at the given location
-    def self.read_node_yaml(node_location)
-      node_data = nil
-      begin
-        File.open(node_location) do |f|
-          node_data = YAML.safe_load(f)
-        end
-      rescue Psych::SyntaxError
-        raise ParseError, <<-ERROR.chomp
-Error parsing yaml in #{node_location} - aborting
-        ERROR
-      end
-      # condition for if the .yaml is empty
-      unless node_data
-        raise ParseError, <<-ERROR.chomp
-Yaml in #{node_location} is empty - aborting
-        ERROR
-      end
-      return node_data.values[0]
-    end
-
-    # outputs the node data to the specified location
-    def self.output_node_yaml(node_data, location)
-      unless check_file_writable?(location)
-        raise FileSysError, <<-ERROR.chomp
-Output file #{location} not accessible - aborting
-        ERROR
-      end
-      yaml_hash = {node_data['name'] => node_data}
-      File.open(location, 'w') { |file| file.write(yaml_hash.to_yaml) }
-    end
-
-    # reads a node's yaml but creats one if it doesn't exist
-    def self.read_node_or_create(location)
-      if Utils::check_file_readable?(location)
-        node_data = Utils.read_node_yaml(location)
-      else
-        node_data = {
-          'name' => File.basename(location, '.yaml'),
-          'mutable' => {},
-        }
-      end
-      return node_data
+      return results
     end
   end
 end

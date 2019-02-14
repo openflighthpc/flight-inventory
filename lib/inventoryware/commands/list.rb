@@ -19,18 +19,19 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/command'
+require 'inventoryware/config'
 
 module Inventoryware
   module Commands
-    class MultiNodeCommand < Command
-      def find_nodes(return_missing, *other_args)
-        Utils::resolve_node_options(@argv, @options, other_args)
-
-        nodes = @argv.dig(other_args.length)
-
-        node_locations = Utils::locate_nodes(nodes,
-                                             @options,
-                                             return_missing)
+    class List < Command
+      def run
+        #TODO format this to have as many results fit on one line as poss.
+        #puts files.join("  ")
+        files = Dir.glob(File.join(Config.yaml_dir, '*.yaml')).map! do |file|
+          File.basename(file, '.yaml')
+        end
+        files.each_slice(3).each { |grp| puts grp.join("  ") }
       end
     end
   end

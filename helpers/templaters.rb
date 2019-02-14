@@ -20,17 +20,12 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-module Inventoryware
-  module Commands
-    module Modifys
-      class Notes < CreateNodeCommand
-        def action(node_data, location)
-          notes = node_data['mutable'].fetch('notes', '')
-          notes = edit_with_tmp_file(notes, :rvim).strip
-          node_data['mutable']['notes'] = notes
-          Utils::output_node_yaml(node_data, location)
-        end
-      end
-    end
+# all subtemplates are to be held in a specific directory of `templates/`
+def render_sub_template(subdir, name)
+  paths = Dir.glob(File.join(Config.templates_dir, subdir, "#{name}.*"))
+  if paths.empty?
+    return false
+  else
+    return Erubis::Eruby.new(File.read(paths[0])).result(binding)
   end
 end

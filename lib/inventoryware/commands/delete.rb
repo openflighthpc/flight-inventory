@@ -19,38 +19,28 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/multi_node_command'
+require 'fileutils'
 
 module Inventoryware
   module Commands
-    module Modifys
-      class Location < MultiNodeCommand
-        def run
-          node_locations = find_nodes(true)
+    class Delete < MultiNodeCommand
+      def run
+        node_locations = find_nodes(false)
 
-          fields = {
-            'site' => {'name' => nil, 'value' => nil},
-            'room' => {'name' => nil, 'value' => nil},
-            'rack' => {'name' => nil, 'value' => nil},
-            'start_unit' => {'name' => 'starting rack unit', 'value' => nil},
-          }
-
-          # Get input REPL style
-          fields.each do |field, hash|
-            name = hash['name'] ? hash['name'] : field
-            value = ask("Enter a #{name} or press enter to skip")
-            hash['value'] = value unless value == ''
+        unless node_locations.empty?
+          prefix = "You are about to delete"
+          node_locations.map! { |loc| File.expand_path(loc) }
+          if node_locations.length > 1
+            node_msg = "#{prefix}:\n#{node_locations.join("\n")}\nProceed? (y/n)"
+          else
+            node_msg = "#{prefix} #{node_locations[0]} - proceed? (y/n)"
           end
-
-          # save data
-          node_locations.each do |location|
-            node_data = Utils::read_node_or_create(location)
-            fields.each do |field, hash|
-              if hash['value']
-                node_data['mutable'][field] = hash['value']
-              end
-            end
-            Utils::output_node_yaml(node_data, location)
+          if agree(node_msg)
+            node_locations.each { |node| FileUtils.rm node }
           end
+        else
+          puts "No nodes found"
         end
       end
     end
