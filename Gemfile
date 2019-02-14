@@ -2,13 +2,14 @@
 
 source 'https://rubygems.org'
 
-gem 'commander', git: 'https://github.com/alces-software/commander'
+gem 'commander', github: 'alces-software/commander', branch: 'future'
 gem 'erubis'
 gem 'nodeattr_utils', github: 'alces-software/nodeattr_utils'
 gem 'recursive-open-struct'
 gem 'rubyzip'
 gem 'tty-editor'
 gem 'xmlhasher'
+gem 'paint'
 
 group :development do
   gem 'pry'

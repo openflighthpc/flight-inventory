@@ -24,6 +24,7 @@ require 'inventoryware/commands'
 require 'commander'
 require 'ostruct'
 require 'yaml'
+require 'paint'
 
 module Inventoryware
   module CLI
@@ -39,6 +40,25 @@ module Inventoryware
     ARGV.push '--help' if ARGV.empty?
 
     silent_trace!
+
+    error_handler do |e|
+      $stderr.puts "#{Paint[PROGRAM_NAME, '#2794d8']}: #{Paint[e.to_s, :red]}"
+      case e
+      when OptionParser::InvalidOption,
+           Commander::Runner::InvalidCommandError,
+           Commander::Patches::CommandUsageError
+        $stderr.puts "\nUsage:\n\n"
+        args = ARGV.reject{|o| o[0] == '-'}
+        if command(topic = args[0..1].join(" "))
+          command("help").run(topic)
+        elsif command(args[0])
+          command("help").run(args[0])
+        else
+          command("help").run
+        end
+      end
+      exit(1)
+    end
 
     class << self
       def action(command, klass)
@@ -74,9 +94,9 @@ module Inventoryware
     end
 
     command :modify do |c|
-      cli_syntax(c)
+      cli_syntax(c, 'SUBCOMMAND')
       c.description = 'Change mutable node data'
-      c.sub_command_group = true
+      c.configure_sub_command(self)
     end
 
     command :'modify other' do |c|
@@ -138,9 +158,9 @@ module Inventoryware
     end
 
     command :show do |c|
-      cli_syntax(c)
+      cli_syntax(c, 'SUBCOMMAND')
       c.description = "View data"
-      c.sub_command_group = true
+      c.configure_sub_command(self)
     end
 
     command :'show data' do |c|
