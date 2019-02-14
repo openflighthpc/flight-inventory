@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'commander', github: 'alces-software/commander', branch: 'future'
+gem 'commander', github: 'alces-software/commander', :tag => '4.4.4.alces3'
 gem 'erubis'
 gem 'nodeattr_utils', github: 'alces-software/nodeattr_utils'
 gem 'recursive-open-struct'
