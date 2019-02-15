@@ -1,4 +1,4 @@
-# Inventoryware
+# Flight Inventory
 
 ## Use
 
@@ -71,7 +71,7 @@ nodes names are given, separated by commas, or `--all` can be passed to process 
 directory. Additionally groups can be selected with the `-g` option in which case all nodes in the specified
 groups will be processed.
 
-For all the editing and modifying commands if the `--create/-c` option is used a new file will be created 
+For all the editing and modifying commands if the `--create/-c` option is used a new file will be created
 for each node if it doesn't already exist.
 
 ## Installation
@@ -80,7 +80,7 @@ For installation instructions please read INSTALL.md
 
 ## Development
 
-It is recommended that Inventoryware is developed locally (so you have all your local
+It is recommended that Flight Inventory is developed locally (so you have all your local
 development tools available) and synced, run, and tested in a clean remote environment (to
 be in an environment close to what it will normally use in production, and to avoid polluting
 or depending on things in your local environment).
@@ -94,7 +94,7 @@ This will keep your working directory synced to `/tmp/inventoryware`
 
 ## Templates
 
-Templates accepted by Inventoryware are .erb templates filled using Erubis. The data is accessible through
+Templates accepted by Flight Inventory are .erb templates filled using Erubis. The data is accessible through
 a large recursive OpenStruct called `@node_data`. The equivalent data is also available in a hash called
 `@node_hash`. There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally,
 in order to the accommodate all possible domains of use, the system will dynamically read any code stored in
