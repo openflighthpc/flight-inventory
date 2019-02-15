@@ -31,7 +31,7 @@ module Inventoryware
       def find_nodes(*args)
         resolve_node_options(@argv, @options, args)
 
-        nodes = @argv.dig(args.length)
+        nodes = @argv[args.length]
 
         node_locations = locate_nodes(nodes, @options)
       end

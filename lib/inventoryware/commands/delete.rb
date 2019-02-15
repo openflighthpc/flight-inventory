@@ -26,7 +26,7 @@ module Inventoryware
   module Commands
     class Delete < MultiNodeCommand
       def run
-        node_locations = find_nodes(false)
+        node_locations = find_nodes()
 
         unless node_locations.empty?
           prefix = "You are about to delete"

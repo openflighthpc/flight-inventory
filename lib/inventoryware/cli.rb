@@ -100,7 +100,7 @@ module Inventoryware
     end
 
     command :'modify other' do |c|
-      cli_syntax(c, 'KEY=VALUE [NODE...]')
+      cli_syntax(c, 'KEY=VALUE [NODE_SPEC]')
       c.description = "Modify arbitrary data for one or more nodes"
       c.hidden = true
       add_multi_node_options(c)
@@ -109,7 +109,7 @@ module Inventoryware
     end
 
     command :'modify location' do |c|
-      cli_syntax(c, '[NODE...]')
+      cli_syntax(c, '[NODE_SPEC]')
       c.description = "Modify location data for one or more nodes"
       c.hidden = true
       add_multi_node_options(c)
@@ -118,7 +118,7 @@ module Inventoryware
     end
 
     command :'modify groups' do |c|
-      cli_syntax(c, 'GROUP [NODE...]')
+      cli_syntax(c, 'GROUP [NODE_SPEC]')
       c.description = "Modify group data for one or more nodes"
       c.hidden = true
       add_multi_node_options(c)
@@ -171,7 +171,7 @@ module Inventoryware
     end
 
     command :'show document' do |c|
-      cli_syntax(c, 'TEMPLATE [NODE...]')
+      cli_syntax(c, 'TEMPLATE [NODE_SPEC]')
       c.description = "Render a document template for one or more nodes"
       c.option '-l', '--location LOCATION',
                "Output the rendered template to the specified location"
@@ -182,7 +182,7 @@ module Inventoryware
     end
 
     command :delete do |c|
-      cli_syntax(c, '[NODE...]')
+      cli_syntax(c, '[NODE_SPEC]')
       c.description = "Delete the stored data for one or more nodes"
       add_multi_node_options(c)
       action(c, Commands::Delete)
