@@ -19,11 +19,18 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/single_node_command'
 
 module Inventoryware
-  class InventorywareError < RuntimeError; end
-
-  class FileSysError < InventorywareError; end
-  class ParseError < InventorywareError; end
-  class ArgumentError < InventorywareError; end
+  module Commands
+    module Shows
+      class Data < SingleNodeCommand
+        def action(node)
+          File.open(node.location) do |file|
+            puts file.read
+          end
+        end
+      end
+    end
+  end
 end

@@ -19,42 +19,28 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/commands/multi_node_command'
+require 'fileutils'
 
 module Inventoryware
   module Commands
-    class ModifyGroups < Command
+    class Delete < MultiNodeCommand
       def run
-        other_args = ["group"]
-        nodes = Utils::resolve_node_options(@argv, @options, other_args)
+        node_locations = find_nodes()
 
-        if @options.primary and @options.remove
-          raise ArgumentError, <<-ERROR
-Cannot remove a primary group
-          ERROR
-        end
-
-        #TODO DRY up? group is defined twice
-        group = @argv[0]
-
-        node_locations = Utils::select_nodes(nodes,
-                                             @options,
-                                             return_missing = true)
-
-        node_locations.each do |location|
-          node_data = Utils::read_node_or_create(location)
-          if @options.primary
-            node_data['mutable']['primary_group'] = group
+        unless node_locations.empty?
+          prefix = "You are about to delete"
+          node_locations.map! { |loc| File.expand_path(loc) }
+          if node_locations.length > 1
+            node_msg = "#{prefix}:\n#{node_locations.join("\n")}\nProceed? (y/n)"
           else
-            sec = node_data['mutable'].fetch('secondary_groups', nil)&.split(',')
-            if @options.remove and sec.include?(group)
-              sec.delete(group)
-            elsif not @options.remove
-              sec ? sec << group : sec = [group]
-              sec.uniq!
-            end
-            node_data['mutable']['secondary_groups'] = sec.join(',')
+            node_msg = "#{prefix} #{node_locations[0]} - proceed? (y/n)"
           end
-          Utils::output_node_yaml(node_data, location)
+          if agree(node_msg)
+            node_locations.each { |node| FileUtils.rm node }
+          end
+        else
+          puts "No nodes found"
         end
       end
     end

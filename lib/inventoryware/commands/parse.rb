@@ -19,8 +19,15 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
+require 'inventoryware/command'
+require 'inventoryware/config'
+require 'inventoryware/exceptions'
+require 'inventoryware/lsblk_parser'
+require 'inventoryware/utils'
 
+require 'fileutils'
 require 'xmlhasher'
+require 'yaml'
 require 'zip'
 
 module Inventoryware
@@ -28,8 +35,8 @@ module Inventoryware
     class Parse < Command
       def run
         unless @argv.length() == 1
-          raise ArgumentError, <<-ERROR
-The data source should be the only argument.
+          raise ArgumentError, <<-ERROR.chomp
+The data source should be the only argument
           ERROR
         end
 
@@ -66,11 +73,11 @@ The data source should be the only argument.
         contents = []
         if File.directory?(data_source)
           contents = Dir.glob(File.join(data_source, "**/*.zip"))
-        elsif Utils::check_zip_exists?(data_source)
+        elsif Utils.check_zip_exists?(data_source)
           contents = [data_source]
         end
         if contents.empty?
-          raise ArgumentError, <<-ERROR
+          raise ArgumentError, <<-ERROR.chomp
 No .zip files found at #{data_source}
           ERROR
         end
@@ -123,20 +130,20 @@ No .zip files found at #{data_source}
 
       def process_dir(dir)
         node_name = File.basename(dir)
-        $stderr.puts "Importing #{node_name}.zip"
+        puts "Importing #{node_name}.zip"
 
         invalid = false
         file_locations = {}
-        ALL_FILES.each do |file|
+        Config.all_files.each do |file|
           file_locations[file] = Dir.glob(File.join(dir, "#{file}*"))&.first
-          if not file_locations[file] and REQ_FILES.include?(file)
+          if not file_locations[file] and Config.req_files.include?(file)
             $stderr.puts "Warning: File #{file} required in #{node_name}.zip but not found."
             invalid = true
           end
         end
 
         if invalid
-          $stderr.puts "Skipping #{node_name}.zip"
+          puts "Skipping #{node_name}.zip"
           return false
         end
 
@@ -151,22 +158,25 @@ No .zip files found at #{data_source}
         # extract data from lsblk
         node_data['lsblk'] = LsblkParser.new(file_locations['lsblk-a-P']).hashify()
 
-        Utils::exit_unless_dir(YAML_DIR)
+        Utils.exit_unless_dir(Config.yaml_dir)
         yaml_out_name = "#{node_name}.yaml"
-        out_file = File.join(YAML_DIR, yaml_out_name)
+        out_file = File.join(Config.yaml_dir, yaml_out_name)
 
-        if Utils::check_file_readable?(out_file)
-          old_data = Utils::read_node_yaml(out_file).values[0]
+        if Utils.check_file_readable?(out_file)
+          old_node = Node.new(out_file)
+          old_data = old_node.open
           # NB: this prioritses 'node_data' - new values will override old ones
           node_data = merge_recursively(old_data, node_data)
         end
 
-        Utils::output_node_yaml(node_data, out_file)
+        node = Node.new(out_file)
+        node.data = node_data
+        node.save
 
-        $stderr.puts "#{node_name}.zip imported to "\
-          "#{File.expand_path(out_file)}"
+        puts "#{node_name}.zip imported to #{File.expand_path(out_file)}"
       end
 
+      #TODO test this method with distinct & deep hashes
       def merge_recursively(a, b)
         a.merge(b) do |key, a_item, b_item|
           if a_item.is_a?(Hash) and b_item.is_a?(Hash)

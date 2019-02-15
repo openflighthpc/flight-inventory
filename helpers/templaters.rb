@@ -20,23 +20,12 @@
 # https://github.com/alces-software/inventoryware
 #==============================================================================
 
-module Inventoryware
-  class Command
-    def initialize(argv, options)
-      @argv = argv.freeze
-      @options = OpenStruct.new(options.__hash__)
-    end
-
-    # this wrapper is here to later enable error handling &/ logging
-    def run!
-      run
-    rescue Exception => e
-      #handle_fatal_error(e)
-      raise e
-    end
-
-    def run
-      raise NotImplementedError
-    end
+# all subtemplates are to be held in a specific directory of `templates/`
+def render_sub_template(subdir, name)
+  paths = Dir.glob(File.join(Config.templates_dir, subdir, "#{name}.*"))
+  if paths.empty?
+    return false
+  else
+    return Erubis::Eruby.new(File.read(paths[0])).result(binding)
   end
 end
