@@ -66,15 +66,15 @@ Please create it before continuing"
     def self.find_file(search_val, dir)
       results = Dir.glob(File.join(dir, "#{search_val}*"))
         if results.empty?
-          puts "No files found for '#{search_val}' in #{File.expand_path(dir)}"
+          $stderr.puts "No files found for '#{search_val}' in #{File.expand_path(dir)}"
         elsif results.length > 1
           file_names = results.map { |p| File.basename(p, File.extname(p)) }
           # if the results include just the search val, return that path
           if file_names.include?(search_val)
             return results.select { |p| p[/#{search_val}\..*$/] }
           end
-          puts "Ambiguous search term '#{search_val}' - possible results are:"
-          file_names.each_slice(3).each { |p| puts p.join("  ") }
+          $stderr.puts "Ambiguous search term '#{search_val}' - possible results are:"
+          file_names.each_slice(3).each { |p| $stderr.puts p.join("  ") }
         end
       return results
     end
