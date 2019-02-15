@@ -100,6 +100,7 @@ cat << EOF > /opt/flight/libexec/commands/inventory
 # For more information on the Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
-cd $alces_INSTALL_DIR/inventoryware/lib
-flexec bundle exec ./inventoryware.rb "\$@"
+cd $alces_INSTALL_DIR/inventoryware
+export FLIGHT_PROGRAM_NAME="\${flight_NAME} \$(basename \$0)"
+flexec bundle exec bin/inventory "\$@"
 EOF
