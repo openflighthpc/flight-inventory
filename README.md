@@ -6,25 +6,25 @@ The commands' syntax is as follows:
 ```
 parse DATA_LOCATION
 
-delete [NODE_NAME(S) -g GROUPS,HERE | --all]
+delete NODE_SPEC
 
 edit NODE [-c]
 
 list
 
-modify groups GROUP [NODE_NAME(S) -g GROUPS,HERE | --all] [-p | -r] [-c]
+modify groups GROUP NODE_SPEC [-p | -r] [-c]
 
-modify location [NODE_NAME(S) -g GROUPS,HERE | --all] [-c]
+modify location NODE_SPEC [-c]
 
 modify notes NODE [-c]
 
 modify map NODE [-c]
 
-modify other FIELD=[VALUE] [NODE_NAME(S) -g GROUPS,HERE | --all] [-c]
+modify other KEY=[VALUE] NODE_SPEC [-c]
 
 show data NODE
 
-show document TEMPLATE_LOCATION [NODE_NAME(S) -g GROUPS,HERE | --all] [-l DESTINATION]
+show document TEMPLATE_LOCATION NODE_SPEC [-l DESTINATION]
 
 ```
 
@@ -66,10 +66,10 @@ be filled, see 'Templates' section for details. First the argument's value will 
 `templates/` directory then, if nothing is found, it will be used as a path. The output will be passed to stdout
 unless a destination is specified with the `-l` option.
 
-All commands that allow specification of more than one node do so in the same way. Either nodes names
-are given, separated by commas, or `--all` can be passed to process all .yaml files in the `store/`
-directory. Additionally groups can be selected with the `-g` option in which case all nodes in the
-specified groups will be processed.
+NODE_SPEC refers to specification of more than one node. This is done in the same way for all commands. Either
+nodes names are given, separated by commas, or `--all` can be passed to process all .yaml files in the `store/`
+directory. Additionally groups can be selected with the `-g` option in which case all nodes in the specified
+groups will be processed.
 
 For all the editing and modifying commands if the `--create/-c` a file will be created for each node if it
 doesn't already exist.
