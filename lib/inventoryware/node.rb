@@ -45,13 +45,13 @@ module Inventoryware
         end
       rescue Psych::SyntaxError
         raise ParseError, <<-ERROR.chomp
-Error parsing yaml in #{node_location} - aborting
+Error parsing yaml in #{@location} - aborting
         ERROR
       end
       # condition for if the .yaml is empty
       unless node_data
         raise ParseError, <<-ERROR.chomp
-Yaml in #{node_location} is empty - aborting
+Yaml in #{@location} is empty - aborting
         ERROR
       end
       @data = node_data.values[0]
