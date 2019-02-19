@@ -39,7 +39,7 @@ module Inventoryware
           # Get input REPL style
           fields.each do |field, hash|
             name = hash['name'] ? hash['name'] : field
-            value = ask("Enter a #{name} or press enter to skip")
+            value = $terminal.ask("Enter a #{name} or press enter to skip")
             hash['value'] = value unless value == ''
           end
 
