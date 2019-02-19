@@ -36,7 +36,7 @@ module Inventoryware
           else
             node_msg = "#{prefix} #{node_locations[0]} - proceed? (y/n)"
           end
-          if agree(node_msg)
+          if $terminal.agree(node_msg)
             node_locations.each { |node| FileUtils.rm node }
           end
         else
