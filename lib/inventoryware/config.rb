@@ -31,7 +31,7 @@ module Inventoryware
         if instance.respond_to?(s)
           instance.send(s)
         else
-          raise
+          super
         end
       end
 
@@ -41,13 +41,14 @@ module Inventoryware
     end
 
     attr_reader :root_dir, :yaml_dir, :templates_dir, :helpers_dir, :req_files,
-      :other_files, :all_files
+      :other_files, :all_files, :plugins_dir
 
     def initialize
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
       @yaml_dir = File.join(@root_dir, 'var/store')
       @templates_dir = File.join(@root_dir, 'templates')
       @helpers_dir = File.join(@root_dir, 'helpers')
+      @plugins_dir = File.join(@root_dir, 'plugins')
 
       @req_files = ["lshw-xml", "lsblk-a-P"]
       @other_files = ["groups"]

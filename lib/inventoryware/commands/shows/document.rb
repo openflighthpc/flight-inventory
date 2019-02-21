@@ -44,12 +44,21 @@ module Inventoryware
 Please refine your search and try again.
             ERROR
           else
-            if not Utils.check_file_readable?(template_arg)
-              raise ArgumentError, <<-ERROR.chomp
-Template at #{template_arg} inaccessible
-              ERROR
+            Dir["#{Config.plugins_dir}/*"].each do |plugin|
+              found = Utils.find_file(template_arg, "#{plugin}/templates")
+              if found.length == 1
+                template = found[0]
+                break
+              end
             end
-            template = template_arg
+            if template.nil?
+              if not Utils.check_file_readable?(template_arg)
+                raise ArgumentError, <<-ERROR.chomp
+Template at #{template_arg} inaccessible
+                ERROR
+              end
+              template = template_arg
+            end
           end
 
           node_locations = find_nodes('template')
@@ -73,6 +82,11 @@ Template at #{template_arg} inaccessible
 
           Dir[File.join(Config.helpers_dir, '*.rb')].each do |file|
             render_env.instance_eval(File.read(file))
+          end
+          Dir["#{Config.plugins_dir}/*"].each do |plugin|
+            Dir["#{plugin}/helpers/*.rb"].each do |file|
+              render_env.instance_eval(File.read(file), file)
+            end
           end
 
           out = ""
@@ -118,7 +132,7 @@ Invalid destination '#{out_dest}'
           rescue StandardError => e
             unless @options.debug
               raise ParseError, <<-ERROR.chomp
-Error filling template using #{File.basename(node_location)}.
+Error filling template using #{File.basename(node.location)}.
 Use '--debug' for more information
               ERROR
             else
