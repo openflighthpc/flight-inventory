@@ -58,8 +58,8 @@ Error parsing map - Non-integer keys
         # returns a hash with each line being a different numerical key
         def string_to_map(str)
           map = Hash.new
-          str.split("\n").each_with_index do |line, i|
-            map[i+1] = line unless line.empty?
+          str.lines.map(&:chomp).each_with_index do |line, i|
+            map[i+1] = line
           end
           return map
         end
