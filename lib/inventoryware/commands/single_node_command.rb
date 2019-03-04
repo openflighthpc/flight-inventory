@@ -36,7 +36,7 @@ module Inventoryware
         # error to prevent confusion if attempting to provide >1 node
         if NodeattrUtils::NodeParser.expand(name).length > 1
           raise ArgumentError, <<-ERROR.chomp
-Issue with argument name, please only provide a single node
+Issue with argument name, please only provide a single asset
           ERROR
         end
 
