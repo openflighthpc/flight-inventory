@@ -50,6 +50,11 @@ The data source should be the only argument
         begin
           top_dir = Dir.mktmpdir('inv_ware_')
 
+          file_path = Pathname.new(@argv[0])
+          unless file_path.absolute?
+            file_path = Dir.glob("/**/#{@argv[0]}")
+          end
+
           # get all zips in in the source, if it's a dir or not
           top_lvl_zip_paths = expand_dir(@argv[0])
 
