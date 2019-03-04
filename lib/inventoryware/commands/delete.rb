@@ -40,7 +40,7 @@ module Inventoryware
             node_locations.each { |node| FileUtils.rm node }
           end
         else
-          puts "No nodes found"
+          puts "No assets found"
         end
       end
     end
