@@ -56,7 +56,7 @@ The data source should be the only argument
           end
 
           # get all zips in in the source, if it's a dir or not
-          top_lvl_zip_paths = expand_dir(@argv[0])
+          top_lvl_zip_paths = expand_dir(file_path)
 
           # for each of these, extract to /tmp/
           top_lvl_zip_paths.each { |zip_path| extract_zip(zip_path, top_dir) }
