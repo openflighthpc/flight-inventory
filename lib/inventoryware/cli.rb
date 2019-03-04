@@ -130,7 +130,7 @@ module Inventoryware
 
     command :'modify map' do |c|
       cli_syntax(c, 'NODE')
-      c.description = "Modify mapping data for a asset"
+      c.description = "Modify mapping data for an asset"
       c.hidden = true
       add_create_option(c)
       action(c, Commands::Modifys::Map)
@@ -138,7 +138,7 @@ module Inventoryware
 
     command :'modify notes' do |c|
       cli_syntax(c, 'NODE')
-      c.description = "Modify miscellaneous notes for a asset"
+      c.description = "Modify miscellaneous notes for an asset"
       c.hidden = true
       add_create_option(c)
       action(c, Commands::Modifys::Notes)
@@ -152,7 +152,7 @@ module Inventoryware
 
     command :edit do |c|
       cli_syntax(c, 'NODE')
-      c.description = "Edit stored data for a asset"
+      c.description = "Edit stored data for an asset"
       add_create_option(c)
       action(c, Commands::Edit)
     end
@@ -165,7 +165,7 @@ module Inventoryware
 
     command :'show data' do |c|
       cli_syntax(c, 'NODE')
-      c.description = "View stored data for a asset"
+      c.description = "View stored data for an asset"
       c.hidden = true
       action(c, Commands::Shows::Data)
     end
