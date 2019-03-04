@@ -27,6 +27,7 @@ require 'inventoryware/utils'
 
 require 'fileutils'
 require 'xmlhasher'
+require 'pathname'
 require 'yaml'
 require 'zip'
 
