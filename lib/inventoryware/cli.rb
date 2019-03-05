@@ -76,14 +76,14 @@ module Inventoryware
       end
 
       def add_multi_node_options(command)
-        command.option '--all', "Select all nodes"
+        command.option '--all', "Select all assets"
         command.option '-g', '--group GROUP',
-                       "Select nodes in GROUP, specify commma-separated list for multiple groups"
+                       "Select assets in GROUP, specify commma-separated list for multiple groups"
       end
 
       def add_create_option(command)
         command.option '-c', '--create',
-                       "Create specified node(s) if they don't exist"
+                       "Create specified asset(s) if they don't exist"
       end
     end
 
@@ -95,13 +95,13 @@ module Inventoryware
 
     command :modify do |c|
       cli_syntax(c, 'SUBCOMMAND')
-      c.description = 'Change mutable node data'
+      c.description = 'Change mutable asset data'
       c.configure_sub_command(self)
     end
 
     command :'modify other' do |c|
-      cli_syntax(c, 'KEY=VALUE [NODE_SPEC]')
-      c.description = "Modify arbitrary data for one or more nodes"
+      cli_syntax(c, 'KEY=VALUE [ASSET_SPEC]')
+      c.description = "Modify arbitrary data for one or more assets"
       c.hidden = true
       add_multi_node_options(c)
       add_create_option(c)
@@ -109,8 +109,8 @@ module Inventoryware
     end
 
     command :'modify location' do |c|
-      cli_syntax(c, '[NODE_SPEC]')
-      c.description = "Modify location data for one or more nodes"
+      cli_syntax(c, '[ASSET_SPEC]')
+      c.description = "Modify location data for one or more assets"
       c.hidden = true
       add_multi_node_options(c)
       add_create_option(c)
@@ -118,27 +118,27 @@ module Inventoryware
     end
 
     command :'modify groups' do |c|
-      cli_syntax(c, 'GROUP [NODE_SPEC]')
-      c.description = "Modify group data for one or more nodes"
+      cli_syntax(c, 'GROUP [ASSET_SPEC]')
+      c.description = "Modify group data for one or more assets"
       c.hidden = true
       add_multi_node_options(c)
       add_create_option(c)
-      c.option '-p', '--primary', "Modify the primary group of one or more nodes"
-      c.option '-r', '--remove', "Remove one or more nodes from this group"
+      c.option '-p', '--primary', "Modify the primary group of one or more assets"
+      c.option '-r', '--remove', "Remove one or more assets from this group"
       action(c, Commands::Modifys::Groups)
     end
 
     command :'modify map' do |c|
-      cli_syntax(c, 'NODE')
-      c.description = "Modify mapping data for a node"
+      cli_syntax(c, 'ASSET')
+      c.description = "Modify mapping data for an asset"
       c.hidden = true
       add_create_option(c)
       action(c, Commands::Modifys::Map)
     end
 
     command :'modify notes' do |c|
-      cli_syntax(c, 'NODE')
-      c.description = "Modify miscellaneous notes for a node"
+      cli_syntax(c, 'ASSET')
+      c.description = "Modify miscellaneous notes for an asset"
       c.hidden = true
       add_create_option(c)
       action(c, Commands::Modifys::Notes)
@@ -146,13 +146,13 @@ module Inventoryware
 
     command :list do |c|
       cli_syntax(c)
-      c.description = "List all nodes that have stored data"
+      c.description = "List all assets that have stored data"
       action(c, Commands::List)
     end
 
     command :edit do |c|
-      cli_syntax(c, 'NODE')
-      c.description = "Edit stored data for a node"
+      cli_syntax(c, 'ASSET')
+      c.description = "Edit stored data for an asset"
       add_create_option(c)
       action(c, Commands::Edit)
     end
@@ -164,15 +164,15 @@ module Inventoryware
     end
 
     command :'show data' do |c|
-      cli_syntax(c, 'NODE')
-      c.description = "View stored data for a node"
+      cli_syntax(c, 'ASSET')
+      c.description = "View stored data for an asset"
       c.hidden = true
       action(c, Commands::Shows::Data)
     end
 
     command :'show document' do |c|
-      cli_syntax(c, 'TEMPLATE [NODE_SPEC]')
-      c.description = "Render a document template for one or more nodes"
+      cli_syntax(c, 'TEMPLATE [ASSET_SPEC]')
+      c.description = "Render a document template for one or more assets"
       c.option '-l', '--location LOCATION',
                "Output the rendered template to the specified location"
       c.option '-d', '--debug', "Display rendering errors"
@@ -182,8 +182,8 @@ module Inventoryware
     end
 
     command :delete do |c|
-      cli_syntax(c, '[NODE_SPEC]')
-      c.description = "Delete the stored data for one or more nodes"
+      cli_syntax(c, '[ASSET_SPEC]')
+      c.description = "Delete the stored data for one or more assets"
       add_multi_node_options(c)
       action(c, Commands::Delete)
     end

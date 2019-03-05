@@ -46,11 +46,11 @@ module Inventoryware
           unless argv.length == other_args.length
             unless other_args.length == 0
               raise ArgumentError, <<-ERROR.chomp
-#{arg_str} should be the only argument(s) - all nodes are being parsed
+#{arg_str} should be the only argument(s) - all assets are being parsed
               ERROR
             else
               raise ArgumentError, <<-ERROR.chomp
-There should be no arguments - all nodes are being parsed
+There should be no arguments - all assets are being parsed
               ERROR
             end
           end
@@ -78,7 +78,7 @@ There should be no arguments - all nodes are being parsed
       def find_all_nodes()
         node_locations = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
         if node_locations.empty?
-          $stderr.puts "No node data found "\
+          $stderr.puts "No asset data found "\
             "in #{File.expand_path(Config.yaml_dir)}"
         end
         return node_locations
@@ -105,7 +105,7 @@ There should be no arguments - all nodes are being parsed
           end
         end
         if nodes.empty?
-          $stderr.puts "No nodes found in #{groups.join(' or ')}."
+          $stderr.puts "No assets found in #{groups.join(' or ')}."
         end
         return nodes
       end
@@ -116,7 +116,7 @@ There should be no arguments - all nodes are being parsed
       #   nodes
       def find_single_nodes(node_str, return_missing = false)
         nodes = expand_asterisks(NodeattrUtils::NodeParser.expand(node_str))
-        $stderr.puts "No nodes found for '#{node_str}'" if nodes.empty?
+        $stderr.puts "No assets found for '#{node_str}'" if nodes.empty?
         node_locations = []
         nodes.each do |node|
           node_yaml = "#{node}.yaml"
