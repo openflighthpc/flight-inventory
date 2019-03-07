@@ -51,10 +51,11 @@ The data source should be the only argument
           top_dir = Dir.mktmpdir('inv_ware_')
 
           # determine if given path is absolute
-          file_path = Pathname.new(@argv[0])
+          file_name = @argv[0]
+          file_path = Pathname.new(file_name)
           unless file_path.absolute?
-            puts "Searching for file by name: #{@argv[0]}"
-            file_path = Dir.glob("/**/#{@argv[0]}")[0]
+            puts "Searching for file by name: #{file_name}"
+            file_path = Dir.glob("/**/#{file_name}")[0]
           end
 
           # get all zips in in the source, if it's a dir or not
