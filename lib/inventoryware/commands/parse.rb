@@ -53,7 +53,7 @@ The data source should be the only argument
           # determine if given path is absolute
           file_path = Pathname.new(@argv[0])
           unless file_path.absolute?
-            file_path = Dir.glob("/**/#{@argv[0]}")
+            file_path = Dir.glob("/**/#{@argv[0]}")[0]
           end
 
           # get all zips in in the source, if it's a dir or not
