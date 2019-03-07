@@ -25,6 +25,10 @@ module Inventoryware
     def initialize(argv, options, command_name)
       @argv = argv.freeze
       @options = OpenStruct.new(options.__hash__)
+
+      if command_name == 'create'
+        @options.create = true
+      end
     end
 
     # this wrapper is here to later enable error handling &/ logging
