@@ -63,7 +63,7 @@ module Inventoryware
     class << self
       def action(command, klass)
         command.action do |args, options|
-          klass.new(args, options).run!
+          klass.new(args, options, command.name).run!
         end
       end
 

@@ -22,7 +22,7 @@
 
 module Inventoryware
   class Command
-    def initialize(argv, options)
+    def initialize(argv, options, command_name)
       @argv = argv.freeze
       @options = OpenStruct.new(options.__hash__)
     end
