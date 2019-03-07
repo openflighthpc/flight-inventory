@@ -50,6 +50,7 @@ The data source should be the only argument
         begin
           top_dir = Dir.mktmpdir('inv_ware_')
 
+          # determine if given path is absolute
           file_path = Pathname.new(@argv[0])
           unless file_path.absolute?
             file_path = Dir.glob("/**/#{@argv[0]}")
