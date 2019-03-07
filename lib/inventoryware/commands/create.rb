@@ -1,3 +1,4 @@
+
 #==============================================================================
 # Copyright (C) 2018-19 Stephen F. Norledge and Alces Software Ltd.
 #
@@ -19,15 +20,19 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
-require 'inventoryware/commands/create'
-require 'inventoryware/commands/delete'
-require 'inventoryware/commands/edit'
-require 'inventoryware/commands/list'
-require 'inventoryware/commands/modifys/location'
-require 'inventoryware/commands/modifys/map'
-require 'inventoryware/commands/modifys/other'
-require 'inventoryware/commands/modifys/notes'
-require 'inventoryware/commands/modifys/groups'
-require 'inventoryware/commands/parse'
-require 'inventoryware/commands/shows/data'
-require 'inventoryware/commands/shows/document'
+require 'inventoryware/commands/single_node_command'
+require 'tty-editor'
+
+module Inventoryware
+  module Commands
+    class Create < SingleNodeCommand
+      def action(node)
+        # output to create the node's file if it doesn't yet exist
+        node.save
+        # maybe don't create unless saved? i.e. don't create the file above
+        # instead save as closing
+        TTY::Editor.open(node.location, command: :rvim)
+      end
+    end
+  end
+end

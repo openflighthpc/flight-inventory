@@ -187,5 +187,11 @@ module Inventoryware
       add_multi_node_options(c)
       action(c, Commands::Delete)
     end
+
+    command :create do |c|
+      cli_syntax(c, 'ASSET')
+      c.description = "Create a new asset"
+      action(c, Commands::Create)
+    end
   end
 end
