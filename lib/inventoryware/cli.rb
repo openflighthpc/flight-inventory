@@ -191,7 +191,7 @@ module Inventoryware
     command :create do |c|
       cli_syntax(c, 'ASSET')
       c.description = "Create a new asset"
-      action(c, Commands::Create)
+      action(c, Commands::Edit)
     end
   end
 end
