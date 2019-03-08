@@ -19,7 +19,6 @@
 # For more information on Alces Inventoryware, please visit:
 # https://github.com/alces-software/inventoryware
 #==============================================================================
-require 'inventoryware/commands/create'
 require 'inventoryware/commands/delete'
 require 'inventoryware/commands/edit'
 require 'inventoryware/commands/list'
