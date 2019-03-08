@@ -108,15 +108,6 @@ module Inventoryware
       action(c, Commands::Modifys::Other)
     end
 
-    command :'modify location' do |c|
-      cli_syntax(c, '[ASSET_SPEC]')
-      c.description = "Modify location data for one or more assets"
-      c.hidden = true
-      add_multi_node_options(c)
-      add_create_option(c)
-      action(c, Commands::Modifys::Location)
-    end
-
     command :'modify groups' do |c|
       cli_syntax(c, 'GROUP [ASSET_SPEC]')
       c.description = "Modify group data for one or more assets"
