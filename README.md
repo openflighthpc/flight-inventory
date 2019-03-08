@@ -35,6 +35,8 @@ and any nested zips are processed. Only bottom level .zips are processed so don'
 data to be sibling to a .zip. Each zip must contain a `lshw-xml` and a `lsblk-a-P` file. A `groups`
 file will be processed if it exists.
 
+`create` opens an editor allowing for the creation of a new asset.
+
 `delete` removes the data for one or more assets after a confirmation message.
 
 `edit` opens the asset's data in an editor for manual input.
