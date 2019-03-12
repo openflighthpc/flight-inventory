@@ -63,7 +63,7 @@ module Inventoryware
     class << self
       def action(command, klass)
         command.action do |args, options|
-          klass.new(args, options).run!
+          klass.new(args, options, command.name).run!
         end
       end
 
@@ -186,6 +186,12 @@ module Inventoryware
       c.description = "Delete the stored data for one or more assets"
       add_multi_node_options(c)
       action(c, Commands::Delete)
+    end
+
+    command :create do |c|
+      cli_syntax(c, 'ASSET')
+      c.description = "Create a new asset"
+      action(c, Commands::Edit)
     end
   end
 end
