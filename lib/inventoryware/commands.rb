@@ -22,7 +22,6 @@
 require 'inventoryware/commands/delete'
 require 'inventoryware/commands/edit'
 require 'inventoryware/commands/list'
-require 'inventoryware/commands/modifys/location'
 require 'inventoryware/commands/modifys/map'
 require 'inventoryware/commands/modifys/other'
 require 'inventoryware/commands/modifys/notes'

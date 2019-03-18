@@ -14,8 +14,6 @@ list
 
 modify groups GROUP [ASSET SPEC] [-p | -r] [-c]
 
-modify location [ASSET SPEC] [-c]
-
 modify notes ASSET [-c]
 
 modify map ASSET [-c]
@@ -46,8 +44,6 @@ file will be processed if it exists.
 The `modify groups` command adds GROUP to the  secondary groups of one or more assets. If -p is set
 their primary group is set to GROUP. If -r is set GROUP will be removed from the assets' secondary groups.
 Primary groups can't be removed, only overwritten.
-
-The `modify location` command starts input prompts to enter one location information for one or more assets.
 
 The `modify other` command allows the setting and un-setting of arbitrary fields for one or more assets.
 FIELD is set to VALUE and if VALUE is blank the field is removed from the assets' data.
