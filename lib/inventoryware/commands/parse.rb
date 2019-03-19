@@ -51,7 +51,6 @@ The data source should be the only argument
         file_name = @argv[0]
         file_path = Pathname.new(file_name)
         unless file_path.absolute?
-          puts "Searching for file by name: #{file_name}"
           file_path = Dir.glob("/**/#{file_name}")[0]
         end
 
