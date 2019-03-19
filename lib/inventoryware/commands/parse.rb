@@ -47,16 +47,16 @@ The data source should be the only argument
           config.string_keys = true
         end
 
+        # determine if given path is absolute
+        file_name = @argv[0]
+        file_path = Pathname.new(file_name)
+        unless file_path.absolute?
+          puts "Searching for file by name: #{file_name}"
+          file_path = Dir.glob("/**/#{file_name}")[0]
+        end
+
         begin
           top_dir = Dir.mktmpdir('inv_ware_')
-
-          # determine if given path is absolute
-          file_name = @argv[0]
-          file_path = Pathname.new(file_name)
-          unless file_path.absolute?
-            puts "Searching for file by name: #{file_name}"
-            file_path = Dir.glob("/**/#{file_name}")[0]
-          end
 
           # get all zips in in the source, if it's a dir or not
           top_lvl_zip_paths = expand_dir(file_path)
