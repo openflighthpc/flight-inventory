@@ -29,7 +29,11 @@ module Inventoryware
         files = Dir.glob(File.join(Config.yaml_dir, '*.yaml')).map! do |file|
           File.basename(file, '.yaml')
         end
-        puts files.sort
+        unless files.empty?
+          puts files.sort
+        else
+          puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
+        end
       end
     end
   end
