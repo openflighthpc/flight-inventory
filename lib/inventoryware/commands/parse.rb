@@ -27,6 +27,7 @@ require 'inventoryware/utils'
 
 require 'fileutils'
 require 'xmlhasher'
+require 'pathname'
 require 'yaml'
 require 'zip'
 
@@ -46,11 +47,30 @@ The data source should be the only argument
           config.string_keys = true
         end
 
+        # determine if given path is absolute
+        file_name = @argv[0]
+        file_path = Pathname.new(file_name)
+        unless file_path.absolute?
+          file_path = Dir.glob("/**/#{file_name}")[0]
+        end
+
+        if file_path.nil?
+          raise ArgumentError, <<-ERROR.chomp
+Please refine your search and try again.
+          ERROR
+        else
+          if not Utils.check_file_readable?(file_path)
+            raise ArgumentError, <<-ERROR.chomp
+Zip file at #{file_path} inaccessible.
+            ERROR
+          end
+        end
+
         begin
           top_dir = Dir.mktmpdir('inv_ware_')
 
           # get all zips in in the source, if it's a dir or not
-          top_lvl_zip_paths = expand_dir(@argv[0])
+          top_lvl_zip_paths = expand_dir(file_path)
 
           # for each of these, extract to /tmp/
           top_lvl_zip_paths.each { |zip_path| extract_zip(zip_path, top_dir) }
