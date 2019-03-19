@@ -55,6 +55,12 @@ The data source should be the only argument
           file_path = Dir.glob("/**/#{file_name}")[0]
         end
 
+        if file_path.nil?
+          raise ArgumentError, <<-ERROR.chomp
+Please refine your search and try again.
+          ERROR
+        end
+
         begin
           top_dir = Dir.mktmpdir('inv_ware_')
 
