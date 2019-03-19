@@ -29,7 +29,7 @@ module Inventoryware
         files = Dir.glob(File.join(Config.yaml_dir, '*.yaml')).map! do |file|
           File.basename(file, '.yaml')
         end
-        files.each_slice(3).each { |grp| puts grp.join("  ") }
+        puts files
       end
     end
   end
