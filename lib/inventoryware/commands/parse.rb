@@ -58,6 +58,12 @@ The data source should be the only argument
           raise ArgumentError, <<-ERROR.chomp
 Please refine your search and try again.
           ERROR
+        else
+          if not Utils.check_file_readable?(file_path)
+            raise ArgumentError, <<-ERROR.chomp
+Zip file at #{file_path} inaccessible.
+            ERROR
+          end
         end
 
         begin
