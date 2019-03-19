@@ -26,12 +26,14 @@ module Inventoryware
   module Commands
     class List < Command
       def run
-        #TODO format this to have as many results fit on one line as poss.
-        #puts files.join("  ")
         files = Dir.glob(File.join(Config.yaml_dir, '*.yaml')).map! do |file|
           File.basename(file, '.yaml')
         end
-        files.each_slice(3).each { |grp| puts grp.join("  ") }
+        unless files.empty?
+          puts files.sort
+        else
+          puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
+        end
       end
     end
   end
