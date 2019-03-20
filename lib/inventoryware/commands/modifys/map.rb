@@ -27,6 +27,10 @@ module Inventoryware
     module Modifys
       class Map < SingleNodeCommand
         def action(node)
+          prompt = TTY::Prompt.new
+          unless prompt.no?('Would you like to add map metadata? (Default: No)')
+          end
+
           map = map_to_string(node.data['mutable']['map'])
           map = string_to_map(edit_with_tmp_file(map, :"rvim +'set number'"))
           node.data['mutable']['map'] = map
