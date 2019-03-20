@@ -118,15 +118,15 @@ Please refine your search and try again.
         end
 
         def find_template_from_asset_type(node)
-          unless File.readable?(Config.template_config_path)
+          unless File.readable?(Config.templates_config_path)
             raise FileSysError, <<-ERROR.chomp
-Template config at #{Config.template_config_path} is inaccessible
+Template config at #{Config.templates_config_path} is inaccessible
             ERROR
           end
-          templates = Utils.load_yaml(Config.template_config_path)
+          templates = Utils.load_yaml(Config.templates_config_path)
           unless templates.is_a?(Hash)
             raise ParseError, <<-ERROR.chomp
-Template config at #{Config.template_config_path} is in an incorrect format
+Template config at #{Config.templates_config_path} is in an incorrect format
             ERROR
           end
           type = node.data['type']
