@@ -29,23 +29,7 @@ module Inventoryware
         def action(node)
           prompt = TTY::Prompt.new
           unless prompt.no?('Would you like to add map metadata? (Default: No)')
-            prompt.say('Enter integer values for the dimensions of the map:')
-
-            x = prompt.ask('X:') do |q|
-              q.validate(/^[0-9]+$/, 'Value must be an integer')
-            end
-
-            y = prompt.ask('Y:') do |q|
-              q.validate(/^[0-9]+$/, 'Value must be an integer')
-            end
-
-            pattern = prompt.select(
-              'Choose the pattern for the map:',
-              %w(DownRight RightDown RightUp UpRight)
-            )
-
-            node.data['mutable']['map_dimensions'] = "#{x}x#{y}"
-            node.data['mutable']['map_pattern'] = pattern
+            get_map_metadata_from_user(node, prompt)
           end
 
           map = map_to_string(node.data['mutable']['map'])
@@ -83,6 +67,26 @@ Error parsing map - Non-integer keys
             map[i+1] = line
           end
           return map
+        end
+
+        def get_map_metadata_from_user(node, prompt)
+          prompt.say('Enter integer values for the dimensions of the map:')
+
+          x = prompt.ask('X:') do |q|
+            q.validate(/^[0-9]+$/, 'Value must be an integer')
+          end
+
+          y = prompt.ask('Y:') do |q|
+            q.validate(/^[0-9]+$/, 'Value must be an integer')
+          end
+
+          pattern = prompt.select(
+            'Choose the pattern for the map:',
+            %w(DownRight RightDown RightUp UpRight)
+          )
+
+          node.data['mutable']['map_dimensions'] = "#{x}x#{y}"
+          node.data['mutable']['map_pattern'] = pattern
         end
       end
     end
