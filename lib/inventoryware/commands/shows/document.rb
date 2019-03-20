@@ -33,7 +33,7 @@ module Inventoryware
     module Shows
       class Document < MultiNodeCommand
         def run
-          node_locations = find_nodes('template')
+          node_locations = find_nodes()
           node_locations = node_locations.uniq
           node_locations = node_locations.sort_by do |location|
             File.basename(location)
@@ -86,7 +86,7 @@ Invalid destination '#{out_dest}'
         end
 
         def find_template
-          template_arg = @argv[0]
+          template_arg = @options.template
           found = Utils.find_file(template_arg, Config.templates_dir)
 
           if found.length == 1
