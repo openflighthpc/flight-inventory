@@ -86,52 +86,56 @@ Invalid destination '#{out_dest}'
         end
 
         #If we want to speed up execution we should try only calling this
-        # method once for all nodes when '@options.template' != nil has a value
-        # as the result will always been the same & it's wasted computation
+        # method once for all nodes when '@options.template' has a value
+        # as the result will always been the same so it's wasted computation
         def find_template(node)
           if @options.template
-            template_arg = @options.template
-            found = Utils.find_file(template_arg, Config.templates_dir)
-            if found.length == 1
-              template = found[0]
-            elsif found.length > 1
-              raise ArgumentError, <<-ERROR.chomp
-  Please refine your search and try again.
-              ERROR
-            else
-              if not Utils.check_file_readable?(template_arg)
-                raise ArgumentError, <<-ERROR.chomp
-  Template at #{template_arg} inaccessible
-                ERROR
-              end
-              template = template_arg
-            end
-
-          elsif not File.readable?(Config.template_config_path)
-            raise FileSysError, <<-ERROR.chomp
-Template config at #{path} is inaccessible
-            ERROR
-
+            template = find_template_as_path(@options.template)
           else
-            templates = Utils.load_yaml(Config.template_config_path)
-            unless templates.is_a?(Hash)
-              raise ParseError, <<-ERROR.chomp
-Template config at #{path} is in an incorrect format
-              ERROR
-            end
-            type = node.data['type']
-            unless templates.keys.include?(type)
-              raise ParseError, <<-ERROR.chomp
-Asset type '#{type}' is not included in template config file
-              ERROR
-            end
-            unless File.readable?(templates[type])
-              raise ParseError, <<-ERROR.chomp
-Template file at #{templates[type]} is inaccessible
-              ERROR
-            end
-            return templates[type]
+            template = find_template_from_asset_type(node)
           end
+
+          unless File.readable?(template)
+            raise ParseError, <<-ERROR.chomp
+Template file at #{template} is inaccessible
+            ERROR
+          end
+
+          return template
+        end
+
+        def find_template_as_path(template_arg)
+          found = Utils.find_file(template_arg, Config.templates_dir)
+          if found.length == 1
+            template = found[0]
+          elsif found.length > 1
+            raise ArgumentError, <<-ERROR.chomp
+Please refine your search and try again.
+            ERROR
+          else
+            template = template_arg
+          end
+        end
+
+        def find_template_from_asset_type(node)
+          unless File.readable?(Config.template_config_path)
+            raise FileSysError, <<-ERROR.chomp
+Template config at #{Config.template_config_path} is inaccessible
+            ERROR
+          end
+          templates = Utils.load_yaml(Config.template_config_path)
+          unless templates.is_a?(Hash)
+            raise ParseError, <<-ERROR.chomp
+Template config at #{Config.template_config_path} is in an incorrect format
+            ERROR
+          end
+          type = node.data['type']
+          unless templates.keys.include?(type)
+            raise ParseError, <<-ERROR.chomp
+Asset type '#{type}' is not included in template config file
+            ERROR
+          end
+          return templates[type]
         end
 
         # fill the template for a single node
