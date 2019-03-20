@@ -38,16 +38,7 @@ module Inventoryware
     end
 
     def open
-      node_data = nil
-      begin
-        File.open(@location) do |f|
-          node_data = YAML.safe_load(f)
-        end
-      rescue Psych::SyntaxError
-        raise ParseError, <<-ERROR.chomp
-Error parsing yaml in #{@location} - aborting
-        ERROR
-      end
+      node_data = Utils.load_yaml(@location)
       # condition for if the .yaml is empty
       unless node_data
         raise ParseError, <<-ERROR.chomp

@@ -86,5 +86,19 @@ Please create it before continuing"
       end
       return type
     end
+
+    def self.load_yaml(path)
+      data = nil
+      begin
+        File.open(path) do |f|
+          data = YAML.safe_load(f)
+        end
+      rescue Psych::SyntaxError
+        raise ParseError, <<-ERROR.chomp
+Error parsing yaml in #{path} - aborting
+        ERROR
+      end
+      return data
+    end
   end
 end
