@@ -5,7 +5,7 @@
 Inventoryware requires a recent version of `ruby` (2.5.1<=) and `bundler`.
 The following will install from source using `git`:
 ```
-git clone https://github.com/alces-software/inventoryware.git
+git clone https://github.com/openflighthpc/inventoryware.git
 cd inventoryware
 bundle install
 ```
@@ -36,10 +36,10 @@ yum install https://s3-eu-west-1.amazonaws.com/alces-flight/rpms/flight-core-0.1
 
 ```
 # Standard install
-curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scripts/install |/bin/bash
+curl https://raw.githubusercontent.com/openflighthpc/inventoryware/master/scripts/install |/bin/bash
 
 # Installation with variables
-curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scripts/install |alces_INSTALL_DIR=/my/install/path/ alces_VERSION=dev-release /bin/bash
+curl https://raw.githubusercontent.com/openflighthpc/inventoryware/master/scripts/install |alces_INSTALL_DIR=/my/install/path/ alces_VERSION=dev-release /bin/bash
 ```
 
 ### Local Installation
