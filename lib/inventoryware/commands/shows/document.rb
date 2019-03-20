@@ -44,12 +44,12 @@ module Inventoryware
 
         private
         def output(node_locations, out_dest)
-
           out = ""
           # check, will loading all output cause issues with memory size?
           # probably fine - 723 nodes was 350Kb
           node_locations.each do |location|
-            out += fill_template(Node.new(location), find_template, render_env)
+            node = Node.new(location)
+            out += fill_template(node, find_template(node), render_env)
             $stderr.puts "Rendered #{File.basename(location, '.yaml')}"
           end
 
@@ -85,23 +85,52 @@ Invalid destination '#{out_dest}'
           return render_env
         end
 
-        def find_template
-          template_arg = @options.template
-          found = Utils.find_file(template_arg, Config.templates_dir)
-
-          if found.length == 1
-            template = found[0]
-          elsif found.length > 1
-            raise ArgumentError, <<-ERROR.chomp
-Please refine your search and try again.
-            ERROR
-          else
-            if not Utils.check_file_readable?(template_arg)
+        #If we want to speed up execution we should try only calling this
+        # method once for all nodes when '@options.template' != nil has a value
+        # as the result will always been the same & it's wasted computation
+        def find_template(node)
+          if @options.template
+            template_arg = @options.template
+            found = Utils.find_file(template_arg, Config.templates_dir)
+            if found.length == 1
+              template = found[0]
+            elsif found.length > 1
               raise ArgumentError, <<-ERROR.chomp
-Template at #{template_arg} inaccessible
+  Please refine your search and try again.
+              ERROR
+            else
+              if not Utils.check_file_readable?(template_arg)
+                raise ArgumentError, <<-ERROR.chomp
+  Template at #{template_arg} inaccessible
+                ERROR
+              end
+              template = template_arg
+            end
+
+          elsif not File.readable?(Config.template_config_path)
+            raise FileSysError, <<-ERROR.chomp
+Template config at #{path} is inaccessible
+            ERROR
+
+          else
+            templates = Utils.load_yaml(Config.template_config_path)
+            unless templates.is_a?(Hash)
+              raise ParseError, <<-ERROR.chomp
+Template config at #{path} is in an incorrect format
               ERROR
             end
-            template = template_arg
+            type = node.data['type']
+            unless templates.keys.include?(type)
+              raise ParseError, <<-ERROR.chomp
+Asset type '#{type}' is not included in template config file
+              ERROR
+            end
+            unless File.readable?(templates[type])
+              raise ParseError, <<-ERROR.chomp
+Template file at #{templates[type]} is inaccessible
+              ERROR
+            end
+            return templates[type]
           end
         end
 

@@ -41,13 +41,15 @@ module Inventoryware
     end
 
     attr_reader :root_dir, :yaml_dir, :templates_dir, :helpers_dir, :req_files,
-      :other_files, :all_files
+      :other_files, :all_files, :template_config_path
 
     def initialize
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
       @yaml_dir = File.join(@root_dir, 'var/store')
       @templates_dir = File.join(@root_dir, 'templates')
       @helpers_dir = File.join(@root_dir, 'helpers')
+
+      @template_config_path = File.join(@root_dir, 'etc/templates.conf')
 
       @req_files = ["lshw-xml", "lsblk-a-P"]
       @other_files = ["groups"]
