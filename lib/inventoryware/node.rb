@@ -68,11 +68,12 @@ Output file #{@location} not accessible - aborting
       File.open(@location, 'w') { |file| file.write(yaml_hash.to_yaml) }
     end
 
-    def create_if_non_existent
+    def create_if_non_existent(type = '')
       unless Utils.check_file_readable?(@location)
         @data = {
           'name' => @name,
           'mutable' => {},
+          'type' => type,
         }
         save
       end

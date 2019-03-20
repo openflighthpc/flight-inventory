@@ -33,7 +33,7 @@ module Inventoryware
     class SingleNodeCommand < Command
       def run
         name = @argv[0]
-        # error to prevent confusion if attempting to provide >1 node
+        # error to prevent confusion if attempting to provide >1 asset
         if NodeattrUtils::NodeParser.expand(name).length > 1
           raise ArgumentError, <<-ERROR.chomp
 Issue with argument name, please only provide a single asset
@@ -43,7 +43,7 @@ Issue with argument name, please only provide a single asset
         if @options.create
           location = File.join(Config.yaml_dir, "#{name}.yaml")
           node = Node.new(location)
-          node.create_if_non_existent
+          node.create_if_non_existent(Utils.get_new_asset_type)
         else
           found = Utils.find_file(name, Config.yaml_dir)
           unless found.length == 1

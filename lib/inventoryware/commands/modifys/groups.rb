@@ -37,8 +37,9 @@ Cannot remove a primary group
           group = @argv[0]
 
           find_nodes("group").each do |location|
-            node= Node.new(location)
-            node.create_if_non_existent
+            node = Node.new(location)
+            type = Utils.get_new_asset_type if @options.create
+            node.create_if_non_existent(type)
             if @options.primary
               node.data['mutable']['primary_group'] = group
             else
