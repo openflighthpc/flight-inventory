@@ -36,6 +36,10 @@ module Inventoryware
             y = prompt.ask('Y:') do |q|
               q.validate(/^[0-9]+$/, 'Value must be an integer')
             end
+            pattern = prompt.select(
+              'Choose the pattern for the map:',
+              %w(DownRight RightDown RightUp UpRight)
+            )
           end
 
           map = map_to_string(node.data['mutable']['map'])
