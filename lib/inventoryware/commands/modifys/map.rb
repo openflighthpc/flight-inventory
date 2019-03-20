@@ -29,6 +29,13 @@ module Inventoryware
         def action(node)
           prompt = TTY::Prompt.new
           unless prompt.no?('Would you like to add map metadata? (Default: No)')
+            prompt.say('Enter integer values for the dimensions of the map:')
+            x = prompt.ask('X:') do |q|
+              q.validate(/^[0-9]+$/, 'Value must be an integer')
+            end
+            y = prompt.ask('Y:') do |q|
+              q.validate(/^[0-9]+$/, 'Value must be an integer')
+            end
           end
 
           map = map_to_string(node.data['mutable']['map'])
