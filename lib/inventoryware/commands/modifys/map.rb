@@ -40,6 +40,9 @@ module Inventoryware
               'Choose the pattern for the map:',
               %w(DownRight RightDown RightUp UpRight)
             )
+
+            node.data['mutable']['map_dimensions'] = "#{x}x#{y}"
+            node.data['mutable']['map_pattern'] = pattern
           end
 
           map = map_to_string(node.data['mutable']['map'])
