@@ -8,6 +8,7 @@ gem 'nodeattr_utils', github: 'alces-software/nodeattr_utils'
 gem 'recursive-open-struct'
 gem 'rubyzip'
 gem 'tty-editor'
+gem 'tty-prompt'
 gem 'xmlhasher'
 gem 'paint'
 
