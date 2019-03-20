@@ -33,53 +33,23 @@ module Inventoryware
     module Shows
       class Document < MultiNodeCommand
         def run
-          template_arg = @argv[0]
-
-          found = Utils.find_file(template_arg, Config.templates_dir)
-
-          if found.length == 1
-            template = found[0]
-          elsif found.length > 1
-            raise ArgumentError, <<-ERROR.chomp
-Please refine your search and try again.
-            ERROR
-          else
-            if not Utils.check_file_readable?(template_arg)
-              raise ArgumentError, <<-ERROR.chomp
-Template at #{template_arg} inaccessible
-              ERROR
-            end
-            template = template_arg
-          end
-
           node_locations = find_nodes('template')
           node_locations = node_locations.uniq
           node_locations = node_locations.sort_by do |location|
             File.basename(location)
           end
 
-          output(node_locations, template, @options.location)
+          output(node_locations, @options.location)
         end
 
-        def output(node_locations, template, out_dest)
-          template_contents = File.read(template)
-          eruby = Erubis::Eruby.new(template_contents)
-
-          render_env = Module.new do
-            class << self
-              attr_reader :node_data
-            end
-          end
-
-          Dir[File.join(Config.helpers_dir, '*.rb')].each do |file|
-            render_env.instance_eval(File.read(file))
-          end
+        private
+        def output(node_locations, out_dest)
 
           out = ""
           # check, will loading all output cause issues with memory size?
           # probably fine - 723 nodes was 350Kb
           node_locations.each do |location|
-            out += fill_template(Node.new(location), eruby, render_env)
+            out += fill_template(Node.new(location), find_template, render_env)
             $stderr.puts "Rendered #{File.basename(location, '.yaml')}"
           end
 
@@ -101,8 +71,45 @@ Invalid destination '#{out_dest}'
           end
         end
 
+        def render_env
+          render_env = Module.new do
+            class << self
+              attr_reader :node_data
+            end
+          end
+
+          Dir[File.join(Config.helpers_dir, '*.rb')].each do |file|
+            render_env.instance_eval(File.read(file))
+          end
+
+          return render_env
+        end
+
+        def find_template
+          template_arg = @argv[0]
+          found = Utils.find_file(template_arg, Config.templates_dir)
+
+          if found.length == 1
+            template = found[0]
+          elsif found.length > 1
+            raise ArgumentError, <<-ERROR.chomp
+Please refine your search and try again.
+            ERROR
+          else
+            if not Utils.check_file_readable?(template_arg)
+              raise ArgumentError, <<-ERROR.chomp
+Template at #{template_arg} inaccessible
+              ERROR
+            end
+            template = template_arg
+          end
+        end
+
         # fill the template for a single node
-        def fill_template(node, eruby, render_env)
+        def fill_template(node, template, render_env)
+          template_contents = File.read(template)
+          eruby = Erubis::Eruby.new(template_contents)
+
           node_hash = node.data
           node_data = RecursiveOpenStruct.new(
                         node_hash,
