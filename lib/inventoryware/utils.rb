@@ -78,5 +78,13 @@ Please create it before continuing"
         end
       return results
     end
+
+    def self.get_new_asset_type
+      type = ''
+      while type.empty?
+        type = $terminal.ask('Enter the type of the new assets being created')
+      end
+      return type
+    end
   end
 end
