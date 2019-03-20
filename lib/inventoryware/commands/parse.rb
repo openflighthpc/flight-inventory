@@ -169,6 +169,7 @@ No .zip files found at #{data_source}
 
         node_data = {
           'name' => node_name,
+          'type' => 'server',
           'mutable' => {},
           # extract data from lshw
           'lshw' => XmlHasher.parse(File.read(file_locations['lshw-xml'])),
