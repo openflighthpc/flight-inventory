@@ -100,6 +100,6 @@ the top level `helpers/` directory and utilise that for filling the specified te
 
 # License
 
-AGPLv3+ License, see LICENSE.txt for details.
+Eclipse Public License 2.0, see LICENSE.txt for details.
 
-Copyright (C) 2017 Alces Software Ltd.
+Copyright (C) 2019-present Alces Flight Ltd.
