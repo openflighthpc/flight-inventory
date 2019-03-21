@@ -32,6 +32,7 @@ module Inventoryware
                   Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
                 end
         file_names = get_file_names(files)
+
         unless file_names.empty?
           puts file_names.sort
         else
