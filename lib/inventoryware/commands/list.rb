@@ -36,6 +36,7 @@ module Inventoryware
         unless file_names.empty?
           puts file_names.sort
         else
+          return if @options.group
           puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
         end
       end
