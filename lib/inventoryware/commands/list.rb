@@ -26,13 +26,20 @@ module Inventoryware
   module Commands
     class List < MultiNodeCommand
       def run
-        files = Dir.glob(File.join(Config.yaml_dir, '*.yaml')).map! do |file|
-          File.basename(file, '.yaml')
-        end
-        unless files.empty?
-          puts files.sort
+        files = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
+        file_names = get_file_names(files)
+        unless file_names.empty?
+          puts file_names.sort
         else
           puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
+        end
+      end
+
+      private
+
+      def get_file_names(files)
+        files.map! do |file|
+          File.basename(file, '.yaml')
         end
       end
     end
