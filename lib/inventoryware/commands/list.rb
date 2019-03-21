@@ -24,7 +24,7 @@ require 'inventoryware/config'
 
 module Inventoryware
   module Commands
-    class List < Command
+    class List < MultiNodeCommand
       def run
         files = Dir.glob(File.join(Config.yaml_dir, '*.yaml')).map! do |file|
           File.basename(file, '.yaml')
