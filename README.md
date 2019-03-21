@@ -88,7 +88,7 @@ To aid this there is a MakeFile containing `watch-rsync` instructions
 gem install rerun # If you don't have this already.
 make watch-rsync PASSWORD="password for machine" IP="ip of machine"
 ```
-This will keep your working directory synced to `/tmp/inventoryware`
+This will keep your working directory synced to `/tmp/flight-inventory`
 
 ## Templates
 

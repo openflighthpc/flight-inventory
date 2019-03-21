@@ -65,10 +65,10 @@ cd $alces_INSTALL_DIR
 
 if [ ! -z $CLONE ] ; then
     # Install tool
-    git clone https://github.com/openflighthpc/inventoryware
+    git clone https://github.com/openflighthpc/flight-inventory
 fi
 
-cd inventoryware
+cd flight-inventory
 
 if [ ! -z $CHECKOUT ] ; then
     git checkout $alces_VERSION
@@ -110,7 +110,7 @@ cat << EOF > /opt/flight/libexec/commands/inventory
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-cd $alces_INSTALL_DIR/inventoryware
+cd $alces_INSTALL_DIR/flight-inventory
 export FLIGHT_PROGRAM_NAME="\${flight_NAME} \$(basename \$0)"
 flexec bundle exec bin/inventory "\$@"
 EOF
