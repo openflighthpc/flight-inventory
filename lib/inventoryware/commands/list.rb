@@ -26,7 +26,11 @@ module Inventoryware
   module Commands
     class List < MultiNodeCommand
       def run
-        files = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
+        files = if @options.group
+                  find_nodes_in_groups([@options.group])
+                else
+                  Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
+                end
         file_names = get_file_names(files)
         unless file_names.empty?
           puts file_names.sort
