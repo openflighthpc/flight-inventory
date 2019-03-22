@@ -148,7 +148,7 @@ module Inventoryware
     command :list do |c|
       cli_syntax(c)
       c.description = "List all assets that have stored data"
-      add_multi_node_options(c)
+      add_group_option(c)
       action(c, Commands::List)
     end
 
