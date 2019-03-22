@@ -82,13 +82,17 @@ module Inventoryware
 
       def add_multi_node_options(command)
         command.option '--all', "Select all assets"
-        command.option '-g', '--group GROUP',
-                       "Select assets in GROUP, specify commma-separated list for multiple groups"
+        add_group_option(command)
       end
 
       def add_create_option(command)
         command.option '-c', '--create',
                        "Create specified asset(s) if they don't exist"
+      end
+
+      def add_group_option(command)
+        command.option '-g', '--group GROUP',
+                       "Select assets in GROUP, specify comma-separated list for multiple groups"
       end
     end
 
