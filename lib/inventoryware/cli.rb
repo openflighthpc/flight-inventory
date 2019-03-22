@@ -171,6 +171,8 @@ module Inventoryware
       c.option '-l', '--location LOCATION',
                "Output the rendered template to the specified location"
       c.option '-d', '--debug', "Display rendering errors"
+      c.option '-f', '--format FORMAT',
+              'Specify the type of template you would like to render'
       add_multi_node_options(c)
       c.hidden = true
       action(c, Commands::Shows::Document)
