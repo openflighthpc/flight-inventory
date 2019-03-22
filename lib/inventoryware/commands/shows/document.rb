@@ -90,11 +90,11 @@ Invalid destination '#{out_dest}'
         # method once for all nodes when '@options.template' has a value
         # as the result will always been the same so it's wasted computation
         def find_template(node)
-          if @options.template
-            template = find_template_as_path(@options.template)
-          else
-            template = TemplatesConfig.new.find(@options.format, node.data['type'])
-          end
+          template = if @options.template
+                       find_template_as_path(@options.template)
+                     else
+                       TemplatesConfig.new.find(@options.format, node.data['type'])
+                     end
 
           unless File.readable?(template)
             raise ParseError, <<-ERROR.chomp
