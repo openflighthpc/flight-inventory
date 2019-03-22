@@ -30,7 +30,7 @@ require 'inventoryware/utils'
 
 module Inventoryware
   module Commands
-    class List < MultiNodeCommand
+    class List < Command
       def run
         files = if @options.group
                   Utils.find_nodes_in_groups(@options.group.split(','))
