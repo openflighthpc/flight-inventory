@@ -118,6 +118,10 @@ module Inventoryware
       @data ||= open
     end
 
+    def type
+      data['type']
+    end
+
     def data=(value)
       @data = value
     end
