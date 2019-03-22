@@ -23,6 +23,7 @@ require 'inventoryware/commands/multi_node_command'
 require 'inventoryware/config'
 require 'inventoryware/exceptions'
 require 'inventoryware/node'
+require 'inventoryware/templates_config'
 require 'inventoryware/utils'
 
 require 'erubis'
@@ -92,7 +93,7 @@ Invalid destination '#{out_dest}'
           if @options.template
             template = find_template_as_path(@options.template)
           else
-            template = find_template_from_asset_type(node)
+            template = TemplatesConfig.new.find(@options.format, node.data['type'])
           end
 
           unless File.readable?(template)
@@ -115,27 +116,6 @@ Please refine your search and try again.
           else
             template = template_arg
           end
-        end
-
-        def find_template_from_asset_type(node)
-          unless File.readable?(Config.templates_config_path)
-            raise FileSysError, <<-ERROR.chomp
-Template config at #{Config.templates_config_path} is inaccessible
-            ERROR
-          end
-          templates = Utils.load_yaml(Config.templates_config_path)
-          unless templates.is_a?(Hash)
-            raise ParseError, <<-ERROR.chomp
-Template config at #{Config.templates_config_path} is in an incorrect format
-            ERROR
-          end
-          type = node.data['type']
-          unless templates.keys.include?(type)
-            raise ParseError, <<-ERROR.chomp
-Asset type '#{type}' is not included in template config file
-            ERROR
-          end
-          return templates[type]
         end
 
         # fill the template for a single node
