@@ -73,46 +73,10 @@ There should be no arguments - all assets are being parsed
             node_locations.push(*find_single_nodes(nodes, !!options.create))
           end
           if options.group
-            node_locations.push(*find_nodes_in_groups(options.group.split(',')))
+            node_locations.push(*Utils.find_nodes_in_groups(options.group.split(',')))
           end
         end
         return node_locations
-      end
-
-      # retrieves all .yaml files in the storage dir
-      def find_all_nodes()
-        node_locations = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
-        if node_locations.empty?
-          $stderr.puts "No asset data found "\
-            "in #{File.expand_path(Config.yaml_dir)}"
-        end
-        return node_locations
-      end
-
-      # retreives all nodes in the given groups
-      # this quite an intensive method of way to go about searching the yaml
-      # each file is converted to a sting and then searched
-      # seems fine as it stands but if speed becomes an issue could stand to
-      #   be changed
-      def find_nodes_in_groups(groups)
-        nodes = []
-        find_all_nodes().each do |location|
-          found = []
-          File.open(location) do |file|
-            contents = file.read
-            m = contents.match(/primary_group: (.*?)$/)
-            found.append(m[1]) if m
-            m = contents.match(/secondary_groups: (.*?)$/)
-            found = found + (m[1].split(',')) if m
-          end
-          unless (found & groups).empty?
-            nodes.append(location)
-          end
-        end
-        if nodes.empty?
-          $stderr.puts "No assets found in #{groups.join(' or ')}."
-        end
-        return nodes
       end
 
       # retreives the .yaml file for each of the given nodes

@@ -105,5 +105,41 @@ Error parsing yaml in #{path} - aborting
       end
       return data
     end
+
+    # retrieves all .yaml files in the storage dir
+    def self.find_all_nodes()
+      node_locations = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
+      if node_locations.empty?
+        $stderr.puts "No asset data found "\
+          "in #{File.expand_path(Config.yaml_dir)}"
+      end
+      return node_locations
+    end
+
+    # retreives all nodes in the given groups
+    # this quite an intensive method of way to go about searching the yaml
+    # each file is converted to a sting and then searched
+    # seems fine as it stands but if speed becomes an issue could stand to
+    #   be changed
+    def self.find_nodes_in_groups(groups)
+      nodes = []
+      find_all_nodes().each do |location|
+        found = []
+        File.open(location) do |file|
+          contents = file.read
+          m = contents.match(/primary_group: (.*?)$/)
+          found.append(m[1]) if m
+          m = contents.match(/secondary_groups: (.*?)$/)
+          found = found + (m[1].split(',')) if m
+        end
+        unless (found & groups).empty?
+          nodes.append(location)
+        end
+      end
+      if nodes.empty?
+        $stderr.puts "No assets found in #{groups.join(' or ')}."
+      end
+      return nodes
+    end
   end
 end
