@@ -24,15 +24,28 @@ require 'inventoryware/config'
 
 module Inventoryware
   module Commands
-    class List < Command
+    class List < MultiNodeCommand
       def run
-        files = Dir.glob(File.join(Config.yaml_dir, '*.yaml')).map! do |file|
-          File.basename(file, '.yaml')
-        end
-        unless files.empty?
-          puts files.sort
+        files = if @options.group
+                  find_nodes_in_groups(@options.group.split(','))
+                else
+                  Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
+                end
+        file_names = get_file_names(files)
+
+        unless file_names.empty?
+          puts file_names.sort
         else
+          return if @options.group
           puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
+        end
+      end
+
+      private
+
+      def get_file_names(files)
+        files.map! do |file|
+          File.basename(file, '.yaml')
         end
       end
     end
