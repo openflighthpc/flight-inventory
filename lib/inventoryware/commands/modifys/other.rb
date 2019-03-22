@@ -46,7 +46,8 @@ Cannot modify '#{field}' this way
 
           find_nodes("modification").each do |location|
             node = Node.new(location)
-            node.create_if_non_existent
+            type = Utils.get_new_asset_type if @options.create
+            node.create_if_non_existent(type)
             if value
               node.data['mutable'][field] = value
             else

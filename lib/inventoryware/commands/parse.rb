@@ -167,16 +167,19 @@ No .zip files found at #{data_source}
           return false
         end
 
-        node_data = {}
-        node_data['name'] = node_name
-        node_data['mutable'] = {}
+        node_data = {
+          'name' => node_name,
+          'type' => 'server',
+          'mutable' => {},
+          # extract data from lshw
+          'lshw' => XmlHasher.parse(File.read(file_locations['lshw-xml'])),
+          # extract data from lsblk
+          'lsblk' => LsblkParser.new(file_locations['lsblk-a-P']).hashify(),
+        }
+
         if file_locations['groups']
           node_data['mutable'] = YAML.load(File.read(file_locations['groups']))
         end
-        # extract data from lshw
-        node_data['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))
-        # extract data from lsblk
-        node_data['lsblk'] = LsblkParser.new(file_locations['lsblk-a-P']).hashify()
 
         Utils.exit_unless_dir(Config.yaml_dir)
         yaml_out_name = "#{node_name}.yaml"

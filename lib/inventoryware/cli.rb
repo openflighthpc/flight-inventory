@@ -163,11 +163,17 @@ module Inventoryware
     end
 
     command :'show document' do |c|
-      cli_syntax(c, 'TEMPLATE [ASSET_SPEC]')
+      cli_syntax(c, '[ASSET_SPEC]')
       c.description = "Render a document template for one or more assets"
+      c.option '-t', '--template TEMPLATE',
+        "Render this specific template\n"\
+        "Otherwise use the asset's type to determine the target template "\
+        "from a config file."
       c.option '-l', '--location LOCATION',
                "Output the rendered template to the specified location"
       c.option '-d', '--debug', "Display rendering errors"
+      c.option '-f', '--format FORMAT',
+              'Specify the type of template you would like to render'
       add_multi_node_options(c)
       c.hidden = true
       action(c, Commands::Shows::Document)

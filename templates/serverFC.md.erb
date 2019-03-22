@@ -1,0 +1,74 @@
+<%= @node_data.name %>:
+  name: <%= @node_data.name %>
+  primary_group: <%= @node_data.mutable.primary_group %>
+  secondary_group: <%= @node_data.mutable.secondary_groups %>
+  info: |
+    # Sections
+    
+    <% if imported? %>
+    1. [System](#system)
+    1. [Network Devices](#network-devices)
+    1. [Disks](#disks)
+    <% end %>
+    <% if @node_data.mutable.notes -%>1. [Notes](#notes)<% end -%>
+    <% if select_bios %>1. [BIOS Information](#bios-information)<% end %>
+
+<% if imported? %>
+    # System <a name="system"></a>
+    
+    ## Model
+    
+    <%= @node_data.lshw.list.node.product %>
+
+    ## BIOS Version
+
+    <%= find_hashes_with_key_value(@node_hash, 'id', 'firmware')&.first['version'] %>
+
+    ## System Serial Number
+
+    <%= @node_data.lshw.list.node.serial %>
+
+    ## CPU(s)
+
+    <% cpus.each do |cpu| %>
+    ### <%= cpu.id.upcase %>
+
+    Model: <%= cpu.model %>
+    Slot: <%= cpu.slot %>
+
+    <% end %>
+    ## RAM
+
+    - Total: <%= format_bytes_value(find_total_memory) %>
+
+
+    # Network Devices <a name="network-devices"></a>
+
+    | Interface | Speed | MAC |
+    |-----------|-------|-----|
+    <% network_devices.each do |net| %>
+    | <%= net.logicalname %> | <%= net.speed %> | <%= net.serial %> |
+    <% end %>
+
+
+    # Disks <a name="disk"></a>
+
+    | Device | Size |
+    |--------|------|
+    <% @node_data.lsblk.disk&.each_pair do |disk, values| %>
+    | <%= disk %> | <%= values['SIZE'] %> |
+    <% end %>
+
+<% end %>
+    <% if @node_data.mutable.notes -%>
+    # Notes <a name="notes"></a>
+
+    <%= @node_data.mutable.notes.split("\n").join("\n    ") %>
+    <% end -%>
+
+    <% if select_bios %>
+    # BIOS Information <a name="bios-information"></a>
+
+    <%= select_bios.split("\n").join("\n    ") %>
+    <% end %>
+
