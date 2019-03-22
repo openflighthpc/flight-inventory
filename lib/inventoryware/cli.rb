@@ -140,6 +140,7 @@ module Inventoryware
       cli_syntax(c, 'ASSET')
       c.description = "Modify miscellaneous notes for an asset"
       c.hidden = true
+      add_multi_node_options(c)
       add_create_option(c)
       action(c, Commands::Modifys::Notes)
     end
