@@ -27,7 +27,7 @@ module Inventoryware
     class List < MultiNodeCommand
       def run
         files = if @options.group
-                  find_nodes_in_groups([@options.group])
+                  find_nodes_in_groups(@options.group.split(','))
                 else
                   Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
                 end
