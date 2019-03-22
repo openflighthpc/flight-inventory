@@ -88,7 +88,7 @@ To aid this there is a MakeFile containing `watch-rsync` instructions
 gem install rerun # If you don't have this already.
 make watch-rsync PASSWORD="password for machine" IP="ip of machine"
 ```
-This will keep your working directory synced to `/tmp/inventoryware`
+This will keep your working directory synced to `/tmp/flight-inventory`
 
 ## Templates
 
@@ -100,6 +100,6 @@ the top level `helpers/` directory and utilise that for filling the specified te
 
 # License
 
-AGPLv3+ License, see LICENSE.txt for details.
+Eclipse Public License 2.0, see LICENSE.txt for details.
 
-Copyright (C) 2017 Alces Software Ltd.
+Copyright (C) 2019-present Alces Flight Ltd.

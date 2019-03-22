@@ -2,11 +2,11 @@
 
 ### Generic
 
-Inventoryware requires a recent version of `ruby` (2.5.1<=) and `bundler`.
+Flight Inventory requires a recent version of `ruby` (2.5.1<=) and `bundler`.
 The following will install from source using `git`:
 ```
-git clone https://github.com/alces-software/inventoryware.git
-cd inventoryware
+git clone https://github.com/openflighthpc/flight-inventory.git
+cd flight-inventory
 bundle install
 ```
 
@@ -16,7 +16,7 @@ Note: Interactive editing requires `vim` be installed, this is available in most
 
 ### Flight Core
 
-Inventoryware can be installed as a tool to the flight-core environment.
+Flight Inventory can be installed as a tool to the flight-core environment.
 
 ### Automated Installation
 
@@ -36,15 +36,15 @@ yum install https://s3-eu-west-1.amazonaws.com/alces-flight/rpms/flight-core-0.1
 
 ```
 # Standard install
-curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scripts/install |/bin/bash
+curl https://raw.githubusercontent.com/openflighthpc/flight-inventory/master/scripts/install |/bin/bash
 
 # Installation with variables
-curl https://raw.githubusercontent.com/alces-software/inventoryware/master/scripts/install |alces_INSTALL_DIR=/my/install/path/ alces_VERSION=dev-release /bin/bash
+curl https://raw.githubusercontent.com/openflighthpc/flight-inventory/master/scripts/install |alces_INSTALL_DIR=/my/install/path/ alces_VERSION=dev-release /bin/bash
 ```
 
 ### Local Installation
 
-Instead of depending on an upstream location, Inventoryware can be installed from a local copy of the repository in the following manner.
+Instead of depending on an upstream location, Flight Inventory can be installed from a local copy of the repository in the following manner.
 
 - Install Flight Core (if not already installed)
 
@@ -54,7 +54,7 @@ yum install https://s3-eu-west-1.amazonaws.com/alces-flight/rpms/flight-core-0.1
 
 - **Note: If Flight Core has just been installed then logout and in again or source `/etc/profile.d/alces-flight.sh`**
 
-- Execute the install script from inside the `inventoryware` directory
+- Execute the install script from inside the `flight-inventory` directory
 
 ```
 bash scripts/install
@@ -66,15 +66,14 @@ bash scripts/install
 
 - Now logout and in again or source `/etc/profile.d/alces-flight.sh`
 
-- Inventoryware can now be run as follows
+- Flight Inventory can now be run as follows
 
 ```
 flight inventory
 ```
 
-- Alternatively, a sandbox environment for Inventoryware can be entered as follows
+- Alternatively, a sandbox environment for Flight Inventory can be entered as follows
 
 ```
 flight shell inventory
 ```
-
