@@ -38,7 +38,16 @@ module Inventoryware
     class SingleNodeCommand < Command
       def run
         name = @argv[0]
-        # error to prevent confusion if attempting to provide >1 asset
+
+        # Error to prevent further execution when no argument is specified
+        # for commands with no mandatory arguments e.g. modify notes
+        if name.nil? && !@options
+          raise ArgumentError, <<-ERROR.chomp
+Please provide at least one asset
+          ERROR
+        end
+
+        # error to prevent confusion if attempting to provide >1 node
         if NodeattrUtils::NodeParser.expand(name).length > 1
           raise ArgumentError, <<-ERROR.chomp
 Issue with argument name, please only provide a single asset
