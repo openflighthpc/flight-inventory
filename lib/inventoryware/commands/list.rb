@@ -26,14 +26,14 @@
 # ==============================================================================
 require 'inventoryware/command'
 require 'inventoryware/config'
-require 'inventoryware/utils'
+require 'inventoryware/node'
 
 module Inventoryware
   module Commands
     class List < Command
       def run
         files = if @options.group
-                  Utils.find_nodes_in_groups(@options.group.split(','))
+                  Node.find_nodes_in_groups(@options.group.split(','))
                 else
                   Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
                 end

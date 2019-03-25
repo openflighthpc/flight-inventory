@@ -26,7 +26,7 @@
 # ==============================================================================
 require 'inventoryware/command'
 require 'inventoryware/exceptions'
-require 'inventoryware/utils'
+require 'inventoryware/node'
 
 require 'nodeattr_utils'
 
@@ -67,57 +67,16 @@ There should be no arguments - all assets are being parsed
       def locate_nodes(nodes, options)
         node_locations = []
         if options.all
-          node_locations = Utils.find_all_nodes
+          node_locations = Node.find_all_nodes
         else
           if nodes
-            node_locations.push(*find_single_nodes(nodes, !!options.create))
+            node_locations.push(*Node.find_single_nodes(nodes, !!options.create))
           end
           if options.group
-            node_locations.push(*Utils.find_nodes_in_groups(options.group.split(',')))
+            node_locations.push(*Node.find_nodes_in_groups(options.group.split(',')))
           end
         end
         return node_locations
-      end
-
-      # retreives the .yaml file for each of the given nodes
-      # expands node ranges if they exist
-      # if return missing is passed, returns paths to the .yamls of non-existent
-      #   nodes
-      def find_single_nodes(node_str, return_missing = false)
-        nodes = expand_asterisks(NodeattrUtils::NodeParser.expand(node_str))
-        $stderr.puts "No assets found for '#{node_str}'" if nodes.empty?
-        node_locations = []
-        nodes.each do |node|
-          node_yaml = "#{node}.yaml"
-          node_yaml_location = File.join(Config.yaml_dir, node_yaml)
-          unless Utils.check_file_readable?(node_yaml_location)
-            $stderr.puts "File #{node_yaml} not found within "\
-              "#{File.expand_path(Config.yaml_dir)}"
-            if return_missing
-              $stderr.puts "Creating..."
-            else
-              $stderr.puts "Skipping."
-              next
-            end
-          end
-          node_locations.append(node_yaml_location)
-        end
-        return node_locations
-      end
-
-      def expand_asterisks(nodes)
-        new_nodes = []
-        nodes.each do |node|
-          if node.match(/\*/)
-            node_names = Dir.glob(File.join(Config.yaml_dir, node)).map { |file|
-              File.basename(file, '.yaml')
-            }
-            new_nodes.push(*node_names)
-          end
-        end
-        nodes.delete_if { |node| node.match(/\*/) }
-        nodes.push(*new_nodes)
-        return nodes
       end
     end
   end

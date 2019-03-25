@@ -29,6 +29,85 @@ require 'inventoryware/utils'
 
 module Inventoryware
   class Node
+    class << self
+      # retrieves all .yaml files in the storage dir
+      def find_all_nodes()
+        node_locations = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
+        if node_locations.empty?
+          $stderr.puts "No asset data found "\
+            "in #{File.expand_path(Config.yaml_dir)}"
+        end
+        return node_locations
+      end
+
+      # retreives all nodes in the given groups
+      # this quite an intensive method of way to go about searching the yaml
+      # each file is converted to a sting and then searched
+      # seems fine as it stands but if speed becomes an issue could stand to
+      #   be changed
+      def find_nodes_in_groups(groups)
+        nodes = []
+        find_all_nodes().each do |location|
+          found = []
+          File.open(location) do |file|
+            contents = file.read
+            m = contents.match(/primary_group: (.*?)$/)
+            found.append(m[1]) if m
+            m = contents.match(/secondary_groups: (.*?)$/)
+            found = found + (m[1].split(',')) if m
+          end
+          unless (found & groups).empty?
+            nodes.append(location)
+          end
+        end
+        if nodes.empty?
+          $stderr.puts "No assets found in #{groups.join(' or ')}."
+        end
+        return nodes
+      end
+
+      # retreives the .yaml file for each of the given nodes
+      # expands node ranges if they exist
+      # if return missing is passed, returns paths to the .yamls of non-existent
+      #   nodes
+      def find_single_nodes(node_str, return_missing = false)
+        nodes = expand_asterisks(NodeattrUtils::NodeParser.expand(node_str))
+        $stderr.puts "No assets found for '#{node_str}'" if nodes.empty?
+        node_locations = []
+        nodes.each do |node|
+          node_yaml = "#{node}.yaml"
+          node_yaml_location = File.join(Config.yaml_dir, node_yaml)
+          unless Utils.check_file_readable?(node_yaml_location)
+            $stderr.puts "File #{node_yaml} not found within "\
+              "#{File.expand_path(Config.yaml_dir)}"
+            if return_missing
+              $stderr.puts "Creating..."
+            else
+              $stderr.puts "Skipping."
+              next
+            end
+          end
+          node_locations.append(node_yaml_location)
+        end
+        return node_locations
+      end
+
+      def expand_asterisks(nodes)
+        new_nodes = []
+        nodes.each do |node|
+          if node.match(/\*/)
+            node_names = Dir.glob(File.join(Config.yaml_dir, node)).map { |file|
+              File.basename(file, '.yaml')
+            }
+            new_nodes.push(*node_names)
+          end
+        end
+        nodes.delete_if { |node| node.match(/\*/) }
+        nodes.push(*new_nodes)
+        return nodes
+      end
+    end
+
     def initialize(location)
       @location = location
       @name = File.basename(location, File.extname(location))

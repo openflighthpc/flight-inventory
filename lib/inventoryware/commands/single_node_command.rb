@@ -59,7 +59,7 @@ Issue with argument name, please only provide a single asset
           nodes = Node.new(location)
           nodes.create_if_non_existent(Utils.get_new_asset_type)
         elsif @options.group
-          node_locations = [*Utils.find_nodes_in_groups(@options.group.split(','))]
+          node_locations = [*Node.find_nodes_in_groups(@options.group.split(','))]
           nodes = []
           node_locations.each do |location|
             nodes.push(Node.new(location))
