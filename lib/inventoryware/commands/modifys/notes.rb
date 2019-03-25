@@ -24,14 +24,16 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-require 'inventoryware/commands/single_node_command'
+require 'inventoryware/commands/multi_node_command'
+require 'inventoryware/node'
 
 module Inventoryware
   module Commands
     module Modifys
-      class Notes < SingleNodeCommand
-        def action(nodes)
-          nodes = *nodes unless nodes.is_a?(Array)
+      class Notes < MultiNodeCommand
+        def run
+          nodes = find_nodes()
+          nodes.map! { |n| Node.new(n) }
           node = nodes.first
 
           notes = node.data['mutable'].fetch('notes', '')
