@@ -38,13 +38,9 @@ module Inventoryware
           notes = edit_with_tmp_file(notes, :rvim).strip
 
           nodes.each do |node|
-            save_notes(node, notes)
+            node.data['mutable']['notes'] = notes
+            node.save
           end
-        end
-
-        def save_notes(node, notes)
-          node.data['mutable']['notes'] = notes
-          node.save
         end
       end
     end
