@@ -76,6 +76,11 @@ There should be no arguments - all assets are being parsed
             node_locations.push(*Node.find_nodes_in_groups(options.group.split(',')))
           end
         end
+        if node_locations.empty?
+          raise ArgumentError, <<-ERROR.chomp
+No assets found
+          ERROR
+        end
         return node_locations
       end
     end
