@@ -37,10 +37,13 @@ module Inventoryware
                 else
                   Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
                 end
-        file_names = get_file_names(files)
 
-        unless file_names.empty?
-          puts file_names.sort
+        unless files.empty?
+          type_hash = create_hash_of_types(files.map { |f| Node.new(f) })
+          type_hash.each do |k,v|
+            puts "##{k.upcase}"
+            puts v.sort
+          end
         else
           return if @options.group
           puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
@@ -49,10 +52,13 @@ module Inventoryware
 
       private
 
-      def get_file_names(files)
-        files.map! do |file|
-          File.basename(file, '.yaml')
+      def create_hash_of_types(nodes)
+        type_hash = {}
+        nodes.each do |node|
+          type_hash[node.type] = [] unless type_hash.key?(node.type)
+          type_hash[node.type] << node.name
         end
+        return type_hash.sort.to_h
       end
     end
   end
