@@ -39,14 +39,6 @@ module Inventoryware
       def run
         name = @argv[0]
 
-        # Error to prevent further execution when no argument is specified
-        # for commands with no mandatory arguments e.g. modify notes
-        if name.nil? && !@options
-          raise ArgumentError, <<-ERROR.chomp
-Please provide at least one asset
-          ERROR
-        end
-
         # error to prevent confusion if attempting to provide >1 node
         if NodeattrUtils::NodeParser.expand(name).length > 1
           raise ArgumentError, <<-ERROR.chomp
@@ -56,14 +48,8 @@ Issue with argument name, please only provide a single asset
 
         if @options.create
           location = File.join(Config.yaml_dir, "#{name}.yaml")
-          nodes = Node.new(location)
-          nodes.create_if_non_existent(Utils.get_new_asset_type)
-        elsif @options.group
-          node_locations = [*Node.find_nodes_in_groups(@options.group.split(','))]
-          nodes = []
-          node_locations.each do |location|
-            nodes.push(Node.new(location))
-          end
+          node = Node.new(location)
+          node.create_if_non_existent(Utils.get_new_asset_type)
         else
           found = Utils.find_file(name, Config.yaml_dir)
           unless found.length == 1
@@ -71,10 +57,10 @@ Issue with argument name, please only provide a single asset
 Please refine your search
             ERROR
           end
-          nodes = Node.new(found[0])
+          node = Node.new(found[0])
         end
 
-        action(nodes)
+        action(node)
       end
 
       def action
