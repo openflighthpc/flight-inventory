@@ -109,9 +109,9 @@ module Inventoryware
       end
     end
 
-    def initialize(location)
-      @location = location
-      @name = File.basename(location, File.extname(location))
+    def initialize(path)
+      @path = path
+      @name = File.basename(path, File.extname(path))
     end
 
     def data
@@ -123,11 +123,11 @@ module Inventoryware
     end
 
     def open
-      node_data = Utils.load_yaml(@location)
+      node_data = Utils.load_yaml(@path)
       # condition for if the .yaml is empty
       unless node_data
         raise ParseError, <<-ERROR.chomp
-Yaml in #{@location} is empty - aborting
+Yaml in #{@path} is empty - aborting
         ERROR
       end
       @data = node_data.values[0]
@@ -135,17 +135,17 @@ Yaml in #{@location} is empty - aborting
     end
 
     def save
-      unless Utils.check_file_writable?(@location)
+      unless Utils.check_file_writable?(@path)
         raise FileSysError, <<-ERROR.chomp
-Output file #{@location} not accessible - aborting
+Output file #{@path} not accessible - aborting
         ERROR
       end
       yaml_hash = {data['name'] => data}
-      File.open(@location, 'w') { |file| file.write(yaml_hash.to_yaml) }
+      File.open(@path, 'w') { |file| file.write(yaml_hash.to_yaml) }
     end
 
     def create_if_non_existent(type = '')
-      unless Utils.check_file_readable?(@location)
+      unless Utils.check_file_readable?(@path)
         @data = {
           'name' => @name,
           'mutable' => {},
@@ -155,6 +155,6 @@ Output file #{@location} not accessible - aborting
       end
     end
 
-    attr_reader :location, :name
+    attr_reader :path, :name
   end
 end
