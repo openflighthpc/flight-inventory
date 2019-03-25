@@ -33,8 +33,7 @@ module Inventoryware
     module Modifys
       class Map < MultiNodeCommand
         def run
-          nodes = find_nodes()
-          nodes.map! { |n| Node.new(n) }
+          nodes = fetch_nodes()
           node = nodes.first
 
           prompt = TTY::Prompt.new

@@ -33,12 +33,15 @@ require 'nodeattr_utils'
 module Inventoryware
   module Commands
     class MultiNodeCommand < Command
-      def find_nodes(*args)
+      def fetch_nodes(*args)
         resolve_node_options(@argv, @options, args)
 
         nodes = @argv[args.length]
 
-        node_locations = locate_nodes(nodes, @options)
+        node_paths = find_nodes(nodes, @options)
+        node_paths = node_paths.uniq
+        nodes = node_paths.map { |p| Node.new(p) }
+        #create if non-existant here
       end
 
       private
@@ -64,7 +67,7 @@ There should be no arguments - all assets are being parsed
 
       # given a set of nodes and relevant options returns an expanded list
       #   of all the necessary nodes
-      def locate_nodes(nodes, options)
+      def find_nodes(nodes, options)
         node_locations = []
         if options.all
           node_locations = Node.find_all_nodes

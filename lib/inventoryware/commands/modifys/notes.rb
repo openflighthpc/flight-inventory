@@ -32,8 +32,7 @@ module Inventoryware
     module Modifys
       class Notes < MultiNodeCommand
         def run
-          nodes = find_nodes()
-          nodes.map! { |n| Node.new(n) }
+          nodes = fetch_nodes()
           node = nodes.first
 
           notes = node.data['mutable'].fetch('notes', '')
