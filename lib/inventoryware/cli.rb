@@ -129,9 +129,10 @@ module Inventoryware
     end
 
     command :'modify map' do |c|
-      cli_syntax(c, 'ASSET')
+      cli_syntax(c, '[ASSET_SPEC]')
       c.description = "Modify mapping data for an asset"
       c.hidden = true
+      add_multi_node_options(c)
       add_create_option(c)
       action(c, Commands::Modifys::Map)
     end
