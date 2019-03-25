@@ -67,7 +67,7 @@ There should be no arguments - all assets are being parsed
       def locate_nodes(nodes, options)
         node_locations = []
         if options.all
-          node_locations = find_all_nodes
+          node_locations = Utils.find_all_nodes
         else
           if nodes
             node_locations.push(*find_single_nodes(nodes, !!options.create))
