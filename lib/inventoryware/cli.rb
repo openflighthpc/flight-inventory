@@ -137,7 +137,7 @@ module Inventoryware
     end
 
     command :'modify notes' do |c|
-      cli_syntax(c, 'ASSET')
+      cli_syntax(c, '[ASSET_SPEC]')
       c.description = "Modify miscellaneous notes for an asset"
       c.hidden = true
       add_multi_node_options(c)
