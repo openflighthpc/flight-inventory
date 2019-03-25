@@ -50,8 +50,6 @@ Cannot modify '#{field}' this way
           end
 
           fetch_nodes("modification").each do |node|
-            type = Utils.get_new_asset_type if @options.create
-            node.create_if_non_existent(type)
             if value
               node.data['mutable'][field] = value
             else

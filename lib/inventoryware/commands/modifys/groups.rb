@@ -42,8 +42,6 @@ Cannot remove a primary group
           group = @argv[0]
 
           fetch_nodes("group").each do |node|
-            type = Utils.get_new_asset_type if @options.create
-            node.create_if_non_existent(type)
             if @options.primary
               node.data['mutable']['primary_group'] = group
             else

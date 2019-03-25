@@ -41,7 +41,14 @@ module Inventoryware
         node_paths = find_nodes(nodes, @options)
         node_paths = node_paths.uniq
         nodes = node_paths.map { |p| Node.new(p) }
-        #create if non-existant here
+        if @options.create
+          new_nodes = nodes.select { |n| not File.file?(n.path) }
+          unless new_nodes.empty?
+            type = Utils.get_new_asset_type
+            new_nodes.each { |n| n.create_if_non_existent(type) }
+          end
+        end
+        return nodes
       end
 
       private
