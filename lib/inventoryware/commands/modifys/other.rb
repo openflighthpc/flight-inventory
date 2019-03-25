@@ -49,10 +49,7 @@ Cannot modify '#{field}' this way
             ERROR
           end
 
-          find_nodes("modification").each do |location|
-            node = Node.new(location)
-            type = Utils.get_new_asset_type if @options.create
-            node.create_if_non_existent(type)
+          fetch_nodes("modification").each do |node|
             if value
               node.data['mutable'][field] = value
             else

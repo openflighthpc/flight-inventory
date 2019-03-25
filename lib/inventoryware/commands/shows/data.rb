@@ -31,7 +31,7 @@ module Inventoryware
     module Shows
       class Data < SingleNodeCommand
         def action(node)
-          File.open(node.location) do |file|
+          File.open(node.path) do |file|
             puts file.read
           end
         end

@@ -82,13 +82,17 @@ module Inventoryware
 
       def add_multi_node_options(command)
         command.option '--all', "Select all assets"
-        command.option '-g', '--group GROUP',
-                       "Select assets in GROUP, specify commma-separated list for multiple groups"
+        add_group_option(command)
       end
 
       def add_create_option(command)
         command.option '-c', '--create',
-                       "Create specified asset(s) if they don't exist"
+          "Create specified asset(s) if they don't exist"
+      end
+
+      def add_group_option(command)
+        command.option '-g', '--group GROUP',
+          "Select assets in GROUP, specify comma-separated list for multiple groups"
       end
     end
 
@@ -125,17 +129,19 @@ module Inventoryware
     end
 
     command :'modify map' do |c|
-      cli_syntax(c, 'ASSET')
-      c.description = "Modify mapping data for an asset"
+      cli_syntax(c, '[ASSET_SPEC]')
+      c.description = "Modify mapping data for one or more assets"
       c.hidden = true
+      add_multi_node_options(c)
       add_create_option(c)
       action(c, Commands::Modifys::Map)
     end
 
     command :'modify notes' do |c|
-      cli_syntax(c, 'ASSET')
-      c.description = "Modify miscellaneous notes for an asset"
+      cli_syntax(c, '[ASSET_SPEC]')
+      c.description = "Modify miscellaneous notes for one or more assets"
       c.hidden = true
+      add_multi_node_options(c)
       add_create_option(c)
       action(c, Commands::Modifys::Notes)
     end
@@ -143,7 +149,7 @@ module Inventoryware
     command :list do |c|
       cli_syntax(c)
       c.description = "List all assets that have stored data"
-      add_multi_node_options(c)
+      add_group_option(c)
       action(c, Commands::List)
     end
 

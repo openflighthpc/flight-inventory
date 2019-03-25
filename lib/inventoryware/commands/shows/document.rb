@@ -39,24 +39,20 @@ module Inventoryware
     module Shows
       class Document < MultiNodeCommand
         def run
-          node_locations = find_nodes()
-          node_locations = node_locations.uniq
-          node_locations = node_locations.sort_by do |location|
-            File.basename(location)
-          end
+          nodes = fetch_nodes()
+          nodes = nodes.sort_by { |node| node.name }
 
-          output(node_locations, @options.location)
+          output(nodes, @options.location)
         end
 
         private
-        def output(node_locations, out_dest)
+        def output(nodes, out_dest)
           out = ""
           # check, will loading all output cause issues with memory size?
           # probably fine - 723 nodes was 350Kb
-          node_locations.each do |location|
-            node = Node.new(location)
+          nodes.each do |node|
             out += fill_template(node, find_template(node), render_env)
-            $stderr.puts "Rendered #{File.basename(location, '.yaml')}"
+            $stderr.puts "Rendered #{File.basename(node.path, '.yaml')}"
           end
 
           if out_dest
@@ -143,7 +139,7 @@ Please refine your search and try again.
           rescue StandardError => e
             unless @options.debug
               raise ParseError, <<-ERROR.chomp
-Error filling template using #{File.basename(node_location)}.
+Error filling template using #{File.basename(node.path)}.
 Use '--debug' for more information
               ERROR
             else

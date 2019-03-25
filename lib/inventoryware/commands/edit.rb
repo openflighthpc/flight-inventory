@@ -35,7 +35,7 @@ module Inventoryware
         node.save
         # maybe don't create unless saved? i.e. don't create the file above
         # instead save as closing
-        TTY::Editor.open(node.location, command: :rvim)
+        TTY::Editor.open(node.path, command: :rvim)
       end
     end
   end

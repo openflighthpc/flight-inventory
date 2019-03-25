@@ -24,23 +24,31 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-require 'inventoryware/commands/single_node_command'
+require 'inventoryware/commands/multi_node_command'
 require 'inventoryware/exceptions'
+require 'inventoryware/node'
 
 module Inventoryware
   module Commands
     module Modifys
-      class Map < SingleNodeCommand
-        def action(node)
+      class Map < MultiNodeCommand
+        def run
+          nodes = fetch_nodes()
+          node = nodes.first
+
           prompt = TTY::Prompt.new
           unless prompt.no?('Would you like to add map metadata? (Default: No)')
-            get_map_metadata_from_user(node, prompt)
+            get_map_metadata_from_user(nodes, prompt)
           end
 
           map = map_to_string(node.data['mutable']['map'])
-          map = string_to_map(edit_with_tmp_file(map, :"rvim +'set number'"))
-          node.data['mutable']['map'] = map
-          node.save
+          map = string_to_map(Utils.edit_with_tmp_file(map,
+                                                       :"rvim +'set number'"))
+
+          nodes.each do |node|
+            node.data['mutable']['map'] = map
+            node.save
+          end
         end
 
         # takes a hash with numerical keys
@@ -74,7 +82,7 @@ Error parsing map - Non-integer keys
           return map
         end
 
-        def get_map_metadata_from_user(node, prompt)
+        def get_map_metadata_from_user(nodes, prompt)
           prompt.say('Enter integer values for the dimensions of the map:')
 
           x = prompt.ask('X:') do |q|
@@ -90,8 +98,10 @@ Error parsing map - Non-integer keys
             %w(DownRight RightDown RightUp UpRight)
           )
 
-          node.data['mutable']['map_dimensions'] = "#{x}x#{y}"
-          node.data['mutable']['map_pattern'] = pattern
+          nodes.each do |node|
+            node.data['mutable']['map_dimensions'] = "#{x}x#{y}"
+            node.data['mutable']['map_pattern'] = pattern
+          end
         end
       end
     end

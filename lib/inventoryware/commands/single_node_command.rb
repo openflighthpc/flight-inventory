@@ -38,7 +38,8 @@ module Inventoryware
     class SingleNodeCommand < Command
       def run
         name = @argv[0]
-        # error to prevent confusion if attempting to provide >1 asset
+
+        # error to prevent confusion if attempting to provide >1 node
         if NodeattrUtils::NodeParser.expand(name).length > 1
           raise ArgumentError, <<-ERROR.chomp
 Issue with argument name, please only provide a single asset
@@ -64,20 +65,6 @@ Please refine your search
 
       def action
         raise NotImplementedError
-      end
-
-      def edit_with_tmp_file(text, command)
-        tmp_file = Tempfile.new('inv_ware_file_')
-        begin
-          TTY::Editor.open(tmp_file.path,
-                           content: text,
-                           command: command)
-          edited = tmp_file.read
-        ensure
-          tmp_file.close
-          tmp_file.unlink
-        end
-        return edited
       end
     end
   end
