@@ -87,12 +87,12 @@ module Inventoryware
 
       def add_create_option(command)
         command.option '-c', '--create',
-                       "Create specified asset(s) if they don't exist"
+          "Create specified asset(s) if they don't exist"
       end
 
       def add_group_option(command)
         command.option '-g', '--group GROUP',
-                       "Select assets in GROUP, specify comma-separated list for multiple groups"
+          "Select assets in GROUP, specify comma-separated list for multiple groups"
       end
     end
 
