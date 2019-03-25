@@ -46,6 +46,7 @@ module Inventoryware
       # seems fine as it stands but if speed becomes an issue could stand to
       #   be changed
       def find_nodes_in_groups(groups)
+        groups = *groups unless groups.is_a?(Array)
         nodes = []
         find_all_nodes().each do |location|
           found = []
