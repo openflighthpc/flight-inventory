@@ -30,9 +30,19 @@ module Inventoryware
   module Commands
     module Modifys
       class Notes < SingleNodeCommand
-        def action(node)
+        def action(nodes)
+          nodes = *nodes unless nodes.is_a?(Array)
+          node = nodes.first
+
           notes = node.data['mutable'].fetch('notes', '')
           notes = edit_with_tmp_file(notes, :rvim).strip
+
+          nodes.each do |node|
+            save_notes(node, notes)
+          end
+        end
+
+        def save_notes(node, notes)
           node.data['mutable']['notes'] = notes
           node.save
         end
