@@ -169,6 +169,8 @@ module Inventoryware
     command :'show data' do |c|
       cli_syntax(c, 'ASSET')
       c.description = "View stored data for an asset"
+      c.option '-m', '--map INDEX',
+        "Show the assets listed in the specified index of the specified asset's map"
       c.hidden = true
       action(c, Commands::Shows::Data)
     end
