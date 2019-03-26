@@ -31,8 +31,55 @@ module Inventoryware
     module Shows
       class Data < SingleNodeCommand
         def action(node)
-          File.open(node.path) do |file|
+          if @options.map
+            read_map(node, @options.map)
+          else
+            output_file(node.path)
+          end
+        end
+
+        def output_file(path)
+          File.open(path) do |file|
             puts file.read
+          end
+        end
+
+        def read_map(node, index)
+          unless index.to_i.to_s == index
+            raise ArgumentError, <<-ERROR.chomp
+Please provide an integer index
+            ERROR
+          end
+
+          index = index.to_i
+
+          unless node.data.dig('mutable', 'map')
+            raise InventorywareError, <<-ERROR.chomp
+Asset #{node.name} does not have map data
+            ERROR
+          end
+
+          unless node.data.dig('mutable', 'map', index)
+            raise InventorywareError, <<-ERROR.chomp
+Asset #{node.name}'s map does not have an index #{index}
+            ERROR
+          end
+
+          line = node.data['mutable']['map'][index]
+          #split on whitespace, commas and equals
+          words = line.split(/[\s,=]/)
+          asset_paths = []
+          words.each do |word|
+            path = File.join(Config.yaml_dir, "#{word}.yaml")
+            asset_paths << path if File.file?(path)
+          end
+
+          if asset_paths.length < 1
+            puts "No assets found under that index"
+          elsif asset_paths.length == 1
+            output_file(asset_paths[0])
+          elsif asset_paths.length > 1
+            puts asset_paths.map { |p| File.basename(p, File.extname(p)) }
           end
         end
       end
