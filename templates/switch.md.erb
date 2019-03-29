@@ -2,6 +2,6 @@
 
 ## Port Layout
 
-<% @node_data.mutable.map.each do |port, node| %>
-<%= port %>: <%= node %>
+<% @node_hash['mutable']['map'].each do |port, asset| %>
+<%= port %>: <%= asset %>
 <% end %>
