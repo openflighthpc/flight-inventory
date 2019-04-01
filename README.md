@@ -1,6 +1,34 @@
 # Flight Inventory
 
-## Use
+Parser of various hardware information into workable unified formats.
+
+## Overview
+
+Flight Inventory is an asset management tool that parses various Linux command
+outputs (e.g. `lshw` and `lsblk`) into YAML data which can be modified and used
+to render asset documents.
+
+## Installation
+
+For installation instructions please read INSTALL.md
+
+## Configuration
+
+### Development
+
+It is recommended that Flight Inventory is developed locally (so you have all your local
+development tools available) and synced, run, and tested in a clean remote environment (to
+be in an environment close to what it will normally use in production, and to avoid polluting
+or depending on things in your local environment).
+
+To aid this there is a MakeFile containing `watch-rsync` instructions
+```
+gem install rerun # If you don't have this already.
+make watch-rsync PASSWORD="password for machine" IP="ip of machine"
+```
+This will keep your working directory synced to `/tmp/flight-inventory`
+
+## Operation
 
 The commands' syntax is as follows:
 ```
@@ -72,25 +100,7 @@ assets in the specified groups will be processed.
 For all the editing and modifying commands if the `--create/-c` option is used a new file will be created
 for each asset if it doesn't already exist.
 
-## Installation
-
-For installation instructions please read INSTALL.md
-
-## Development
-
-It is recommended that Flight Inventory is developed locally (so you have all your local
-development tools available) and synced, run, and tested in a clean remote environment (to
-be in an environment close to what it will normally use in production, and to avoid polluting
-or depending on things in your local environment).
-
-To aid this there is a MakeFile containing `watch-rsync` instructions
-```
-gem install rerun # If you don't have this already.
-make watch-rsync PASSWORD="password for machine" IP="ip of machine"
-```
-This will keep your working directory synced to `/tmp/flight-inventory`
-
-## Templates
+### Templates
 
 Templates accepted by Flight Inventory are .erb templates filled using Erubis. The data is accessible through
 a large recursive OpenStruct called `@node_data`. The equivalent data is also available in a hash called
@@ -98,8 +108,29 @@ a large recursive OpenStruct called `@node_data`. The equivalent data is also av
 in order to the accommodate all possible domains of use, the system will dynamically read any code stored in
 the top level `helpers/` directory and utilise that for filling the specified template.
 
-# License
+# Contributing
 
-Eclipse Public License 2.0, see LICENSE.txt for details.
+Fork the project. Make your feature addition or bug fix. Send a pull
+request. Bonus points for topic branches.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
+# Copyright and License
+
+Eclipse Public License 2.0, see [LICENSE.txt](LICENSE.txt) for details.
 
 Copyright (C) 2019-present Alces Flight Ltd.
+
+This program and the accompanying materials are made available under
+the terms of the Eclipse Public License 2.0 which is available at
+[https://www.eclipse.org/legal/epl-2.0](https://www.eclipse.org/legal/epl-2.0),
+or alternative license terms made available by Alces Flight Ltd -
+please direct inquiries about licensing to
+[licensing@alces-flight.com](mailto:licensing@alces-flight.com).
+
+Flight Inventory is distributed in the hope that it will be
+useful, but WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER
+EXPRESS OR IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR
+CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR
+A PARTICULAR PURPOSE. See the [Eclipse Public License 2.0](https://opensource.org/licenses/EPL-2.0) for more
+details.
