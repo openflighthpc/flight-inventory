@@ -43,11 +43,11 @@ module Inventoryware
       # retreives all nodes in the given groups
       # note: if speed becomes an issue this should be reverted back to the old
       # method of converting the yaml to a string and searching with regex
-      def find_nodes_in_groups(groups)
+      def find_nodes_in_groups(groups, node_list = find_all_nodes())
         keys = ['primary_group', 'secondary_groups']
         groups = *groups unless groups.is_a?(Array)
         nodes = []
-        find_all_nodes().each do |node|
+        node_list.each do |node|
           found = []
           mutable = node.data['mutable']
           keys.each do |key|
@@ -66,11 +66,11 @@ module Inventoryware
       # retreives all nodes with the given type
       # This cannot easily be done by converting the yaml to a string and
       # searching with regex as the `lshw` hash has keys called 'type'
-      def find_nodes_with_types(target_types)
+      def find_nodes_with_types(target_types, node_list = find_all_nodes())
         key = ['type']
         target_types = *target_types unless target_types.is_a?(Array)
         nodes = []
-        find_all_nodes().each do |node|
+        node_list.each do |node|
           if target_types.include?(node.type)
             nodes.append(node)
           end

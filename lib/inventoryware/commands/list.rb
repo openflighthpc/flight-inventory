@@ -33,18 +33,19 @@ module Inventoryware
     class List < Command
       def run
         # note: this process has become quite time intensive when options are
-        # passed -  taking suggestions on speeding it up
+        # passed - taking suggestions on speeding it up
         nodes = if not @options.group and not @options.type
                   Node.find_all_nodes
                 else
                   found = []
+                  all_nodes = Node.find_all_nodes
                   if @options.group
                     groups = @options.group.split(',')
-                    found.concat(Node.find_nodes_in_groups(groups))
+                    found.concat(Node.find_nodes_in_groups(groups, all_nodes))
                   end
                   if @options.type
                     types = @options.type.split(',')
-                    found.concat(Node.find_nodes_with_types(types))
+                    found.concat(Node.find_nodes_with_types(types, all_nodes))
                   end
                   Node.make_unique(found)
                 end
