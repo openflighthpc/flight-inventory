@@ -41,21 +41,17 @@ module Inventoryware
       end
 
       # retreives all nodes in the given groups
-      # this quite an intensive method of way to go about searching the yaml
-      # each file is converted to a sting and then searched
-      # seems fine as it stands but if speed becomes an issue could stand to
-      #   be changed
+      # note: if speed becomes an issue this should be reverted back to the old
+      # method of converting the yaml to a string and searching with regex
       def find_nodes_in_groups(groups)
+        keys = ['primary_group', 'secondary_groups']
         groups = *groups unless groups.is_a?(Array)
         nodes = []
         find_all_nodes().each do |location|
           found = []
-          File.open(location) do |file|
-            contents = file.read
-            m = contents.match(/primary_group: (.*?)$/)
-            found.append(m[1]) if m
-            m = contents.match(/secondary_groups: (.*?)$/)
-            found = found + (m[1].split(',')) if m
+          mutable = Node.new(location).data['mutable']
+          keys.each do |key|
+            found = found + mutable[key].split(',') if mutable.key?(key)
           end
           unless (found & groups).empty?
             nodes.append(location)
