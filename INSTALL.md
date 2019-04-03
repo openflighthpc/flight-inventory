@@ -1,6 +1,6 @@
-## Installation
+# Installing Flight Inventory
 
-### Generic
+## Generic
 
 Flight Inventory requires a recent version of `ruby` (2.5.1<=) and `bundler`.
 The following will install from source using `git`:
@@ -14,7 +14,7 @@ The entry script is located at `bin/inventory`
 
 Note: Interactive editing requires `vim` be installed, this is available in most standard package repositories (yum/zypper/apt/etc).
 
-### Installing with Flight Runway
+## Installing with Flight Runway
 
 Flight Runway (and Flight Tools) provides the Ruby environment and command-line helpers for running openflightHPC tools.
 
