@@ -66,20 +66,17 @@ Asset #{node.name}'s map does not have an index #{index}
           end
 
           line = node.data['mutable']['map'][index]
-          #split on whitespace, commas and equals
-          words = line.split(/[\s,=]/)
-          asset_paths = []
-          words.each do |word|
-            path = File.join(Config.yaml_dir, "#{word}.yaml")
-            asset_paths << path if File.file?(path)
+
+          asset_names = Dir[File.join(Config.yaml_dir, '*')].map do |p|
+            p = File.basename(p, File.extname(p))
           end
 
-          if asset_paths.length < 1
+          asset_names.select! { |name| line.include?(name) }
+
+          if asset_names.empty?
             puts "No assets found under that index"
-          elsif asset_paths.length == 1
-            output_file(asset_paths[0])
-          elsif asset_paths.length > 1
-            puts asset_paths.map { |p| File.basename(p, File.extname(p)) }
+          else
+            puts asset_names
           end
         end
       end
