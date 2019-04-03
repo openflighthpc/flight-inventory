@@ -63,6 +63,25 @@ module Inventoryware
         return nodes
       end
 
+      # retreives all nodes with the given type
+      # This cannot easily be done by converting the yaml to a string and
+      # searching with regex as the `lshw` hash has keys called 'type'
+      def find_nodes_with_types(target_types)
+        key = ['type']
+        target_types = *target_types unless target_types.is_a?(Array)
+        nodes = []
+        find_all_nodes().each do |location|
+          node_type = Node.new(location).type
+          if target_types.include?(node_type)
+            nodes.append(location)
+          end
+        end
+        if nodes.empty?
+          $stderr.puts "No assets found with type #{target_types.join(' or ')}."
+        end
+        return nodes
+      end
+
       # retreives the .yaml file for each of the given nodes
       # expands node ranges if they exist
       # if return missing is passed, returns paths to the .yamls of non-existent
