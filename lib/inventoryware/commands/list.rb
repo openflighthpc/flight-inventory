@@ -45,8 +45,8 @@ module Inventoryware
             puts v.sort
           end
         else
-          return if @options.group
-          puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
+          return if @options.group or @options.type
+          $stderr.puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
         end
       end
 
