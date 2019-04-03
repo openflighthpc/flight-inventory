@@ -42,6 +42,10 @@ module Inventoryware
                     groups = @options.group.split(',')
                     found.concat(Node.find_nodes_in_groups(groups))
                   end
+                  if @options.type
+                    types = @options.type.split(',')
+                    found.concat(Node.find_nodes_with_types(types))
+                  end
                   Node.make_unique(found)
                 end
 
