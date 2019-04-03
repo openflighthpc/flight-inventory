@@ -36,18 +36,10 @@ module Inventoryware
       def fetch_nodes(*args)
         resolve_node_options(@argv, @options, args)
 
-        nodes = @argv[args.length]
+        node_names = @argv[args.length]
 
-        node_paths = find_nodes(nodes, @options)
-        node_paths = node_paths.uniq
-        nodes = node_paths.map { |p| Node.new(p) }
-        if @options.create
-          new_nodes = nodes.select { |n| not File.file?(n.path) }
-          unless new_nodes.empty?
-            type = Utils.get_new_asset_type
-            new_nodes.each { |n| n.create_if_non_existent(type) }
-          end
-        end
+        nodes = find_nodes(node_names, @options)
+        nodes = Node.make_unique(nodes)
         return nodes
       end
 
@@ -74,24 +66,24 @@ There should be no arguments - all assets are being parsed
 
       # given a set of nodes and relevant options returns an expanded list
       #   of all the necessary nodes
-      def find_nodes(nodes, options)
-        node_locations = []
+      def find_nodes(node_names, options)
+        nodes = []
         if options.all
-          node_locations = Node.find_all_nodes
+          nodes = Node.find_all_nodes
         else
-          if nodes
-            node_locations.push(*Node.find_single_nodes(nodes, !!options.create))
+          if node_names
+            nodes.push(*Node.find_single_nodes(node_names, !!options.create))
           end
           if options.group
-            node_locations.push(*Node.find_nodes_in_groups(options.group.split(',')))
+            nodes.push(*Node.find_nodes_in_groups(options.group.split(',')))
           end
         end
-        if node_locations.empty?
+        if nodes.empty?
           raise ArgumentError, <<-ERROR.chomp
 No assets found
           ERROR
         end
-        return node_locations
+        return nodes
       end
     end
   end
