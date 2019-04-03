@@ -53,7 +53,7 @@ module Inventoryware
         unless nodes.empty?
           type_hash = create_hash_of_types(nodes)
           type_hash.each do |k,v|
-            puts "##{k.upcase}"
+            puts "\n##{k.upcase}"
             puts v.sort
           end
         else
