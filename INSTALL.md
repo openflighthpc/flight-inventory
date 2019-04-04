@@ -1,6 +1,6 @@
-## Installation
+# Installing Flight Inventory
 
-### Generic
+## Generic
 
 Flight Inventory requires a recent version of `ruby` (2.5.1<=) and `bundler`.
 The following will install from source using `git`:
@@ -28,7 +28,7 @@ Integrate Flight Inventory to runway:
 [root@myhost ~]# flintegrate /opt/flight/opt/openflight-tools/tools/flight-inventory.yml
 Loading integration instructions ... OK.
 Verifying instructions ... OK.
-Downloading from URL: https://github.com/alces-software/underware/archive/master.zip ... OK.
+Downloading from URL: https://github.com/openflighthpc/flight-inventory/archive/master.zip ... OK.
 Extracting archive ... OK.
 Performing configuration ... OK.
 Integrating ... OK.
