@@ -2,9 +2,9 @@
 
 source 'https://rubygems.org'
 
-gem 'commander', github: 'alces-software/commander', :tag => '4.4.4.alces3'
+gem 'commander-openflighthpc'
 gem 'erubis'
-gem 'nodeattr_utils', github: 'alces-software/nodeattr_utils'
+gem 'nodeattr_utils'
 gem 'recursive-open-struct'
 gem 'rubyzip'
 gem 'tty-editor'

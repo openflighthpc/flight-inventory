@@ -1,25 +1,14 @@
-GIT
-  remote: git://github.com/alces-software/commander.git
-  revision: 89523312cc16c5454d79b598bec05112ee529d5d
-  tag: 4.4.4.alces3
-  specs:
-    commander (4.4.4.pre.alces2)
-      highline (~> 1.7.2)
-
-GIT
-  remote: git://github.com/alces-software/nodeattr_utils.git
-  revision: f5a390bd8701db67ee83284b0c4a900a97de2adf
-  specs:
-    nodeattr_utils (0.1.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
+    commander-openflighthpc (1.0.0)
+      highline (~> 1.7.2)
     equatable (0.5.0)
     erubis (2.7.0)
     escape_utils (1.2.1)
     highline (1.7.10)
     necromancer (0.4.0)
+    nodeattr_utils (1.0.0)
     ox (2.10.0)
     paint (2.1.0)
     pastel (0.7.2)
@@ -54,9 +43,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  commander!
+  commander-openflighthpc
   erubis
-  nodeattr_utils!
+  nodeattr_utils
   paint
   recursive-open-struct
   rubyzip
