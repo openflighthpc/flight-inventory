@@ -36,6 +36,7 @@ module Inventoryware
       File.extname(path) == ".zip"
     end
 
+    #TODO refine these methods, they're mostly unnecessary
     def self.check_file_writable?(path)
       return false unless check_file_location?(path)
       return false if File.exist?(path) and not File.writable?(path)

@@ -32,21 +32,33 @@ module Inventoryware
   module Commands
     class List < Command
       def run
-        files = if @options.group
-                  Node.find_nodes_in_groups(@options.group.split(','))
+        # note: this process has become quite time intensive when options are
+        # passed - taking suggestions on speeding it up
+        nodes = if not @options.group and not @options.type
+                  Node.find_all_nodes
                 else
-                  Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
+                  found = []
+                  all_nodes = Node.find_all_nodes
+                  if @options.group
+                    groups = @options.group.split(',')
+                    found.concat(Node.find_nodes_in_groups(groups, all_nodes))
+                  end
+                  if @options.type
+                    types = @options.type.split(',')
+                    found.concat(Node.find_nodes_with_types(types, all_nodes))
+                  end
+                  Node.make_unique(found)
                 end
 
-        unless files.empty?
-          type_hash = create_hash_of_types(files.map { |f| Node.new(f) })
+        unless nodes.empty?
+          type_hash = create_hash_of_types(nodes)
           type_hash.each do |k,v|
-            puts "##{k.upcase}"
+            puts "\n##{k.upcase}"
             puts v.sort
           end
         else
-          return if @options.group
-          puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
+          return if @options.group or @options.type
+          $stderr.puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
         end
       end
 

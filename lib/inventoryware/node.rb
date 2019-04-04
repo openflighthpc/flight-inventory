@@ -32,37 +32,51 @@ module Inventoryware
     class << self
       # retrieves all .yaml files in the storage dir
       def find_all_nodes()
-        node_locations = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
-        if node_locations.empty?
+        node_paths = Dir.glob(File.join(Config.yaml_dir, '*.yaml'))
+        if node_paths.empty?
           $stderr.puts "No asset data found "\
             "in #{File.expand_path(Config.yaml_dir)}"
         end
-        return node_locations
+        return node_paths.map { |p| Node.new(p) }
       end
 
       # retreives all nodes in the given groups
-      # this quite an intensive method of way to go about searching the yaml
-      # each file is converted to a sting and then searched
-      # seems fine as it stands but if speed becomes an issue could stand to
-      #   be changed
-      def find_nodes_in_groups(groups)
+      # note: if speed becomes an issue this should be reverted back to the old
+      # method of converting the yaml to a string and searching with regex
+      def find_nodes_in_groups(groups, node_list = find_all_nodes())
+        keys = ['primary_group', 'secondary_groups']
         groups = *groups unless groups.is_a?(Array)
         nodes = []
-        find_all_nodes().each do |location|
+        node_list.each do |node|
           found = []
-          File.open(location) do |file|
-            contents = file.read
-            m = contents.match(/primary_group: (.*?)$/)
-            found.append(m[1]) if m
-            m = contents.match(/secondary_groups: (.*?)$/)
-            found = found + (m[1].split(',')) if m
+          mutable = node.data['mutable']
+          keys.each do |key|
+            found = found + mutable[key].split(',') if mutable.key?(key)
           end
           unless (found & groups).empty?
-            nodes.append(location)
+            nodes.append(node)
           end
         end
         if nodes.empty?
           $stderr.puts "No assets found in #{groups.join(' or ')}."
+        end
+        return nodes
+      end
+
+      # retreives all nodes with the given type
+      # This cannot easily be done by converting the yaml to a string and
+      # searching with regex as the `lshw` hash has keys called 'type'
+      def find_nodes_with_types(target_types, node_list = find_all_nodes())
+        key = ['type']
+        target_types = *target_types unless target_types.is_a?(Array)
+        nodes = []
+        node_list.each do |node|
+          if target_types.include?(node.type)
+            nodes.append(node)
+          end
+        end
+        if nodes.empty?
+          $stderr.puts "No assets found with type #{target_types.join(' or ')}."
         end
         return nodes
       end
@@ -72,25 +86,30 @@ module Inventoryware
       # if return missing is passed, returns paths to the .yamls of non-existent
       #   nodes
       def find_single_nodes(node_str, return_missing = false)
-        nodes = expand_asterisks(NodeattrUtils::NodeParser.expand(node_str))
-        $stderr.puts "No assets found for '#{node_str}'" if nodes.empty?
-        node_locations = []
-        nodes.each do |node|
-          node_yaml = "#{node}.yaml"
+        node_names = expand_asterisks(NodeattrUtils::NodeParser.expand(node_str))
+        $stderr.puts "No assets found for '#{node_str}'" if node_names.empty?
+
+        type = nil
+        nodes = []
+        node_names.each do |node_name|
+          node_yaml = "#{node_name}.yaml"
           node_yaml_location = File.join(Config.yaml_dir, node_yaml)
           unless Utils.check_file_readable?(node_yaml_location)
             $stderr.puts "File #{node_yaml} not found within "\
               "#{File.expand_path(Config.yaml_dir)}"
             if return_missing
               $stderr.puts "Creating..."
+              type = type || Utils.get_new_asset_type
             else
               $stderr.puts "Skipping."
               next
             end
           end
-          node_locations.append(node_yaml_location)
+          node = Node.new(node_yaml_location)
+          node.create_if_non_existent(type)
+          nodes.append(node)
         end
-        return node_locations
+        return nodes
       end
 
       def expand_asterisks(nodes)
@@ -106,6 +125,10 @@ module Inventoryware
         nodes.delete_if { |node| node.match(/\*/) }
         nodes.push(*new_nodes)
         return nodes
+      end
+
+      def make_unique(nodes)
+        nodes.uniq { |n| [n.path] }
       end
     end
 

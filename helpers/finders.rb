@@ -25,7 +25,7 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
-#value' can be a regular expression or a plain old string
+#'value' can be a regular expression or a plain old string
 def find_hashes_with_key_value(obj, key, value, store = [])
   if obj.respond_to?(:key?) && obj.key?(key) && /#{value}/.match(obj[key])
     store.push(obj)

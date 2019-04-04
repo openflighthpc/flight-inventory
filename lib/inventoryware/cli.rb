@@ -150,6 +150,8 @@ module Inventoryware
       cli_syntax(c)
       c.description = "List all assets that have stored data"
       add_group_option(c)
+      c.option '-t', '--type TYPE',
+        "Select assets in TYPE, specify comma-separated list for multiple types"
       action(c, Commands::List)
     end
 
