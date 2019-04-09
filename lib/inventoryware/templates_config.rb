@@ -52,11 +52,22 @@ module Inventoryware
 Template config at #{@path} is inaccessible
         ERROR
         end
-        Utils.load_yaml(Config.templates_config_path).tap do |contents|
+        template_data = {}
+        Dir["#{Config.plugins_dir}/*"].each do |plugin|
+          templates_config_file = File.join(plugin,'etc','templates.yml')
+          if File.readable?(templates_config_file)
+            template_data.merge!(load_template_config(templates_config_file))
+          end
+        end
+        template_data.merge!(load_template_config(Config.templates_config_path))
+      end
+
+      def load_template_config(f)
+        Utils.load_yaml(f).tap do |contents|
           unless contents.is_a?(Hash)
             raise ParseError, <<-ERROR.chomp
-Template config at #{Config.template_config_path} is in an incorrect format
-          ERROR
+Template config at #{f} is in an incorrect format
+            ERROR
           end
         end
       end

@@ -55,7 +55,7 @@ module Inventoryware
       @helpers_dir = File.join(@root_dir, 'helpers')
       @plugins_dir = File.join(@root_dir, 'plugins')
 
-      @templates_config_path = File.join(@root_dir, 'etc/templates.conf')
+      @templates_config_path = File.join(@root_dir, 'etc/templates.yml')
 
       @req_files = ["lshw-xml", "lsblk-a-P"]
       @other_files = ["groups"]
