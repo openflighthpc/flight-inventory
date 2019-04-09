@@ -82,6 +82,11 @@ Invalid destination '#{out_dest}'
         Dir[File.join(Config.helpers_dir, '*.rb')].each do |file|
           render_env.instance_eval(File.read(file))
         end
+        Dir["#{Config.plugins_dir}/*"].each do |plugin|
+          Dir["#{plugin}/helpers/*.rb"].each do |file|
+            render_env.instance_eval(File.read(file), file)
+          end
+        end
 
         return render_env
       end
@@ -101,9 +106,16 @@ Invalid destination '#{out_dest}'
           if File.readable?(template_file)
             template = template_file
           else
-            raise RuntimeError, <<-ERROR.chomp
+            plugin = Dir["#{Config.plugins_dir}/*"].find do |plugin|
+              File.readable?(File.join(plugin,'templates', template))
+            end
+            if plugin
+              template = File.join(plugin, 'templates', template)
+            else
+              raise RuntimeError, <<-ERROR.chomp
 Template '#{template}' was not found
               ERROR
+            end
           end
         end
 
