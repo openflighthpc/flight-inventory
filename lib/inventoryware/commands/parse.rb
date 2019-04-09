@@ -54,10 +54,7 @@ The data source should be the only argument
 
         # determine if given path is absolute
         file_name = @argv[0]
-        file_path = Pathname.new(file_name)
-        unless file_path.absolute?
-          file_path = Dir.glob("/**/#{file_name}")[0]
-        end
+        file_path = File.expand_path(file_name)
 
         if file_path.nil?
           raise ArgumentError, <<-ERROR.chomp

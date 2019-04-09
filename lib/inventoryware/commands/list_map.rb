@@ -28,56 +28,42 @@ require 'inventoryware/commands/single_node_command'
 
 module Inventoryware
   module Commands
-    module Shows
-      class Data < SingleNodeCommand
-        def action(node)
-          if @options.map
-            read_map(node, @options.map)
-          else
-            output_file(node.path)
-          end
-        end
+    class ListMap < SingleNodeCommand
+      def action(node)
+        index = @argv[1]
 
-        def output_file(path)
-          File.open(path) do |file|
-            puts file.read
-          end
-        end
-
-        def read_map(node, index)
-          unless index.to_i.to_s == index
-            raise ArgumentError, <<-ERROR.chomp
+        unless index.to_i.to_s == index
+          raise ArgumentError, <<-ERROR.chomp
 Please provide an integer index
             ERROR
-          end
+        end
 
-          index = index.to_i
+        index = index.to_i
 
-          unless node.data.dig('mutable', 'map')
-            raise InventorywareError, <<-ERROR.chomp
-Asset #{node.name} does not have map data
+        unless node.data.dig('mutable', 'map')
+          raise InventorywareError, <<-ERROR.chomp
+Asset '#{node.name}' does not have map data
             ERROR
-          end
+        end
 
-          unless node.data.dig('mutable', 'map', index)
-            raise InventorywareError, <<-ERROR.chomp
-Asset #{node.name}'s map does not have an index #{index}
+        unless node.data.dig('mutable', 'map', index)
+          raise InventorywareError, <<-ERROR.chomp
+Map for asset '#{node.name}' does not have index #{index}
             ERROR
-          end
+        end
 
-          line = node.data['mutable']['map'][index]
+        line = node.data['mutable']['map'][index]
 
-          asset_names = Dir[File.join(Config.yaml_dir, '*')].map do |p|
-            p = File.basename(p, File.extname(p))
-          end
+        asset_names = Dir[File.join(Config.yaml_dir, '*')].map do |p|
+          p = File.basename(p, File.extname(p))
+        end
 
-          asset_names.select! { |name| line.include?(name) }
+        asset_names.select! { |name| line.include?(name) }
 
-          if asset_names.empty?
-            puts "No assets found under that index"
-          else
-            puts asset_names
-          end
+        if asset_names.empty?
+          puts "No assets found under that index"
+        else
+          puts asset_names
         end
       end
     end

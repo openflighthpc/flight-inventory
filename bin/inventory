@@ -35,4 +35,5 @@ require 'bundler'
 Bundler.setup(:default)
 
 require 'inventoryware/cli'
+Dir.chdir(ENV.fetch('FLIGHT_CWD','.'))
 Inventoryware::CLI.run!

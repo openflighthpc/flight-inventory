@@ -30,6 +30,11 @@ require 'tty-editor'
 module Inventoryware
   module Commands
     class Edit < SingleNodeCommand
+      def create
+        @options.create = true
+        run!
+      end
+
       def action(node)
         # output to create the node's file if it doesn't yet exist
         node.save

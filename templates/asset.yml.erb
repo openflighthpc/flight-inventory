@@ -1,0 +1,2 @@
+<%= @node_data.name %>:
+  <%= @node_data.to_hash.to_yaml.split("\n").tap {|a| a.shift}.join("\n  ") %>
