@@ -93,14 +93,18 @@ Error parsing map - Non-integer keys
             q.validate(/^[0-9]+$/, 'Value must be an integer')
           end
 
-          pattern = prompt.select(
-            'Choose the pattern for the map:',
-            %w(DownRight RightDown RightUp UpRight)
-          )
+          choices = {
+            'Down then right (starting at top-left)' => 't-l-v',
+            'Right the down (starting at top-left)' => 't-l-h',
+            'Up then right (starting at bottom-left)' => 'b-l-v',
+            'Right then up (starting at bottom-left)' => 'b-l-h'
+          }
+          layout = prompt.select('Choose the pattern for the map:', choices)
 
           nodes.each do |node|
-            node.data['mutable']['map_dimensions'] = "#{x}x#{y}"
-            node.data['mutable']['map_pattern'] = pattern
+            node.data['mutable']['map_height'] = y
+            node.data['mutable']['map_width'] = x
+            node.data['mutable']['map_layout'] = layout
           end
         end
       end
