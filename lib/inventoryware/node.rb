@@ -44,15 +44,12 @@ module Inventoryware
       # note: if speed becomes an issue this should be reverted back to the old
       # method of converting the yaml to a string and searching with regex
       def find_nodes_in_groups(groups, node_list = find_all_nodes())
-        keys = ['primary_group', 'secondary_groups']
         groups = *groups unless groups.is_a?(Array)
         nodes = []
         node_list.each do |node|
           found = []
-          mutable = node.data['mutable']
-          keys.each do |key|
-            found = found + mutable[key].split(',') if mutable.key?(key)
-          end
+          found = found << node.primary_group if node.primary_group
+          found = found + node.secondary_groups if node.secondary_groups
           unless (found & groups).empty?
             nodes.append(node)
           end
@@ -160,6 +157,32 @@ module Inventoryware
       # return nil if not found (instead of erroring) to match the
       # output of using `@data['type']
       return type
+    end
+
+    #TODO as with `.type`
+    def primary_group
+      return @data.dig('mutable','primary_group') if @data
+      pri_group = nil
+      IO.foreach(@path) do | line|
+        if m = line.match(/^    primary_group: (.*)$/)
+          pri_group = m[1]
+          break
+        end
+      end
+      return pri_group
+    end
+
+    #TODO as with `.type`
+    def secondary_groups
+      return @data.dig('mutable','secondary_groups') if @data
+      sec_groups = nil
+      IO.foreach(@path) do | line|
+        if m = line.match(/^    secondary_groups: (.*)$/)
+          sec_groups = m[1].split(',')
+          break
+        end
+      end
+      return sec_groups
     end
 
     def data=(value)
