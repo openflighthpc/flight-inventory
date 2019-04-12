@@ -67,8 +67,9 @@ module Inventoryware
       def create_hash_of_types(nodes)
         type_hash = {}
         nodes.each do |node|
-          type_hash[node.type] = [] unless type_hash.key?(node.type)
-          type_hash[node.type] << node.name
+          type = node.type
+          type_hash[type] = [] unless type_hash.key?(type)
+          type_hash[type] << node.name
         end
         return type_hash.sort.to_h
       end

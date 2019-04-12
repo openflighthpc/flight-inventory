@@ -143,7 +143,23 @@ module Inventoryware
     end
 
     def type
-      data['type']
+      # hack-y method to save time - rather than load the node's data into mem
+      #   as a hash if the data isn't going to be used for anything, just grep.
+      #   This time saving add up if listing 100s of nodes
+      # TODO UPDATE THIS WHEN THE YAML FORMAT IS CHANGED (issue #119)
+      #   this will alter the amount of whitespace prepending 'type' and as such
+      #   the regex will need to be changed
+      return @data['type'] if @data
+      type = nil
+      IO.foreach(@path) do | line|
+        if m = line.match(/^  type: (.*)$/)
+          type = m[1]
+          break
+        end
+      end
+      # return nil if not found (instead of erroring) to match the
+      # output of using `@data['type']
+      return type
     end
 
     def data=(value)
