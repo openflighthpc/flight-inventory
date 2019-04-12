@@ -69,9 +69,10 @@ module Inventoryware
       def find_nodes_with_types(target_types, node_list = find_all_nodes())
         key = ['type']
         target_types = *target_types unless target_types.is_a?(Array)
+        target_types.map! { |t| t.downcase }
         nodes = []
         node_list.each do |node|
-          if target_types.include?(node.type)
+          if target_types.include?(node.type.downcase)
             nodes.append(node)
           end
         end
