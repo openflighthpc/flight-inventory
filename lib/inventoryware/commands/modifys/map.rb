@@ -85,11 +85,11 @@ Error parsing map - Non-integer keys
         def get_map_metadata_from_user(nodes, prompt)
           prompt.say('Enter integer values for the dimensions of the map:')
 
-          x = prompt.ask('X:') do |q|
+          x = prompt.ask('Width:') do |q|
             q.validate(/^[0-9]+$/, 'Value must be an integer')
           end
 
-          y = prompt.ask('Y:') do |q|
+          y = prompt.ask('Height:') do |q|
             q.validate(/^[0-9]+$/, 'Value must be an integer')
           end
 
