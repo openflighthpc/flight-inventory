@@ -26,5 +26,5 @@
 # ==============================================================================
 
 def imported?
-  @node_hash.key?('lshw') and @node_hash.key?('lsblk')
+  @asset_hash.key?('lshw') and @asset_hash.key?('lsblk')
 end

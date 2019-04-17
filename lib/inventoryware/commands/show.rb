@@ -75,7 +75,7 @@ Invalid destination '#{out_dest}'
       def render_env
         render_env = Module.new do
           class << self
-            attr_reader :node_data
+            attr_reader :asset_data
           end
         end
 
@@ -140,14 +140,14 @@ Please refine your search and try again.
         template_contents = File.read(template)
         eruby = Erubis::Eruby.new(template_contents)
 
-        node_hash = node.data
-        node_data = RecursiveOpenStruct.new(
-          node_hash,
+        asset_hash = node.data
+        asset_data = RecursiveOpenStruct.new(
+          asset_hash,
           recurse_over_arrays: true,
           preserve_original_keys: true
         )
-        render_env.instance_variable_set(:@node_data, node_data)
-        render_env.instance_variable_set(:@node_hash, node_hash)
+        render_env.instance_variable_set(:@asset_data, asset_data)
+        render_env.instance_variable_set(:@asset_hash, asset_hash)
         ctx = render_env.instance_eval { binding }
 
         begin

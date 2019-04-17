@@ -31,7 +31,7 @@ def cpus
     end
   end
   cpus = []
-  find_hashes_with_key_value(@node_hash, 'class', 'processor').each do |cpu_hash|
+  find_hashes_with_key_value(@asset_hash, 'class', 'processor').each do |cpu_hash|
     cpus << create_cpu(cpu_hash)
   end
   cpus

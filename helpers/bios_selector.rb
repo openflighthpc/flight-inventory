@@ -25,7 +25,7 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 def select_bios
-  product = @node_data.lshw.list.node.product rescue ''
+  product = @asset_data.lshw.list.node.product rescue ''
   product = product.downcase.split(' ')
 
   # we look for sub templates with increasingly short names
