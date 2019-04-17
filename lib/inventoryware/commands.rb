@@ -33,7 +33,7 @@ require 'inventoryware/commands/modifys/map'
 require 'inventoryware/commands/modifys/other'
 require 'inventoryware/commands/modifys/notes'
 require 'inventoryware/commands/modifys/groups'
-require 'inventoryware/commands/parse'
+require 'inventoryware/commands/import'
 require 'inventoryware/commands/show'
 
 module Inventoryware

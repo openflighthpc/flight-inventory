@@ -38,7 +38,7 @@ require 'zip'
 
 module Inventoryware
   module Commands
-    class Parse < Command
+    class Import < Command
       def run
         unless @argv.length() == 1
           raise ArgumentError, <<-ERROR.chomp
