@@ -98,7 +98,7 @@ Invalid destination '#{out_dest}'
         template = if @options.template
                      find_template_as_path(@options.template)
                    else
-                     TemplatesConfig.find(@options.format, node.data['type'])
+                     TemplatesConfig.find(@options.format, node.type)
                    end
 
         if ! File.readable?(template)

@@ -146,16 +146,18 @@ module Inventoryware
       # TODO UPDATE THIS WHEN THE YAML FORMAT IS CHANGED (issue #119)
       #   this will alter the amount of whitespace prepending 'type' and as such
       #   the regex will need to be changed
-      return @data['type'] if @data
-      type = nil
-      IO.foreach(@path) do | line|
-        if m = line.match(/^  type: (.*)$/)
-          type = m[1]
-          break
+      if @data
+        type = @data['type']
+      else
+        type = nil
+        IO.foreach(@path) do | line|
+          if m = line.match(/^  type: (.*)$/)
+            type = m[1]
+            break
+          end
         end
       end
-      # return nil if not found (instead of erroring) to match the
-      # output of using `@data['type']
+      type = 'server' unless type
       return type
     end
 
