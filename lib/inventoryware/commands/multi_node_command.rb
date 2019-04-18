@@ -79,9 +79,7 @@ There should be no arguments - all assets are being parsed
           end
         end
         if nodes.empty?
-          raise ArgumentError, <<-ERROR.chomp
-No assets found
-          ERROR
+          raise ArgumentError, "No assets found"
         end
         return nodes
       end

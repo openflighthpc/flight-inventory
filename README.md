@@ -103,8 +103,8 @@ for each asset if it doesn't already exist.
 ### Templates
 
 Templates accepted by Flight Inventory are .erb templates filled using Erubis. The data is accessible through
-a large recursive OpenStruct called `@node_data`. The equivalent data is also available in a hash called
-`@node_hash`. There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally,
+a large recursive OpenStruct called `@asset_data`. The equivalent data is also available in a hash called
+`@asset_hash`. There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally,
 in order to the accommodate all possible domains of use, the system will dynamically read any code stored in
 the top level `helpers/` directory and utilise that for filling the specified template.
 

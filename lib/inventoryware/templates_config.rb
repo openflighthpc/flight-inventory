@@ -29,53 +29,55 @@ require 'inventoryware/config'
 require 'inventoryware/exceptions'
 
 module Inventoryware
-  class TemplatesConfig
-    def initialize
-      @path = Config.templates_config_path
-      unless File.readable?(@path)
-        raise FileSysError, <<-ERROR.chomp
-Template config at #{@path} is inaccessible
-        ERROR
-      end
-    end
-
-    def data
-      @data ||= open
-    end
-
-    def open
-      contents = Utils.load_yaml(@path)
-      unless contents.is_a?(Hash)
-        raise ParseError, <<-ERROR.chomp
-Template config at #{Config.template_config_path} is in an incorrect format
-        ERROR
-      end
-      return contents
-    end
-
-    def find(format = nil, type)
-      if format
-        if data.dig(format, type)
-          return data[format][type]
-        # if a format is specified & it doesn't exist just error
-        # don't continue looking
+  module TemplatesConfig
+    class << self
+      def find(format, type)
+        format ||= 'default'
+        if t = templates.dig(format, type) ||
+               templates.dig(format, 'default')
+          t
         else
           not_found_error(format, type)
         end
-      elsif data[type]
-        return data[type]
-      elsif data.values[0][type]
-        return data.values[0][type]
-      else
-        not_found_error(format, type)
       end
-    end
 
-    def not_found_error(format = nil, type)
-      tag = format ? "Output format '#{format}' with a": 'A'
-      raise ParseError, <<-ERROR.chomp
+      private
+      def templates
+        @templates ||= load
+      end
+
+      def load
+        unless File.readable?(Config.templates_config_path)
+          raise FileSysError, <<-ERROR.chomp
+Template config at #{@path} is inaccessible
+        ERROR
+        end
+        template_data = {}
+        Dir["#{Config.plugins_dir}/*"].each do |plugin|
+          templates_config_file = File.join(plugin,'etc','templates.yml')
+          if File.readable?(templates_config_file)
+            template_data.merge!(load_template_config(templates_config_file))
+          end
+        end
+        template_data.merge!(load_template_config(Config.templates_config_path))
+      end
+
+      def load_template_config(f)
+        Utils.load_yaml(f).tap do |contents|
+          unless contents.is_a?(Hash)
+            raise ParseError, <<-ERROR.chomp
+Template config at #{f} is in an incorrect format
+            ERROR
+          end
+        end
+      end
+
+      def not_found_error(format, type)
+        tag = format ? "Output format '#{format}' with a": 'A'
+        raise ParseError, <<-ERROR.chomp
 #{tag}sset type '#{type}' is not included in template config file
       ERROR
+      end
     end
   end
 end

@@ -25,53 +25,26 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 require 'inventoryware/commands'
+require 'inventoryware/version'
 
 require 'commander'
 require 'ostruct'
 require 'yaml'
-require 'paint'
 
 module Inventoryware
   module CLI
     PROGRAM_NAME = ENV.fetch('FLIGHT_PROGRAM_NAME','inventory')
 
     extend Commander::Delegates
+    program :application, "Flight Inventory"
     program :name, PROGRAM_NAME
-    program :version, '1.0.0'
+    program :version, "Release 2019.1 (v#{Inventoryware::VERSION})"
     program :description, 'Parser of hardware information into unified formats.'
     program :help_paging, false
-
-    # Display the help if there is no input arguments
-    ARGV.push '--help' if ARGV.empty?
-
+    default_command :help
     silent_trace!
 
-    error_handler do |e|
-      $stderr.puts "#{Paint[PROGRAM_NAME, '#2794d8']}: #{Paint[e.to_s, :red]}"
-      case e
-      when OptionParser::InvalidOption,
-           Commander::Runner::InvalidCommandError,
-           Commander::Patches::CommandUsageError
-        $stderr.puts "\nUsage:\n\n"
-        args = ARGV.reject{|o| o[0] == '-'}
-        if command(topic = args[0..1].join(" "))
-          command("help").run(topic)
-        elsif command(args[0])
-          command("help").run(args[0])
-        else
-          command("help").run
-        end
-      end
-      exit(1)
-    end
-
     class << self
-      def action(command, klass)
-        command.action do |args, options|
-          klass.new(args, options, command.name).run!
-        end
-      end
-
       def cli_syntax(command, args_str = nil)
         command.syntax = [
           PROGRAM_NAME,
@@ -96,54 +69,44 @@ module Inventoryware
       end
     end
 
-    command :parse do |c|
+    command :import do |c|
       cli_syntax(c, 'FILE')
       c.description = 'Parse and store inventory information'
-      action(c, Commands::Parse)
+      c.action Commands, :import
     end
 
-    command :modify do |c|
-      cli_syntax(c, 'SUBCOMMAND')
-      c.description = 'Change mutable asset data'
-      c.configure_sub_command(self)
-    end
-
-    command :'modify other' do |c|
+    command :'modify-other' do |c|
       cli_syntax(c, 'KEY=VALUE [ASSET_SPEC]')
       c.description = "Modify arbitrary data for one or more assets"
-      c.hidden = true
       add_multi_node_options(c)
       add_create_option(c)
-      action(c, Commands::Modifys::Other)
+      c.action Commands, :'modifys-other'
     end
 
-    command :'modify groups' do |c|
+    command :'modify-groups' do |c|
       cli_syntax(c, 'GROUP [ASSET_SPEC]')
       c.description = "Modify group data for one or more assets"
-      c.hidden = true
       add_multi_node_options(c)
       add_create_option(c)
       c.option '-p', '--primary', "Modify the primary group of one or more assets"
       c.option '-r', '--remove', "Remove one or more assets from this group"
-      action(c, Commands::Modifys::Groups)
+      c.action Commands, :'modifys-groups'
     end
 
-    command :'modify map' do |c|
+    command :'edit-map' do |c|
       cli_syntax(c, '[ASSET_SPEC]')
-      c.description = "Modify mapping data for one or more assets"
-      c.hidden = true
+      c.description = "Edit mapping data for one or more assets"
       add_multi_node_options(c)
       add_create_option(c)
-      action(c, Commands::Modifys::Map)
+      c.action Commands, :'modifys-map'
     end
 
-    command :'modify notes' do |c|
+    command :'edit-notes' do |c|
       cli_syntax(c, '[ASSET_SPEC]')
-      c.description = "Modify miscellaneous notes for one or more assets"
-      c.hidden = true
+      c.description = "Edit miscellaneous notes for one or more assets"
       add_multi_node_options(c)
       add_create_option(c)
-      action(c, Commands::Modifys::Notes)
+      c.action Commands, :'modifys-notes'
     end
 
     command :list do |c|
@@ -152,34 +115,26 @@ module Inventoryware
       add_group_option(c)
       c.option '-t', '--type TYPE',
         "Select assets in TYPE, specify comma-separated list for multiple types"
-      action(c, Commands::List)
+      c.action Commands, :list
     end
 
     command :edit do |c|
       cli_syntax(c, 'ASSET')
       c.description = "Edit stored data for an asset"
       add_create_option(c)
-      action(c, Commands::Edit)
+      c.action Commands, :edit
+    end
+
+    command :'list-map' do |c|
+      cli_syntax(c, 'ASSET INDEX')
+      c.summary = "List assets stored within mapping data"
+      c.description = "View asset names stored for ASSET at the specified map INDEX."
+      c.action Commands, :list_map
     end
 
     command :show do |c|
-      cli_syntax(c, 'SUBCOMMAND')
-      c.description = "View data"
-      c.configure_sub_command(self)
-    end
-
-    command :'show data' do |c|
-      cli_syntax(c, 'ASSET')
-      c.description = "View stored data for an asset"
-      c.option '-m', '--map INDEX',
-        "Show the assets listed in the specified index of the specified asset's map"
-      c.hidden = true
-      action(c, Commands::Shows::Data)
-    end
-
-    command :'show document' do |c|
       cli_syntax(c, '[ASSET_SPEC]')
-      c.description = "Render a document template for one or more assets"
+      c.description = "Render a template for one or more assets"
       c.option '-t', '--template TEMPLATE',
         "Render this specific template\n"\
         "Otherwise use the asset's type to determine the target template "\
@@ -190,21 +145,20 @@ module Inventoryware
       c.option '-f', '--format FORMAT',
               'Specify the type of template you would like to render'
       add_multi_node_options(c)
-      c.hidden = true
-      action(c, Commands::Shows::Document)
+      c.action Commands, :show
     end
 
     command :delete do |c|
       cli_syntax(c, '[ASSET_SPEC]')
       c.description = "Delete the stored data for one or more assets"
       add_multi_node_options(c)
-      action(c, Commands::Delete)
+      c.action Commands, :delete
     end
 
     command :create do |c|
       cli_syntax(c, 'ASSET')
       c.description = "Create a new asset"
-      action(c, Commands::Edit)
+      c.action Commands, :create
     end
   end
 end

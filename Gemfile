@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'commander-openflighthpc'
+gem 'commander-openflighthpc', github: 'openflighthpc/commander-openflighthpc', tag: 'develop'
 gem 'erubis'
 gem 'nodeattr_utils'
 gem 'recursive-open-struct'

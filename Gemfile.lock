@@ -1,8 +1,15 @@
+GIT
+  remote: git://github.com/openflighthpc/commander-openflighthpc.git
+  revision: 1487c2129dd313a90142de8b11fdeaa1bf7f4fa4
+  tag: develop
+  specs:
+    commander-openflighthpc (1.1.0.pre.dev1)
+      highline (~> 1.7.2)
+      paint (~> 2.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
-    commander-openflighthpc (1.0.0)
-      highline (~> 1.7.2)
     equatable (0.5.0)
     erubis (2.7.0)
     escape_utils (1.2.1)
@@ -43,7 +50,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  commander-openflighthpc
+  commander-openflighthpc!
   erubis
   nodeattr_utils
   paint

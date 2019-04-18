@@ -31,7 +31,7 @@ def network_devices
     end
   end
   network_devices = []
-  find_hashes_with_key_value(@node_hash, 'class', 'network')&.each do |net|
+  find_hashes_with_key_value(@asset_hash, 'class', 'network')&.each do |net|
     network_devices << create_net(net)
   end
   network_devices.sort_by {|hsh| hsh[:logicalname] }

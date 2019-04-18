@@ -113,7 +113,7 @@ Error parsing yaml in #{path} - aborting
         TTY::Editor.open(tmp_file.path,
                          content: text,
                          command: command)
-        edited = tmp_file.read
+        edited = tmp_file.open.read
       ensure
         tmp_file.close
         tmp_file.unlink
