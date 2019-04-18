@@ -1,0 +1,10 @@
+<%= @asset_data.name %>:
+  name: <%= @asset_data.name %>
+  primary_group: <%= @asset_data.mutable.primary_group %>
+  secondary_group: <%= @asset_data.mutable.secondary_groups %>
+  info: |
+    ## Port Layout
+
+    <% @asset_hash['mutable']['map'].each do |port, asset| %>
+    <%= port %>: <%= asset %>
+    <% end %>

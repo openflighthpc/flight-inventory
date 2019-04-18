@@ -1,24 +1,29 @@
-#==============================================================================
-# Copyright (C) 2018-19 Stephen F. Norledge and Alces Software Ltd.
+# =============================================================================
+# Copyright (C) 2019-present Alces Flight Ltd.
 #
-# This file/package is part of Alces Inventoryware.
+# This file is part of Flight Inventory.
 #
-# Alces Inventoryware is free software: you can redistribute it and/or
-# modify it under the terms of the GNU Affero General Public License
-# as published by the Free Software Foundation, either version 3 of
-# the License, or (at your option) any later version.
+# This program and the accompanying materials are made available under
+# the terms of the Eclipse Public License 2.0 which is available at
+# <https://www.eclipse.org/legal/epl-2.0>, or alternative license
+# terms made available by Alces Flight Ltd - please direct inquiries
+# about licensing to licensing@alces-flight.com.
 #
-# Alces Inventoryware is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Affero General Public License for more details.
+# Flight Inventory is distributed in the hope that it will be useful, but
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR
+# IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS
+# OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A
+# PARTICULAR PURPOSE. See the Eclipse Public License 2.0 for more
+# details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this package.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the Eclipse Public License 2.0
+# along with Flight Inventory. If not, see:
 #
-# For more information on Alces Inventoryware, please visit:
-# https://github.com/alces-software/inventoryware
-#==============================================================================
+#  https://opensource.org/licenses/EPL-2.0
+#
+# For more information on Flight Inventory, please visit:
+# https://github.com/openflighthpc/flight-inventory
+# ==============================================================================
 require 'inventoryware/command'
 require 'inventoryware/config'
 require 'inventoryware/exceptions'
@@ -27,12 +32,13 @@ require 'inventoryware/utils'
 
 require 'fileutils'
 require 'xmlhasher'
+require 'pathname'
 require 'yaml'
 require 'zip'
 
 module Inventoryware
   module Commands
-    class Parse < Command
+    class Import < Command
       def run
         unless @argv.length() == 1
           raise ArgumentError, <<-ERROR.chomp
@@ -46,11 +52,27 @@ The data source should be the only argument
           config.string_keys = true
         end
 
+        # determine if given path is absolute
+        file_name = @argv[0]
+        file_path = File.expand_path(file_name)
+
+        if file_path.nil?
+          raise ArgumentError, <<-ERROR.chomp
+Please refine your search and try again.
+          ERROR
+        else
+          if not Utils.check_file_readable?(file_path)
+            raise ArgumentError, <<-ERROR.chomp
+Zip file at #{file_path} inaccessible.
+            ERROR
+          end
+        end
+
         begin
           top_dir = Dir.mktmpdir('inv_ware_')
 
           # get all zips in in the source, if it's a dir or not
-          top_lvl_zip_paths = expand_dir(@argv[0])
+          top_lvl_zip_paths = expand_dir(file_path)
 
           # for each of these, extract to /tmp/
           top_lvl_zip_paths.each { |zip_path| extract_zip(zip_path, top_dir) }
@@ -147,16 +169,19 @@ No .zip files found at #{data_source}
           return false
         end
 
-        node_data = {}
-        node_data['name'] = node_name
-        node_data['mutable'] = {}
+        node_data = {
+          'name' => node_name,
+          'type' => 'server',
+          'mutable' => {},
+          # extract data from lshw
+          'lshw' => XmlHasher.parse(File.read(file_locations['lshw-xml'])),
+          # extract data from lsblk
+          'lsblk' => LsblkParser.new(file_locations['lsblk-a-P']).hashify(),
+        }
+
         if file_locations['groups']
           node_data['mutable'] = YAML.load(File.read(file_locations['groups']))
         end
-        # extract data from lshw
-        node_data['lshw'] = XmlHasher.parse(File.read(file_locations['lshw-xml']))
-        # extract data from lsblk
-        node_data['lsblk'] = LsblkParser.new(file_locations['lsblk-a-P']).hashify()
 
         Utils.exit_unless_dir(Config.yaml_dir)
         yaml_out_name = "#{node_name}.yaml"

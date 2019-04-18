@@ -1,7 +1,7 @@
 
 .PHONY: rsync watch-rsync
 
-REMOTE_DIR='/tmp/inventoryware'
+REMOTE_DIR='/tmp/flight-inventory'
 
 rsync:
 	rsync \

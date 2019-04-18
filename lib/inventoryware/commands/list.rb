@@ -1,37 +1,77 @@
-#==============================================================================
-# Copyright (C) 2018-19 Stephen F. Norledge and Alces Software Ltd.
+# =============================================================================
+# Copyright (C) 2019-present Alces Flight Ltd.
 #
-# This file/package is part of Alces Inventoryware.
+# This file is part of Flight Inventory.
 #
-# Alces Inventoryware is free software: you can redistribute it and/or
-# modify it under the terms of the GNU Affero General Public License
-# as published by the Free Software Foundation, either version 3 of
-# the License, or (at your option) any later version.
+# This program and the accompanying materials are made available under
+# the terms of the Eclipse Public License 2.0 which is available at
+# <https://www.eclipse.org/legal/epl-2.0>, or alternative license
+# terms made available by Alces Flight Ltd - please direct inquiries
+# about licensing to licensing@alces-flight.com.
 #
-# Alces Inventoryware is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Affero General Public License for more details.
+# Flight Inventory is distributed in the hope that it will be useful, but
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR
+# IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS
+# OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A
+# PARTICULAR PURPOSE. See the Eclipse Public License 2.0 for more
+# details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this package.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the Eclipse Public License 2.0
+# along with Flight Inventory. If not, see:
 #
-# For more information on Alces Inventoryware, please visit:
-# https://github.com/alces-software/inventoryware
-#==============================================================================
+#  https://opensource.org/licenses/EPL-2.0
+#
+# For more information on Flight Inventory, please visit:
+# https://github.com/openflighthpc/flight-inventory
+# ==============================================================================
 require 'inventoryware/command'
 require 'inventoryware/config'
+require 'inventoryware/node'
 
 module Inventoryware
   module Commands
     class List < Command
       def run
-        #TODO format this to have as many results fit on one line as poss.
-        #puts files.join("  ")
-        files = Dir.glob(File.join(Config.yaml_dir, '*.yaml')).map! do |file|
-          File.basename(file, '.yaml')
+        # note: this process has become quite time intensive when options are
+        # passed - taking suggestions on speeding it up
+        nodes = if not @options.group and not @options.type
+                  Node.find_all_nodes
+                else
+                  found = []
+                  all_nodes = Node.find_all_nodes
+                  if @options.group
+                    groups = @options.group.split(',')
+                    found.concat(Node.find_nodes_in_groups(groups, all_nodes))
+                  end
+                  if @options.type
+                    types = @options.type.split(',')
+                    found.concat(Node.find_nodes_with_types(types, all_nodes))
+                  end
+                  Node.make_unique(found)
+                end
+
+        unless nodes.empty?
+          type_hash = create_hash_of_types(nodes)
+          type_hash.each do |k,v|
+            puts "\n##{k.upcase}"
+            puts v.sort
+          end
+        else
+          return if @options.group or @options.type
+          $stderr.puts "No asset files found within #{File.expand_path(Config.yaml_dir)}"
         end
-        files.each_slice(3).each { |grp| puts grp.join("  ") }
+      end
+
+      private
+
+      def create_hash_of_types(nodes)
+        type_hash = {}
+        nodes.each do |node|
+          type = node.type
+          type_hash[type] = [] unless type_hash.key?(type)
+          type_hash[type] << node.name
+        end
+        return type_hash.sort.to_h
       end
     end
   end

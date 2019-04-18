@@ -24,17 +24,48 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
+require 'inventoryware/commands/single_node_command'
 
-#'value' can be a regular expression or a plain old string
-def find_hashes_with_key_value(obj, key, value, store = [])
-  if obj.respond_to?(:key?) && obj.key?(key) && /#{value}/.match(obj[key])
-    store.push(obj)
-  else
-    obj.each do |elem|
-      if elem.is_a? Enumerable
-        find_hashes_with_key_value(elem, key, value, store)
+module Inventoryware
+  module Commands
+    class ListMap < SingleNodeCommand
+      def action(node)
+        index = @argv[1]
+
+        unless index.to_i.to_s == index
+          raise ArgumentError, <<-ERROR.chomp
+Please provide an integer index
+            ERROR
+        end
+
+        index = index.to_i
+
+        unless node.data.dig('mutable', 'map')
+          raise InventorywareError, <<-ERROR.chomp
+Asset '#{node.name}' does not have map data
+            ERROR
+        end
+
+        unless node.data.dig('mutable', 'map', index)
+          raise InventorywareError, <<-ERROR.chomp
+Map for asset '#{node.name}' does not have index #{index}
+            ERROR
+        end
+
+        line = node.data['mutable']['map'][index]
+
+        asset_names = Dir[File.join(Config.yaml_dir, '*')].map do |p|
+          p = File.basename(p, File.extname(p))
+        end
+
+        asset_names.select! { |name| line.include?(name) }
+
+        if asset_names.empty?
+          puts "No assets found under that index"
+        else
+          puts asset_names
+        end
       end
     end
   end
-  return store
 end

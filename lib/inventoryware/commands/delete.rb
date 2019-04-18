@@ -1,24 +1,29 @@
-#==============================================================================
-# Copyright (C) 2018-19 Stephen F. Norledge and Alces Software Ltd.
+# =============================================================================
+# Copyright (C) 2019-present Alces Flight Ltd.
 #
-# This file/package is part of Alces Inventoryware.
+# This file is part of Flight Inventory.
 #
-# Alces Inventoryware is free software: you can redistribute it and/or
-# modify it under the terms of the GNU Affero General Public License
-# as published by the Free Software Foundation, either version 3 of
-# the License, or (at your option) any later version.
+# This program and the accompanying materials are made available under
+# the terms of the Eclipse Public License 2.0 which is available at
+# <https://www.eclipse.org/legal/epl-2.0>, or alternative license
+# terms made available by Alces Flight Ltd - please direct inquiries
+# about licensing to licensing@alces-flight.com.
 #
-# Alces Inventoryware is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Affero General Public License for more details.
+# Flight Inventory is distributed in the hope that it will be useful, but
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR
+# IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS
+# OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A
+# PARTICULAR PURPOSE. See the Eclipse Public License 2.0 for more
+# details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this package.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the Eclipse Public License 2.0
+# along with Flight Inventory. If not, see:
 #
-# For more information on Alces Inventoryware, please visit:
-# https://github.com/alces-software/inventoryware
-#==============================================================================
+#  https://opensource.org/licenses/EPL-2.0
+#
+# For more information on Flight Inventory, please visit:
+# https://github.com/openflighthpc/flight-inventory
+# ==============================================================================
 require 'inventoryware/commands/multi_node_command'
 require 'fileutils'
 
@@ -26,21 +31,17 @@ module Inventoryware
   module Commands
     class Delete < MultiNodeCommand
       def run
-        node_locations = find_nodes()
+        nodes = fetch_nodes()
 
-        unless node_locations.empty?
-          prefix = "You are about to delete"
-          node_locations.map! { |loc| File.expand_path(loc) }
-          if node_locations.length > 1
-            node_msg = "#{prefix}:\n#{node_locations.join("\n")}\nProceed? (y/n)"
-          else
-            node_msg = "#{prefix} #{node_locations[0]} - proceed? (y/n)"
-          end
-          if $terminal.agree(node_msg)
-            node_locations.each { |node| FileUtils.rm node }
-          end
+        prefix = "You are about to delete"
+        node_paths = nodes.map { |n| File.expand_path(n.path) }
+        if node_paths.length > 1
+          node_msg = "#{prefix}:\n#{node_paths.join("\n")}\nProceed? (y/n)"
         else
-          puts "No nodes found"
+          node_msg = "#{prefix} #{node_paths[0]} - proceed? (y/n)"
+        end
+        if $terminal.agree(node_msg)
+          node_paths.each { |path| FileUtils.rm path }
         end
       end
     end

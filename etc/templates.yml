@@ -1,0 +1,12 @@
+default:
+  default: server.md.erb
+data:
+  default: asset.yml.erb
+markdown:
+  default: server.md.erb
+  server: server.md.erb
+  switch: switch.md.erb
+flightcenter:
+  default: serverFC.md.erb
+  server: serverFC.md.erb
+  switch: switchFC.md.erb

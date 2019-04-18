@@ -1,84 +1,20 @@
 # Flight Inventory
 
-## Use
+Parser of various hardware information into workable unified formats.
 
-The commands' syntax is as follows:
-```
-parse DATA_LOCATION
+## Overview
 
-delete [NODE SPEC]
-
-edit NODE [-c]
-
-list
-
-modify groups GROUP [NODE SPEC] [-p | -r] [-c]
-
-modify location [NODE SPEC] [-c]
-
-modify notes NODE [-c]
-
-modify map NODE [-c]
-
-modify other KEY=[VALUE] [NODE SPEC] [-c]
-
-show data NODE
-
-show document TEMPLATE_LOCATION [NODE SPEC] [-l DESTINATION]
-
-```
-
-The `parse` command processes zips at the specified location to create files in the `store/`
-directory.
-If the location is a directory all '.zips' in it will be processed. Each of these zips are expanded
-and any nested zips are processed. Only bottom level .zips are processed so don't allow any node's
-data to be sibling to a .zip. Each zip must contain a `lshw-xml` and a `lsblk-a-P` file. A `groups`
-file will be processed if it exists.
-
-`delete` removes the data for one or more nodes after a confirmation message.
-
-`edit` opens the node's data in an editor for manual input.
-
-`list` lists all nodes with data in the store.
-
-The `modify groups` command adds GROUP to the  secondary groups of one or more nodes. If -p is set
-their primary group is set to GROUP. If -r is set GROUP will be removed from the nodes' secondary groups.
-Primary groups can't be removed, only overwritten.
-
-The `modify location` command starts input prompts to enter one location information for one or more nodes.
-
-The `modify other` command allows the setting and un-setting of arbitrary fields for one or more nodes.
-FIELD is set to VALUE and if VALUE is blank the field is removed from the nodes' data.
-A node's groups cannot be set this way because of the special constraints for those fields; for groups please
-use `modify groups`.
-
-`modify notes` opens an editor for a node's 'notes' section. This is general data store that maintains text
-formatting.
-
-The `modify map` command opens an editor for a node's 'map' section. A 'map' is a key:value store where all
-the keys are numerical and represent port numbers and the values are text. The lines of the editor refer to
-the keys of the map, the editor has its line numbers set to 'on' to aid entry.
-
-`show data` displays the selected node's data in the terminal.
-
-The `show document` command fills eRuby templates using stored data. The first argument is the template to
-be filled, see 'Templates' section for details. First the argument's value will be used to search the
-`templates/` directory then, if nothing is found, it will be used as a path. The output will be passed to stdout
-unless a destination is specified with the `-l` option.
-
-NODE_SPEC refers to specification of more than one node. This is done in the same way for all commands.
-Either nodes names are given, separated by commas, or `--all` can be passed to supersede this process the
-data for all nodes directory. Additionally groups can be selected with the `-g` option in which case all
-nodes in the specified groups will be processed.
-
-For all the editing and modifying commands if the `--create/-c` option is used a new file will be created
-for each node if it doesn't already exist.
+Flight Inventory is an asset management tool that parses various Linux command
+outputs (e.g. `lshw` and `lsblk`) into YAML data which can be modified and used
+to render asset documents.
 
 ## Installation
 
 For installation instructions please read INSTALL.md
 
-## Development
+## Configuration
+
+### Development
 
 It is recommended that Flight Inventory is developed locally (so you have all your local
 development tools available) and synced, run, and tested in a clean remote environment (to
@@ -90,18 +26,119 @@ To aid this there is a MakeFile containing `watch-rsync` instructions
 gem install rerun # If you don't have this already.
 make watch-rsync PASSWORD="password for machine" IP="ip of machine"
 ```
-This will keep your working directory synced to `/tmp/inventoryware`
+This will keep your working directory synced to `/tmp/flight-inventory`
 
-## Templates
+## Operation
+
+The commands' syntax is as follows:
+```
+import DATA_LOCATION
+
+delete [ASSET SPEC]
+
+create ASSET
+
+edit ASSET [-c]
+
+list [--group GROUP] [--type TYPE]
+
+list-map ASSET INDEX
+
+edit-notes ASSET [-c]
+
+edit-map ASSET [-c]
+
+modify-groups GROUP [ASSET SPEC] [-p | -r] [-c]
+
+modify-other KEY=[VALUE] [ASSET SPEC] [-c]
+
+show [ASSET SPEC] [-l DESTINATION] [-t TEMPLATE | -f FORMAT]
+
+```
+
+The `import` command processes zips at the specified location to create files in the `store/`
+directory.
+If the location is a directory all '.zips' in it will be processed. Each of these zips are expanded
+and any nested zips are processed. Only bottom level .zips are processed so don't allow any asset's
+data to be sibling to a .zip. Each zip must contain a `lshw-xml` and a `lsblk-a-P` file. A `groups`
+file will be processed if it exists.
+
+`create` opens an editor allowing for the creation of a new asset.
+
+`delete` removes the data for one or more assets after a confirmation message.
+
+`edit` opens the asset's data in an editor for manual input.
+
+`list` lists all assets with data in the store. Type and group switches taking comma separated lists are
+available to filter the results.
+
+`list-map` lists all the assets names at the specified INDEX of the specified ASSET's map.
+
+`edit-notes` opens an editor for an asset's 'notes' section. This is general data store that maintains text
+formatting.
+
+The `edit-map` command opens an editor for an asset's 'map' section. A 'map' is a key:value store where all
+the keys are numerical and represent port numbers and the values are text. The lines of the editor refer to
+the keys of the map, the editor has its line numbers set to 'on' to aid entry.
+
+The `modify-groups` command adds GROUP to the  secondary groups of one or more assets. If -p is set
+their primary group is set to GROUP. If -r is set GROUP will be removed from the assets' secondary groups.
+Primary groups can't be removed, only overwritten.
+
+The `modify-other` command allows the setting and un-setting of arbitrary fields for one or more assets.
+FIELD is set to VALUE and if VALUE is blank the field is removed from the assets' data.
+An asset's groups cannot be set this way because of the special constraints for those fields; for groups please
+use `modify groups`.
+
+The `show` command fills eRuby templates using stored data. Either a path to a template can be passed with the
+`-t`option or a template can be inferred from the assets' type and a format (given with `-f`).
+The output will be passed to stdout unless a destination is specified with the `-l` option.
+
+ASSET_SPEC refers to specification of more than one asset. This is done in the same way for all commands.
+Either assets names are given, separated by commas, or `--all` can be passed to supersede this process the
+data for all assets directory. Additionally groups can be selected with the `-g` option in which case all
+assets in the specified groups will be processed.
+
+For all the editing and modifying commands if the `--create/-c` option is used a new file will be created
+for each asset if it doesn't already exist.
+
+### Templates
 
 Templates accepted by Flight Inventory are .erb templates filled using Erubis. The data is accessible through
-a large recursive OpenStruct called `@node_data`. The equivalent data is also available in a hash called
-`@node_hash`. There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally,
+a large recursive OpenStruct called `@asset_data`. The equivalent data is also available in a hash called
+`@asset_hash`. There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally,
 in order to the accommodate all possible domains of use, the system will dynamically read any code stored in
 the top level `helpers/` directory and utilise that for filling the specified template.
 
-# License
+# Plugins
 
-AGPLv3+ License, see LICENSE.txt for details.
+Flight Inventory also supports plugins. To render asset data in new and interesting ways place additional
+code in the `plugins/` directory. These plugins must have an `etc/templates.yml` file specifying formats for
+rendered templates and all ruby files will be evaluated as source code.
 
-Copyright (C) 2017 Alces Software Ltd.
+# Contributing
+
+Fork the project. Make your feature addition or bug fix. Send a pull
+request. Bonus points for topic branches.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
+# Copyright and License
+
+Eclipse Public License 2.0, see [LICENSE.txt](LICENSE.txt) for details.
+
+Copyright (C) 2019-present Alces Flight Ltd.
+
+This program and the accompanying materials are made available under
+the terms of the Eclipse Public License 2.0 which is available at
+[https://www.eclipse.org/legal/epl-2.0](https://www.eclipse.org/legal/epl-2.0),
+or alternative license terms made available by Alces Flight Ltd -
+please direct inquiries about licensing to
+[licensing@alces-flight.com](mailto:licensing@alces-flight.com).
+
+Flight Inventory is distributed in the hope that it will be
+useful, but WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER
+EXPRESS OR IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR
+CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR
+A PARTICULAR PURPOSE. See the [Eclipse Public License 2.0](https://opensource.org/licenses/EPL-2.0) for more
+details.
