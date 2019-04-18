@@ -32,29 +32,31 @@ This will keep your working directory synced to `/tmp/flight-inventory`
 
 The commands' syntax is as follows:
 ```
-parse DATA_LOCATION
+import DATA_LOCATION
 
 delete [ASSET SPEC]
 
+create ASSET
+
 edit ASSET [-c]
 
-list
+list [--group GROUP] [--type TYPE]
 
-modify groups GROUP [ASSET SPEC] [-p | -r] [-c]
+list-map ASSET INDEX
 
-modify notes ASSET [-c]
+edit-notes ASSET [-c]
 
-modify map ASSET [-c]
+edit-map ASSET [-c]
 
-modify other KEY=[VALUE] [ASSET SPEC] [-c]
+modify-groups GROUP [ASSET SPEC] [-p | -r] [-c]
 
-show data ASSET
+modify-other KEY=[VALUE] [ASSET SPEC] [-c]
 
-show document TEMPLATE_LOCATION [ASSET SPEC] [-l DESTINATION]
+show [ASSET SPEC] [-l DESTINATION] [-t TEMPLATE | -f FORMAT]
 
 ```
 
-The `parse` command processes zips at the specified location to create files in the `store/`
+The `import` command processes zips at the specified location to create files in the `store/`
 directory.
 If the location is a directory all '.zips' in it will be processed. Each of these zips are expanded
 and any nested zips are processed. Only bottom level .zips are processed so don't allow any asset's
@@ -67,30 +69,30 @@ file will be processed if it exists.
 
 `edit` opens the asset's data in an editor for manual input.
 
-`list` lists all assets with data in the store.
+`list` lists all assets with data in the store. Type and group switches taking comma separated lists are
+available to filter the results.
 
-The `modify groups` command adds GROUP to the  secondary groups of one or more assets. If -p is set
+`list-map` lists all the assets names at the specified INDEX of the specified ASSET's map.
+
+`edit-notes` opens an editor for an asset's 'notes' section. This is general data store that maintains text
+formatting.
+
+The `edit-map` command opens an editor for an asset's 'map' section. A 'map' is a key:value store where all
+the keys are numerical and represent port numbers and the values are text. The lines of the editor refer to
+the keys of the map, the editor has its line numbers set to 'on' to aid entry.
+
+The `modify-groups` command adds GROUP to the  secondary groups of one or more assets. If -p is set
 their primary group is set to GROUP. If -r is set GROUP will be removed from the assets' secondary groups.
 Primary groups can't be removed, only overwritten.
 
-The `modify other` command allows the setting and un-setting of arbitrary fields for one or more assets.
+The `modify-other` command allows the setting and un-setting of arbitrary fields for one or more assets.
 FIELD is set to VALUE and if VALUE is blank the field is removed from the assets' data.
 An asset's groups cannot be set this way because of the special constraints for those fields; for groups please
 use `modify groups`.
 
-`modify notes` opens an editor for an asset's 'notes' section. This is general data store that maintains text
-formatting.
-
-The `modify map` command opens an editor for an asset's 'map' section. A 'map' is a key:value store where all
-the keys are numerical and represent port numbers and the values are text. The lines of the editor refer to
-the keys of the map, the editor has its line numbers set to 'on' to aid entry.
-
-`show data` displays the selected asset's data in the terminal.
-
-The `show document` command fills eRuby templates using stored data. The first argument is the template to
-be filled, see 'Templates' section for details. First the argument's value will be used to search the
-`templates/` directory then, if nothing is found, it will be used as a path. The output will be passed to stdout
-unless a destination is specified with the `-l` option.
+The `show` command fills eRuby templates using stored data. Either a path to a template can be passed with the
+`-t`option or a template can be inferred from the assets' type and a format (given with `-f`).
+The output will be passed to stdout unless a destination is specified with the `-l` option.
 
 ASSET_SPEC refers to specification of more than one asset. This is done in the same way for all commands.
 Either assets names are given, separated by commas, or `--all` can be passed to supersede this process the
@@ -107,6 +109,12 @@ a large recursive OpenStruct called `@asset_data`. The equivalent data is also a
 `@asset_hash`. There are helper methods for navigation and formatting this data in `erb_utils.rb`. Additionally,
 in order to the accommodate all possible domains of use, the system will dynamically read any code stored in
 the top level `helpers/` directory and utilise that for filling the specified template.
+
+# Plugins
+
+Flight Inventory also supports plugins. To render asset data in new and interesting ways place additional
+code in the `plugins/` directory. These plugins must have an `etc/templates.yml` file specifying formats for
+rendered templates and all ruby files will be evaluated as source code.
 
 # Contributing
 
