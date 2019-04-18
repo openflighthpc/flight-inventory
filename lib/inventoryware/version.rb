@@ -25,5 +25,5 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 module Inventoryware
-  VERSION = '1.0.0'
+  VERSION = '1.3.0-dev'
 end
