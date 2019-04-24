@@ -142,15 +142,12 @@ module Inventoryware
       # hack-y method to save time - rather than load the node's data into mem
       #   as a hash if the data isn't going to be used for anything, just grep.
       #   This time saving add up if listing 100s of nodes
-      # TODO UPDATE THIS WHEN THE YAML FORMAT IS CHANGED (issue #119)
-      #   this will alter the amount of whitespace prepending 'type' and as such
-      #   the regex will need to be changed
       if @data
         type = @data['type']
       else
         type = nil
         IO.foreach(@path) do | line|
-          if m = line.match(/^  type: (.*)$/)
+          if m = line.match(/^type: (.*)$/)
             type = m[1]
             break
           end
@@ -160,12 +157,11 @@ module Inventoryware
       return type
     end
 
-    #TODO as with `.type`
     def primary_group
       return @data.dig('mutable','primary_group') if @data
       pri_group = nil
       IO.foreach(@path) do | line|
-        if m = line.match(/^    primary_group: (.*)$/)
+        if m = line.match(/^  primary_group: (.*)$/)
           pri_group = m[1]
           break
         end
@@ -173,12 +169,11 @@ module Inventoryware
       return pri_group
     end
 
-    #TODO as with `.type`
     def secondary_groups
       return @data.dig('mutable','secondary_groups') if @data
       sec_groups = nil
       IO.foreach(@path) do | line|
-        if m = line.match(/^    secondary_groups: (.*)$/)
+        if m = line.match(/^  secondary_groups: (.*)$/)
           sec_groups = m[1].split(',')
           break
         end
@@ -198,7 +193,7 @@ module Inventoryware
 Yaml in #{@path} is empty - aborting
         ERROR
       end
-      @data = node_data.values[0]
+      @data = node_data
       return @data
     end
 
@@ -208,8 +203,7 @@ Yaml in #{@path} is empty - aborting
 Output file #{@path} not accessible - aborting
         ERROR
       end
-      yaml_hash = {data['name'] => data}
-      File.open(@path, 'w') { |file| file.write(yaml_hash.to_yaml) }
+      File.open(@path, 'w') { |file| file.write(data.to_yaml) }
     end
 
     def create_if_non_existent(type = '')
