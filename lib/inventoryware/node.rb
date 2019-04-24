@@ -198,6 +198,9 @@ Yaml in #{@path} is empty - aborting
     end
 
     def save
+      # this `.data` call is necessary to prevent attempting to write nothing
+      # to the file
+      self.data
       unless Utils.check_file_writable?(@path)
         raise FileSysError, <<-ERROR.chomp
 Output file #{@path} not accessible - aborting
