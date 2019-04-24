@@ -218,6 +218,7 @@ Output file #{@path} not accessible - aborting
           'name' => @name,
           'mutable' => {},
           'type' => type,
+          'schema' => SCHEMA_NUM,
         }
         save
       end
