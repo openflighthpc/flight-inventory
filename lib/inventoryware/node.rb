@@ -64,7 +64,6 @@ module Inventoryware
       # This cannot easily be done by converting the yaml to a string and
       # searching with regex as the `lshw` hash has keys called 'type'
       def find_nodes_with_types(target_types, node_list = find_all_nodes())
-        key = ['type']
         target_types = *target_types unless target_types.is_a?(Array)
         target_types.map! { |t| t.downcase }
         nodes = []
