@@ -37,7 +37,9 @@ module Inventoryware
           $stderr.puts "No asset data found "\
             "in #{File.expand_path(Config.yaml_dir)}"
         end
-        return node_paths.map { |p| Node.new(p) }
+        nodes = node_paths.map { |p| Node.new(p) }
+        nodes.each { |n| n.check_schema }
+        return nodes
       end
 
       # retreives all nodes in the given groups
@@ -157,6 +159,23 @@ module Inventoryware
       return type
     end
 
+    def schema
+      if @data
+        schema = @data['schema']
+      else
+        schema = nil
+        IO.foreach(@path) do | line|
+          if m = line.match(/^schema: (.*)$/)
+            schema = m[1]
+            break
+          end
+        end
+      end
+      schema = 0 unless schema
+      return schema
+    end
+
+
     def primary_group
       return @data.dig('mutable','primary_group') if @data
       pri_group = nil
@@ -218,6 +237,16 @@ Output file #{@path} not accessible - aborting
           'schema' => SCHEMA_NUM,
         }
         save
+      end
+    end
+
+    def check_schema
+      unless schema.to_f >= REQ_SCHEMA_NUM
+        raise FileSysError, <<-ERROR.chomp
+Asset '#{name}' has data in the wrong schema
+Please update it before continuing
+(Has #{schema}; minimum required is #{REQ_SCHEMA_NUM})
+        ERROR
       end
     end
 

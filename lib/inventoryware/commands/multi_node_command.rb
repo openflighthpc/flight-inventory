@@ -40,6 +40,7 @@ module Inventoryware
 
         nodes = find_nodes(node_names, @options)
         nodes = Node.make_unique(nodes)
+        nodes.each { |n| n.check_schema }
         return nodes
       end
 
