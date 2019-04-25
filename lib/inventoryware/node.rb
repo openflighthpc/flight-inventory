@@ -141,36 +141,21 @@ module Inventoryware
     end
 
     def type
-      # hack-y method to save time - rather than load the node's data into mem
-      #   as a hash if the data isn't going to be used for anything, just grep.
-      #   This time saving add up if listing 100s of nodes
-      if @data
-        type = @data['type']
-      else
-        type = nil
-        IO.foreach(@path) do | line|
-          if m = line.match(/^type: (.*)$/)
-            type = m[1]
-            break
-          end
-        end
-      end
+      type = if @data
+               @data['type']
+             else
+               quick_search_file('type')
+             end
       type = 'server' unless type
       return type
     end
 
     def schema
-      if @data
-        schema = @data['schema']
-      else
-        schema = nil
-        IO.foreach(@path) do | line|
-          if m = line.match(/^schema: (.*)$/)
-            schema = m[1]
-            break
-          end
-        end
-      end
+      schema = if @data
+                 @data['schema']
+               else
+                 quick_search_file('schema')
+               end
       schema = 0 unless schema
       return schema
     end
@@ -178,23 +163,18 @@ module Inventoryware
 
     def primary_group
       return @data.dig('mutable','primary_group') if @data
-      pri_group = nil
-      IO.foreach(@path) do | line|
-        if m = line.match(/^  primary_group: (.*)$/)
-          pri_group = m[1]
-          break
-        end
-      end
-      return pri_group
+      # Note the two spaces
+      return quick_search_file('  primary_group')
     end
 
     def secondary_groups
-      return @data.dig('mutable','secondary_groups') if @data
-      sec_groups = nil
-      IO.foreach(@path) do | line|
-        if m = line.match(/^  secondary_groups: (.*)$/)
-          sec_groups = m[1].split(',')
-          break
+      groups = if @data
+                 @data.dig('mutable','secondary_groups')
+               else
+                 # Note the two spaces
+                 groups = quick_search_file('  secondary_groups')
+               end
+      groups.nil? ? [] : groups.split(',')
         end
       end
       return sec_groups
@@ -251,5 +231,22 @@ Please update it before continuing
     end
 
     attr_reader :path, :name
+
+    private
+    def quick_search_file(target_str_prefix = nil)
+      # hack-y method to save time - rather than load the node's data into mem
+      #   as a hash if the data isn't going to be used for anything, just grep.
+      #   This time saving adds up if listing 100s of nodes
+      return_value = nil
+      IO.foreach(@path) do |line|
+        if block_given?
+          return_value = yield(line)
+        elsif m = line.match(/^#{target_str_prefix}: (.*)$/)
+          return_value = m[1]
+        end
+        break if return_value
+      end
+      return return_value
+    end
   end
 end
