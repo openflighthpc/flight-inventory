@@ -45,19 +45,16 @@ module Inventoryware
       # retreives all nodes in the given groups
       # note: if speed becomes an issue this should be reverted back to the old
       # method of converting the yaml to a string and searching with regex
-      def find_nodes_in_groups(groups, node_list = find_all_nodes())
-        groups = *groups unless groups.is_a?(Array)
+      def find_nodes_in_groups(target_groups, node_list = find_all_nodes())
+        target_groups = *target_groups unless target_groups.is_a?(Array)
         nodes = []
         node_list.each do |node|
-          found = []
-          found = found << node.primary_group if node.primary_group
-          found = found + node.secondary_groups if node.secondary_groups
-          unless (found & groups).empty?
+          unless (node.all_groups & target_groups).empty?
             nodes.append(node)
           end
         end
         if nodes.empty?
-          $stderr.puts "No assets found in #{groups.join(' or ')}."
+          $stderr.puts "No assets found in #{target_groups.join(' or ')}."
         end
         return nodes
       end
@@ -175,9 +172,21 @@ module Inventoryware
                  groups = quick_search_file('  secondary_groups')
                end
       groups.nil? ? [] : groups.split(',')
+    end
+
+    # Time saving method - functionally executes `primary_group` and
+    # `secondary_groups` in sequence, while only iterating over the file once
+    def all_groups
+      return secondary_groups << primary_group if @data
+      found = []
+      quick_search_file do |line|
+        if pri_m = line.match(/^  primary_group: (.*)$/)
+          found << pri_m[1]
+        elsif sec_m = line.match(/^  secondary_groups: (.*)$/)
+          found = found + sec_m[1].split(',')
         end
       end
-      return sec_groups
+      return found
     end
 
     def data=(value)
