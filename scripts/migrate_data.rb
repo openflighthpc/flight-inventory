@@ -37,22 +37,34 @@ Bundler.setup(:default)
 
 require 'inventoryware/cli'
 
+def migrate_asset(asset)
+  changed = false
+  while
+    if asset.schema.to_f < Inventoryware::SCHEMA_NUM
+      method_name = "schema_" + asset.schema.to_s
+      unless respond_to?(method_name, true)
+        raise <<-ERROR
+No migration method found for schema '#{asset.schema}' (for asset '#{asset.name}').
+This script cannot solve this issue.
+Please edit the file, delete it or expand this script before continuing.
+Aborting.
+        ERROR
+      end
+      send(method_name, asset)
+      changed = true
+    else
+      p "No changes needed for asset '#{asset.name}' - at schema #{asset.schema}"
+      changed = false
+    end
+    break unless changed
+  end
+  asset.save
+end
+
 # To process all files
 if ARGV.empty?
-  assets = Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).map do |p|
-    Inventoryware::Node.new(p)
-  end
-
-  changed = true
-  while !assets.empty? and changed
-    changed = false
-    assets.each do |asset|
-      migrate_asset(asset)
-      unless asset.schema.to_f < Inventoryware::SCHEMA_NUM
-        changed = true
-        assets.delete(asset)
-      end
-    end
+  Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).each do |p|
+    migrate_asset(Inventoryware::Node.new(p))
   end
 # To process a specific file
 else
