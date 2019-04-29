@@ -214,7 +214,9 @@ Yaml in #{@path} is empty - aborting
 Output file #{@path} not accessible - aborting
         ERROR
       end
-      File.open(@path, 'w') { |file| file.write(order_hash(data).to_yaml) }
+
+      output_yaml = order_hash(data).to_yaml
+      File.open(@path, 'w') { |file| file.write(output_yaml) }
     end
 
     def create_if_non_existent(type = '')
