@@ -236,6 +236,7 @@ Output file #{@path} not accessible - aborting
         raise FileSysError, <<-ERROR.chomp
 Asset '#{name}' has data in the wrong schema
 Please update it before continuing
+See migrate_data.rb in the scripts directory
 (Has #{schema}; minimum required is #{REQ_SCHEMA_NUM})
         ERROR
       end

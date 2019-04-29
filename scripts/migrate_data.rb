@@ -26,6 +26,9 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
+# WILL NEED TO BE UPDATED WITH 'schema_X' METHODS FOR ANY FUTURE CHANGES
+# Currently supports schema 0 (no schema) to 1
+
 lib_dir = File.join(__FILE__, '../../lib')
 scripts_dir = File.join(__FILE__, '../')
 $LOAD_PATH << lib_dir
@@ -46,7 +49,7 @@ def migrate_asset(asset)
         raise <<-ERROR
 No migration method found for schema '#{asset.schema}' (for asset '#{asset.name}').
 This script cannot solve this issue.
-Please edit the file, delete it or expand this script before continuing.
+Please edit the asset's file, delete it or expand this script before continuing.
 Aborting.
         ERROR
       end
@@ -67,9 +70,9 @@ end
 # number (nil => 0). Due to this we must detect if the file in question is a
 # valid file from inventoryware version 1.2.0 or before OR if it is a file in
 # an unknown state.
-# We will detect this by checking the presence of a single primary key with
-# 'name' and 'mutable' subkeys. If this is the state of the file we will treat
-# it as a "true" schema 0 file. Otherwise we will error.
+# We will detect this by checking the presence of a single primary key with a
+# 'name' subkey. If this is the state of the file we will treat
+# it as a "true" schema 0 file and proceed. Otherwise we will error.
 def schema_0(asset)
   p "Attempting to update asset '#{asset.name}' from no schema to schema 1"
   unless true_shema_0?(asset)
