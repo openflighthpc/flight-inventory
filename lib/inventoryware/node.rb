@@ -214,7 +214,7 @@ Yaml in #{@path} is empty - aborting
 Output file #{@path} not accessible - aborting
         ERROR
       end
-      File.open(@path, 'w') { |file| file.write(data.to_yaml) }
+      File.open(@path, 'w') { |file| file.write(order_hash(data).to_yaml) }
     end
 
     def create_if_non_existent(type = '')
@@ -256,6 +256,13 @@ Please update it before continuing
         break if return_value
       end
       return return_value
+    end
+
+    # Another hack-y method to keep short values near the top of the hash
+    # This is to speed up quick_search_file above (a move to using a db may be
+    # in order shortly)
+    def order_hash(hash)
+      Hash[hash.sort_by { |k, _| Config.req_keys.include?(k) ? 0 : 1 }]
     end
   end
 end
