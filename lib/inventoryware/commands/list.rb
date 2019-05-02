@@ -35,11 +35,11 @@ module Inventoryware
         # note: this process has become quite time intensive when options are
         # passed - taking suggestions on speeding it up
 
+        all_nodes = Node.find_all_nodes
         nodes = if not @options.group and not @options.type
                   attr = 'type'
-                  Node.find_all_nodes
+                  all_nodes
                 else
-                  all_nodes = Node.find_all_nodes
                   if @options.group
                     attr = 'primary_group'
                     filter_nodes(all_nodes, @options.group, 'find_nodes_in_groups')
