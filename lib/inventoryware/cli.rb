@@ -112,8 +112,9 @@ module Inventoryware
     command :list do |c|
       cli_syntax(c)
       c.description = "List all assets that have stored data"
-      add_group_option(c)
-      c.option '-t', '--type TYPE',
+      c.option '-g', '--group [GROUP]',
+        "Select assets in GROUP, specify comma-separated list for multiple groups"
+      c.option '-t', '--type [TYPE]',
         "Select assets in TYPE, specify comma-separated list for multiple types"
       c.action Commands, :list
     end
