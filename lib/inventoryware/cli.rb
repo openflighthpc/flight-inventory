@@ -113,9 +113,9 @@ module Inventoryware
       cli_syntax(c)
       c.description = "List all assets that have stored data"
       c.option '-g', '--group [GROUP]',
-        "Select assets in GROUP, specify comma-separated list for multiple groups"
+        "Optionally select assets in GROUP, specify comma-separated list for multiple groups"
       c.option '-t', '--type [TYPE]',
-        "Select assets in TYPE, specify comma-separated list for multiple types"
+        "Optionally select assets in TYPE, specify comma-separated list for multiple types"
       c.action Commands, :list
     end
 
