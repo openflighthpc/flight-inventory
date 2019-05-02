@@ -160,8 +160,9 @@ module Inventoryware
 
     def primary_group
       return @data.dig('mutable','primary_group') if @data
+
       # Note the two spaces
-      return quick_search_file('  primary_group')
+      return quick_search_file('  primary_group') || 'orphan'
     end
 
     def secondary_groups
