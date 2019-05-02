@@ -61,14 +61,15 @@ module Inventoryware
 
       private
 
-
       def create_hash_of_attribute(nodes, attr)
         hash = {}
+
         nodes.each do |node|
           key = node.public_send(attr)
           hash[key] = [] unless hash.key?(key)
           hash[key] << node.name
         end
+
         return hash.sort.to_h
       end
 
