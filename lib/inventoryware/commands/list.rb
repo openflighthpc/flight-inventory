@@ -39,26 +39,13 @@ module Inventoryware
                   attr = 'type'
                   Node.find_all_nodes
                 else
-                  found = []
                   all_nodes = Node.find_all_nodes
                   if @options.group
-                    unless @options.group == true
-                      groups = @options.group.split(',')
-                      found.concat(Node.find_nodes_in_groups(groups, all_nodes))
-                    end
                     attr = 'primary_group'
-                  end
-                  if @options.type
-                    unless @options.type == true
-                      types = @options.type.split(',')
-                      found.concat(Node.find_nodes_with_types(types, all_nodes))
-                    end
+                    filter_nodes(all_nodes, @options.group, 'find_nodes_in_groups')
+                  elsif @options.type
                     attr = 'type'
-                  end
-                  if found.empty?
-                    all_nodes
-                  else
-                    Node.make_unique(found)
+                    filter_nodes(all_nodes, @options.type, 'find_nodes_with_types')
                   end
                 end
 
@@ -85,6 +72,19 @@ module Inventoryware
           hash[key] << node.name
         end
         return hash.sort.to_h
+      end
+
+      def filter_nodes(nodes, options, search_method)
+        unless options == true
+          found = []
+
+          filter = options.split(',')
+          found.concat(Node.public_send(search_method, filter, nodes))
+
+          Node.make_unique(found)
+        else
+          nodes
+        end
       end
     end
   end
