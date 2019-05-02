@@ -7,7 +7,12 @@ GEM
     equatable (0.5.0)
     erubis (2.7.0)
     escape_utils (1.2.1)
+    ffi (1.10.0)
     highline (1.7.10)
+    listen (3.1.5)
+      rb-fsevent (~> 0.9, >= 0.9.4)
+      rb-inotify (~> 0.9, >= 0.9.7)
+      ruby_dep (~> 1.2)
     necromancer (0.4.0)
     nodeattr_utils (1.0.0)
     ox (2.10.0)
@@ -15,7 +20,13 @@ GEM
     pastel (0.7.2)
       equatable (~> 0.5.0)
       tty-color (~> 0.4.0)
+    rb-fsevent (0.10.3)
+    rb-inotify (0.10.0)
+      ffi (~> 1.0)
     recursive-open-struct (1.1.0)
+    rerun (0.13.0)
+      listen (~> 3.0)
+    ruby_dep (1.5.0)
     rubyzip (1.2.2)
     timers (4.3.0)
     tty-color (0.4.3)
@@ -49,6 +60,7 @@ DEPENDENCIES
   nodeattr_utils
   paint
   recursive-open-struct
+  rerun
   rubyzip
   tty-editor
   tty-prompt
