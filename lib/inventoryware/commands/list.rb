@@ -36,17 +36,15 @@ module Inventoryware
         # passed - taking suggestions on speeding it up
 
         all_nodes = Node.find_all_nodes
-        nodes = if not @options.group and not @options.type
+        nodes = if @options.group
+                  attr = 'primary_group'
+                  filter_nodes(all_nodes, @options.group, 'find_nodes_in_groups')
+                elsif @options.type
+                  attr = 'type'
+                  filter_nodes(all_nodes, @options.type, 'find_nodes_with_types')
+                else
                   attr = 'type'
                   all_nodes
-                else
-                  if @options.group
-                    attr = 'primary_group'
-                    filter_nodes(all_nodes, @options.group, 'find_nodes_in_groups')
-                  elsif @options.type
-                    attr = 'type'
-                    filter_nodes(all_nodes, @options.type, 'find_nodes_with_types')
-                  end
                 end
 
         unless nodes.empty?
