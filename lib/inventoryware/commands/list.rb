@@ -34,25 +34,37 @@ module Inventoryware
       def run
         # note: this process has become quite time intensive when options are
         # passed - taking suggestions on speeding it up
+
         nodes = if not @options.group and not @options.type
+                  attr = 'type'
                   Node.find_all_nodes
                 else
                   found = []
                   all_nodes = Node.find_all_nodes
                   if @options.group
-                    groups = @options.group.split(',')
-                    found.concat(Node.find_nodes_in_groups(groups, all_nodes))
+                    unless @options.group == true
+                      groups = @options.group.split(',')
+                      found.concat(Node.find_nodes_in_groups(groups, all_nodes))
+                    end
+                    attr = 'primary_group'
                   end
                   if @options.type
-                    types = @options.type.split(',')
-                    found.concat(Node.find_nodes_with_types(types, all_nodes))
+                    unless @options.type == true
+                      types = @options.type.split(',')
+                      found.concat(Node.find_nodes_with_types(types, all_nodes))
+                    end
+                    attr = 'type'
                   end
-                  Node.make_unique(found)
+                  if found.empty?
+                    all_nodes
+                  else
+                    Node.make_unique(found)
+                  end
                 end
 
         unless nodes.empty?
-          type_hash = create_hash_of_types(nodes)
-          type_hash.each do |k,v|
+          hash = create_hash_of_attribute(nodes, attr)
+          hash.each do |k,v|
             puts "\n##{k.upcase}"
             puts v.sort
           end
@@ -64,14 +76,15 @@ module Inventoryware
 
       private
 
-      def create_hash_of_types(nodes)
-        type_hash = {}
+
+      def create_hash_of_attribute(nodes, attr)
+        hash = {}
         nodes.each do |node|
-          type = node.type
-          type_hash[type] = [] unless type_hash.key?(type)
-          type_hash[type] << node.name
+          key = node.public_send(attr)
+          hash[key] = [] unless hash.key?(key)
+          hash[key] << node.name
         end
-        return type_hash.sort.to_h
+        return hash.sort.to_h
       end
     end
   end
