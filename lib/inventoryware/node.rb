@@ -179,10 +179,10 @@ module Inventoryware
     # `secondary_groups` in sequence, while only iterating over the file once
     def all_groups
       return secondary_groups << primary_group if @data
-      found = []
+      found = ['orphan']
       quick_search_file do |line|
         if pri_m = line.match(/^  primary_group: (.*)$/)
-          found << pri_m[1]
+          found[0] = pri_m[1]
         elsif sec_m = line.match(/^  secondary_groups: (.*)$/)
           found = found + sec_m[1].split(',')
         end
