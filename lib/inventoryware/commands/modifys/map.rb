@@ -37,6 +37,8 @@ module Inventoryware
           node = nodes.first
           map_name = @argv.first
 
+          initialise_map_hashes(nodes, map_name)
+
           prompt = TTY::Prompt.new
           unless prompt.no?('Would you like to add map metadata? (Default: No)')
             get_map_metadata_from_user(map_name, nodes, prompt)
@@ -103,13 +105,21 @@ Error parsing map - Non-integer keys
           layout = prompt.select('Choose the pattern for the map:', choices)
 
           nodes.each do |node|
-            mutable = node.data['mutable']
-            maps = mutable.fetch('maps') { mutable['maps'] = {} }
-            map = maps.fetch(map_name) { maps[map_name] = {} }
+            map = node.data['mutable']['maps'][map_name]
 
             map['map_height'] = y
             map['map_width'] = x
             map['map_layout'] = layout
+          end
+        end
+
+        # This method ensures the program doesn't run into problems with nil
+        # values when no map exists along with the nested hashes.
+        def initialise_map_hashes(nodes, map_name)
+          nodes.each do |node|
+            mutable = node.data['mutable']
+            maps = mutable.fetch('maps') { mutable['maps'] = {} }
+            maps.fetch(map_name) { maps[map_name] = {} }
           end
         end
       end
