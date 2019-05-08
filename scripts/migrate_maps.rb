@@ -26,7 +26,7 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
-def migrate_existing_group(asset)
+def migrate_existing_map(asset)
   data = asset.data
   name = data['name']
   mutable = data['mutable']
@@ -41,6 +41,6 @@ def migrate_existing_group(asset)
     end
 
     maps['migrated'] = migrated_map
-    puts "Existing group migrated for asset: #{name}" if asset.save
+    puts "Existing map migrated for asset: #{name}" if asset.save
   end
 end
