@@ -74,7 +74,7 @@ end
 # it as a "true" schema 0 file and proceed. Otherwise we will error.
 def schema_0(asset)
   p "Attempting to update asset '#{asset.name}' from no schema to schema 1"
-  unless true_shema_0?(asset)
+  unless true_schema_0?(asset)
     raise "Asset '#{asset.name}' is in an unknown state - aborting"
   end
 
@@ -92,7 +92,7 @@ def schema_0(asset)
   p "Successful in updating asset '#{asset.name} to schema 1"
 end
 
-def true_shema_0?(asset)
+def true_schema_0?(asset)
   #check for a primary key
   return false unless asset.data.keys.length == 1
   #check that the nested hash is valid & hash a name
