@@ -26,8 +26,6 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
-scripts_dir = File.dirname(__FILE__)
-
-require File.join(scripts_dir, 'migrate_schema')
+require_relative "migrate_schema"
 
 migrate_schema
