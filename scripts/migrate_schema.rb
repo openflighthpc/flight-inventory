@@ -101,17 +101,19 @@ def true_shema_0?(asset)
   return true
 end
 
-# To process all files
-if ARGV.empty?
-  Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).each do |p|
-    migrate_asset(Inventoryware::Node.new(p))
+def migrate_schema
+  # To process all files
+  if ARGV.empty?
+    Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).each do |p|
+      migrate_asset(Inventoryware::Node.new(p))
+    end
+  # To process a specific file
+  else
+    path = if File.file?(ARGV[0])
+             ARGV[0]
+           else
+             File.join(Inventoryware::Config.yaml_dir, ARGV[0] + ".yaml")
+           end
+    migrate_asset(Inventoryware::Node.new(path))
   end
-# To process a specific file
-else
-  path = if File.file?(ARGV[0])
-           ARGV[0]
-         else
-           File.join(Inventoryware::Config.yaml_dir, ARGV[0] + ".yaml")
-         end
-  migrate_asset(Inventoryware::Node.new(path))
 end
