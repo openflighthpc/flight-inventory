@@ -30,7 +30,6 @@
 # Currently supports schema 0 (no schema) to 1
 
 lib_dir = File.join(__FILE__, '../../lib')
-scripts_dir = File.join(__FILE__, '../')
 $LOAD_PATH << lib_dir
 
 require 'rubygems'
