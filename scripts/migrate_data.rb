@@ -28,4 +28,7 @@
 
 require_relative "migrate_schema"
 
-migrate_schema
+Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).each do |p|
+  asset = Inventoryware::Node.new(p)
+  migrate_schema(asset)
+end

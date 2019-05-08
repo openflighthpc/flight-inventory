@@ -39,7 +39,7 @@ Bundler.setup(:default)
 
 require 'inventoryware/cli'
 
-def migrate_asset(asset)
+def migrate_schema(asset)
   changed = false
   while
     if asset.schema.to_f < Inventoryware::SCHEMA_NUM
@@ -98,21 +98,4 @@ def true_schema_0?(asset)
   #check that the nested hash is valid & hash a name
   return false unless asset.data.values[0]['name']
   return true
-end
-
-def migrate_schema
-  # To process all files
-  if ARGV.empty?
-    Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).each do |p|
-      migrate_asset(Inventoryware::Node.new(p))
-    end
-  # To process a specific file
-  else
-    path = if File.file?(ARGV[0])
-             ARGV[0]
-           else
-             File.join(Inventoryware::Config.yaml_dir, ARGV[0] + ".yaml")
-           end
-    migrate_asset(Inventoryware::Node.new(path))
-  end
 end
