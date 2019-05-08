@@ -94,7 +94,7 @@ module Inventoryware
     end
 
     command :'edit-map' do |c|
-      cli_syntax(c, '[ASSET_SPEC]')
+      cli_syntax(c, 'MAP_NAME [ASSET_SPEC]')
       c.description = "Edit mapping data for one or more assets"
       add_multi_node_options(c)
       add_create_option(c)
