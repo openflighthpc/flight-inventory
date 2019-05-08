@@ -127,7 +127,7 @@ module Inventoryware
     end
 
     command :'list-map' do |c|
-      cli_syntax(c, 'ASSET INDEX')
+      cli_syntax(c, 'ASSET MAP_NAME INDEX')
       c.summary = "List assets stored within mapping data"
       c.description = "View asset names stored for ASSET at the specified map INDEX."
       c.action Commands, :list_map
