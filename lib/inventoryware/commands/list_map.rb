@@ -30,7 +30,8 @@ module Inventoryware
   module Commands
     class ListMap < SingleNodeCommand
       def action(node)
-        index = @argv[1]
+        map_name = @argv[1]
+        index = @argv.last
 
         unless index.to_i.to_s == index
           raise ArgumentError, <<-ERROR.chomp
@@ -40,19 +41,19 @@ Please provide an integer index
 
         index = index.to_i
 
-        unless node.data.dig('mutable', 'map')
+        unless node.data.dig('mutable', 'maps', map_name)
           raise InventorywareError, <<-ERROR.chomp
-Asset '#{node.name}' does not have map data
+Asset '#{node.name}' does not have map data for '#{map_name}'
             ERROR
         end
 
-        unless node.data.dig('mutable', 'map', index)
+        unless node.data.dig('mutable', 'maps', map_name, 'map', index)
           raise InventorywareError, <<-ERROR.chomp
-Map for asset '#{node.name}' does not have index #{index}
+The '#{map_name}' map for asset '#{node.name}' does not have index #{index}
             ERROR
         end
 
-        line = node.data['mutable']['map'][index]
+        line = node.data['mutable']['maps'][map_name]['map'][index]
 
         asset_names = Dir[File.join(Config.yaml_dir, '*')].map do |p|
           p = File.basename(p, File.extname(p))
