@@ -44,7 +44,6 @@ def migrate_to_schema_1(asset)
   new_data = asset.data.values[0]
 
   new_data['mutable'] ||= {}
-  new_data['schema'] = 1
   unless new_data['type']
     p "Setting asset '#{asset.name}' to type 'server'"
     new_data['type'] ||= 'server'
