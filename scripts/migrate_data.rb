@@ -48,6 +48,7 @@ def migrate_asset_schema(asset)
 
   if asset_schema < target_schema
     for i in (asset_schema + 1)..target_schema do
+      # Method to call within corresponding migration file
       method_name = "migrate_to_schema_#{i}"
 
       unless respond_to?(method_name, true)
@@ -62,6 +63,7 @@ def migrate_asset_schema(asset)
       # Call schema migration script
       send(method_name, asset)
 
+      # Update asset schema version number
       asset.data['schema'] = i
       puts "Successful in updating asset '#{asset.name}' to schema #{i}"
     end
