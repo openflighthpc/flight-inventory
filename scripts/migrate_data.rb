@@ -102,7 +102,7 @@ end
 
 # To process all files
 if ARGV.empty?
-  Dir.glob(File.join(Inventoryware::Confid.yaml_dir, '*.yaml')).each do |p|
+  Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).each do |p|
     migrate_asset(Inventoryware::Node.new(p))
   end
 # To process a specific file
