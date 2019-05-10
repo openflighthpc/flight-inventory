@@ -99,3 +99,18 @@ def true_schema_0?(asset)
   return false unless asset.data.values[0]['name']
   return true
 end
+
+# To process all files
+if ARGV.empty?
+  Dir.glob(File.join(Inventoryware::Confid.yaml_dir, '*.yaml')).each do |p|
+    migrate_asset(Inventoryware::Node.new(p))
+  end
+# To process a specific file
+else
+  path = if File.file?(ARGV.first)
+          ARGV.first
+         else
+           File.join(Inventoryware::Config.yaml_dir, ARGV.first + ".yaml")
+         end
+  migrate_asset(Inventoryware::Node.new(path))
+end
