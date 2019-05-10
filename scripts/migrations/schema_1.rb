@@ -52,7 +52,6 @@ def migrate_to_schema_1(asset)
 
   asset.data = new_data
   asset.save
-  p "Successful in updating asset '#{asset.name} to schema 1"
 end
 
 def true_schema_0?(asset)
