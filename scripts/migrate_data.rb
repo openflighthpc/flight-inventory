@@ -35,6 +35,9 @@ $LOAD_PATH << lib_dir
 require 'rubygems'
 require 'bundler'
 
+# Require every migration within scripts/migrations
+Dir[File.join(__dir__, 'migrations', '*.rb')].each { |file| require file }
+
 Bundler.setup(:default)
 
 require 'inventoryware/cli'
