@@ -43,26 +43,32 @@ Bundler.setup(:default)
 require 'inventoryware/cli'
 
 def migrate_asset_schema(asset)
-  changed = false
-  while
-    if asset.schema.to_f < Inventoryware::SCHEMA_NUM
-      method_name = "schema_" + asset.schema.to_s
+  asset_schema = asset.schema.to_i
+  target_schema = Inventoryware::SCHEMA_NUM
+
+  if asset_schema < target_schema
+    for i in (asset_schema + 1)..target_schema do
+      method_name = "migrate_to_schema_#{i}"
+
       unless respond_to?(method_name, true)
-        raise <<-ERROR
-No migration method found for schema '#{asset.schema}' (for asset '#{asset.name}').
-This script cannot solve this issue.
-Please edit the asset's file, delete it or expand this script before continuing.
-Aborting.
+        raise <<~ERROR
+          No migration method found for schema '#{asset.schema}' (for asset '#{asset.name}').
+          This script cannot solve this issue.
+          Please edit the asset's file, delete it or expand this script before continuing.
+          Aborting.
         ERROR
       end
+
+      # Call schema migration script
       send(method_name, asset)
-      changed = true
-    else
-      p "No changes needed for asset '#{asset.name}' - at schema #{asset.schema}"
-      changed = false
+
+      asset.data['schema'] = i
+      puts "Successful in updating asset '#{asset.name}' to schema #{i}"
     end
-    break unless changed
+  else
+    puts "No changes needed for asset '#{asset.name}' - at schema #{asset_schema}"
   end
+
   asset.save
 end
 
