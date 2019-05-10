@@ -82,7 +82,7 @@ if ARGV.empty?
 # To process a specific file
 else
   path = if File.file?(ARGV.first)
-          ARGV.first
+           ARGV.first
          else
            File.join(Inventoryware::Config.yaml_dir, ARGV.first + ".yaml")
          end
