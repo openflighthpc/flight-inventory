@@ -35,7 +35,7 @@
 # We will detect this by checking the presence of a single primary key with a
 # 'name' subkey. If this is the state of the file we will treat
 # it as a "true" schema 0 file and proceed. Otherwise we will error.
-def schema_0(asset)
+def migrate_to_schema_1(asset)
   p "Attempting to update asset '#{asset.name}' from no schema to schema 1"
   unless true_schema_0?(asset)
     raise "Asset '#{asset.name}' is in an unknown state - aborting"

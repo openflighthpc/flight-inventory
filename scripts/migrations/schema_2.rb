@@ -26,11 +26,15 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
-def migrate_existing_map(asset)
-  data = asset.data
-  name = data['name']
-  mutable = data['mutable']
+def migrate_to_schema_2(asset)
+  mutable = asset.data['mutable']
 
+  if mutable['map']
+    migrate_existing_map(mutable)
+  end
+end
+
+def migrate_existing_map(mutable)
   if mutable['map']
     maps = mutable.fetch('maps') { mutable['maps'] = {} }
     migrated_map = {}
@@ -41,6 +45,5 @@ def migrate_existing_map(asset)
     end
 
     maps['migrated'] = migrated_map
-    puts "Existing map migrated for asset: #{name}" if asset.save
   end
 end
