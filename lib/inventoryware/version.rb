@@ -26,6 +26,6 @@
 # ==============================================================================
 module Inventoryware
   VERSION = '1.3.0-dev'
-  SCHEMA_NUM = 1
-  REQ_SCHEMA_NUM = 1
+  SCHEMA_NUM = 2
+  REQ_SCHEMA_NUM = 2
 end
