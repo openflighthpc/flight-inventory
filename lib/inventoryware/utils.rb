@@ -107,6 +107,10 @@ Error parsing yaml in #{path} - aborting
       return data
     end
 
+    def self.save_yaml(path, data)
+      File.open(path, 'w') { |f| f.write data.to_yaml }
+    end
+
     def self.edit_with_tmp_file(text, command)
       tmp_file = Tempfile.new('inv_ware_file_')
       begin
