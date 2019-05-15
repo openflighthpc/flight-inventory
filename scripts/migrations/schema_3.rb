@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # =============================================================================
 # Copyright (C) 2019-present Alces Flight Ltd.
 #
@@ -24,8 +25,34 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-module Inventoryware
-  VERSION = '1.3.0-dev'
-  SCHEMA_NUM = 3
-  REQ_SCHEMA_NUM = 3
+
+require 'fileutils'
+
+def migrate_to_schema_3(asset)
+  create_default_directory_if_necessary
+
+  if File.dirname(asset.path) == store_dir
+    move_asset_to_default_dir(asset)
+  end
+end
+
+private
+
+def create_default_directory_if_necessary
+  unless Dir.exist? default_dir
+    FileUtils.mkdir(default_dir)
+  end
+end
+
+def move_asset_to_default_dir(asset)
+  filename = File.basename(asset.path)
+  asset.move(File.join(default_dir, filename))
+end
+
+def default_dir
+  File.join(store_dir, 'default')
+end
+
+def store_dir
+  File.join(Inventoryware::Config.root_dir, 'var/store')
 end
