@@ -36,7 +36,7 @@ module Inventoryware
       def fetch_nodes(*args)
         resolve_node_options(@argv, @options, args)
 
-        node_names = @argv[args.length]
+        node_names = @argv.last
 
         nodes = find_nodes(node_names, @options)
         nodes = Node.make_unique(nodes)

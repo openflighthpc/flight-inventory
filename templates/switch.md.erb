@@ -1,7 +1,11 @@
 # <%= @asset_data.name %>
+<% @asset_hash['mutable']['maps'].each do |map| %>
 
-## Port Layout
+## <%= map.first %>
 
-<% @asset_hash['mutable']['map'].each do |port, asset| %>
+### Port Layout
+
+  <% map[1]['map'].each do |port, asset| %>
 <%= port %>: <%= asset %>
+  <% end %>
 <% end %>

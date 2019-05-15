@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # =============================================================================
 # Copyright (C) 2019-present Alces Flight Ltd.
 #
@@ -24,8 +25,25 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-module Inventoryware
-  VERSION = '1.3.0-dev'
-  SCHEMA_NUM = 2
-  REQ_SCHEMA_NUM = 2
+
+def migrate_to_schema_2(asset)
+  mutable = asset.data['mutable']
+
+  if mutable['map']
+    migrate_existing_map(mutable)
+  end
+end
+
+def migrate_existing_map(mutable)
+  if mutable['map']
+    maps = mutable.fetch('maps') { mutable['maps'] = {} }
+    migrated_map = {}
+
+    ['map_height', 'map_width', 'map_layout', 'map'].each do |key|
+      migrated_map[key] = mutable[key]
+      mutable.delete(key)
+    end
+
+    maps['migrated'] = migrated_map
+  end
 end

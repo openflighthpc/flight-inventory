@@ -94,7 +94,7 @@ module Inventoryware
     end
 
     command :'edit-map' do |c|
-      cli_syntax(c, '[ASSET_SPEC]')
+      cli_syntax(c, 'MAP_NAME [ASSET_SPEC]')
       c.description = "Edit mapping data for one or more assets"
       add_multi_node_options(c)
       add_create_option(c)
@@ -127,7 +127,7 @@ module Inventoryware
     end
 
     command :'list-map' do |c|
-      cli_syntax(c, 'ASSET INDEX')
+      cli_syntax(c, 'ASSET MAP_NAME INDEX')
       c.summary = "List assets stored within mapping data"
       c.description = "View asset names stored for ASSET at the specified map INDEX."
       c.action Commands, :list_map

@@ -30,88 +30,59 @@
 # Currently supports schema 0 (no schema) to 1
 
 lib_dir = File.join(__FILE__, '../../lib')
-scripts_dir = File.join(__FILE__, '../')
 $LOAD_PATH << lib_dir
 
 require 'rubygems'
 require 'bundler'
 
+# Require every migration within scripts/migrations
+Dir[File.join(__dir__, 'migrations', '*.rb')].each { |file| require file }
+
 Bundler.setup(:default)
 
 require 'inventoryware/cli'
 
-def migrate_asset(asset)
-  changed = false
-  while
-    if asset.schema.to_f < Inventoryware::SCHEMA_NUM
-      method_name = "schema_" + asset.schema.to_s
+def migrate_asset_schema(asset)
+  asset_schema = asset.schema.to_i
+  target_schema = Inventoryware::SCHEMA_NUM
+
+  if asset_schema < target_schema
+    for i in (asset_schema + 1)..target_schema do
+      method_name = "migrate_to_schema_#{i}"
+
       unless respond_to?(method_name, true)
-        raise <<-ERROR
-No migration method found for schema '#{asset.schema}' (for asset '#{asset.name}').
-This script cannot solve this issue.
-Please edit the asset's file, delete it or expand this script before continuing.
-Aborting.
+        raise <<~ERROR
+          No migration method found for schema '#{asset.schema}' (for asset '#{asset.name}').
+          This script cannot solve this issue.
+          Please edit the asset's file, delete it or expand this script before continuing.
+          Aborting.
         ERROR
       end
+
+      # Call schema migration script
       send(method_name, asset)
-      changed = true
-    else
-      p "No changes needed for asset '#{asset.name}' - at schema #{asset.schema}"
-      changed = false
+
+      asset.data['schema'] = i
+      puts "Successful in updating asset '#{asset.name}' to schema #{i}"
     end
-    break unless changed
+  else
+    puts "No changes needed for asset '#{asset.name}' - at schema #{asset_schema}"
   end
+
   asset.save
-end
-
-# Schema 0 is an edge case.
-# While it designates data files from before the introduction of schemas as a
-# notion, it is what is returned when any file that doesn't have a given schema
-# number (nil => 0). Due to this we must detect if the file in question is a
-# valid file from inventoryware version 1.2.0 or before OR if it is a file in
-# an unknown state.
-# We will detect this by checking the presence of a single primary key with a
-# 'name' subkey. If this is the state of the file we will treat
-# it as a "true" schema 0 file and proceed. Otherwise we will error.
-def schema_0(asset)
-  p "Attempting to update asset '#{asset.name}' from no schema to schema 1"
-  unless true_shema_0?(asset)
-    raise "Asset '#{asset.name}' is in an unknown state - aborting"
-  end
-
-  new_data = asset.data.values[0]
-
-  new_data['mutable'] ||= {}
-  new_data['schema'] = 1
-  unless new_data['type']
-    p "Setting asset '#{asset.name}' to type 'server'"
-    new_data['type'] ||= 'server'
-  end
-
-  asset.data = new_data
-  asset.save
-  p "Successful in updating asset '#{asset.name} to schema 1"
-end
-
-def true_shema_0?(asset)
-  #check for a primary key
-  return false unless asset.data.keys.length == 1
-  #check that the nested hash is valid & hash a name
-  return false unless asset.data.values[0]['name']
-  return true
 end
 
 # To process all files
 if ARGV.empty?
   Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).each do |p|
-    migrate_asset(Inventoryware::Node.new(p))
+    migrate_asset_schema(Inventoryware::Node.new(p))
   end
 # To process a specific file
 else
-  path = if File.file?(ARGV[0])
-           ARGV[0]
+  path = if File.file?(ARGV.first)
+          ARGV.first
          else
-           File.join(Inventoryware::Config.yaml_dir, ARGV[0] + ".yaml")
+           File.join(Inventoryware::Config.yaml_dir, ARGV.first + ".yaml")
          end
-  migrate_asset(Inventoryware::Node.new(path))
+  migrate_asset_schema(Inventoryware::Node.new(path))
 end
