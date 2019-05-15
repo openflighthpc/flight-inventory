@@ -220,6 +220,16 @@ Output file #{@path} not accessible - aborting
       File.open(@path, 'w') { |file| file.write(output_yaml) }
     end
 
+    # Moves the asset file. This was created to assist with moving existing assets
+    # to the new format that supports clusters. Use with caution as this has a
+    # fairly significant impact on system functionality.
+    def move(new_path)
+      original_path = self.path
+
+      set_path(new_path)
+      FileUtils.mv(original_path, new_path)
+    end
+
     def create_if_non_existent(type = '')
       unless Utils.check_file_readable?(@path)
         @data = {
@@ -267,6 +277,12 @@ See migrate_data.rb in the scripts directory
     # in order shortly)
     def order_hash(hash)
       Hash[hash.sort_by { |k, _| Config.req_keys.include?(k) ? 0 : 1 }]
+    end
+
+    # Like with the move method this might not see any practical use outside
+    # of moving existing assets to the format supporting clusters
+    def set_path(path)
+      @path = path
     end
   end
 end
