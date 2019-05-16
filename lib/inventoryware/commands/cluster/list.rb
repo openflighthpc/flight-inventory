@@ -35,7 +35,11 @@ module Inventoryware
           clusters = get_list_of_clusters
 
           clusters.each do |cluster|
-            puts cluster
+            if cluster.start_with?('*')
+              puts cluster
+            else
+              puts "  #{cluster}"
+            end
           end
         end
 
