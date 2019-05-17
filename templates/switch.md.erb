@@ -5,7 +5,7 @@
 
 ### Port Layout
 
-  <% map[1]['map'].each do |port, asset| %>
+  <% (map[1]['map'] || {}).each do |port, asset| %>
 <%= port %>: <%= asset %>
   <% end %>
 <% end %>
