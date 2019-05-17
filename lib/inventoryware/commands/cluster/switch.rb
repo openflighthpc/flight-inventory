@@ -25,50 +25,34 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
+require 'inventoryware/config'
 require 'inventoryware/utils'
 
 module Inventoryware
-  class Config
-    class << self
-      def instance
-        @instance ||= Config.new
-      end
+  module Commands
+    module Cluster
+      class Switch < Command
+        def run
+          cluster_config_path = Config.cluster_config_path
+          cluster_config = Utils.load_yaml(cluster_config_path)
+          cluster = @argv.first
 
-      def method_missing(s, *a, &b)
-        if instance.respond_to?(s)
-          instance.send(s, *a, &b)
-        else
-          super
+          if cluster_exists?(cluster)
+            cluster_config["active_cluster"] = cluster
+            Utils.save_yaml(cluster_config_path, cluster_config)
+
+            puts "'#{cluster}' is now the active cluster"
+          else
+            puts "'#{cluster}' is not an existing cluster"
+          end
+        end
+
+        private
+
+        def cluster_exists?(cluster)
+          Dir.exist?(File.join(Config.root_dir, 'var/store', cluster))
         end
       end
-
-      def respond_to_missing?(s)
-        instance.respond_to?(s)
-      end
-    end
-
-    attr_reader :root_dir, :yaml_dir, :templates_dir, :helpers_dir, :req_files,
-      :other_files, :all_files, :templates_config_path, :plugins_dir, :req_keys,
-      :cluster_config_path, :active_cluster
-
-    def initialize
-      @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
-
-      @cluster_config_path = File.join(@root_dir, 'etc/cluster.yml')
-      @templates_config_path = File.join(@root_dir, 'etc/templates.yml')
-
-      @active_cluster = Utils.load_yaml(cluster_config_path)['active_cluster']
-
-      @yaml_dir = File.join(@root_dir, 'var/store', active_cluster)
-      @templates_dir = File.join(@root_dir, 'templates')
-      @helpers_dir = File.join(@root_dir, 'helpers')
-      @plugins_dir = File.join(@root_dir, 'plugins')
-
-      @req_files = ["lshw-xml", "lsblk-a-P"]
-      @other_files = ["groups"]
-      @all_files = @req_files + @other_files
-
-      @req_keys = ['name', 'schema', 'mutable', 'type']
     end
   end
 end

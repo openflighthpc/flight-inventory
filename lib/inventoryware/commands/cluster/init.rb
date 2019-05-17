@@ -24,8 +24,36 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
+
+require 'inventoryware/config'
+require 'inventoryware/utils'
+
+require 'fileutils'
+
 module Inventoryware
-  VERSION = '1.3.0-dev'
-  SCHEMA_NUM = 3
-  REQ_SCHEMA_NUM = 3
+  module Commands
+    module Cluster
+      class Init < Command
+        def run
+          cluster_config_path = Config.cluster_config_path
+          cluster_config = Utils.load_yaml(cluster_config_path)
+          cluster = @argv.first
+
+          if create_cluster_directory
+            cluster_config['active_cluster'] = cluster
+            Utils.save_yaml(cluster_config_path, cluster_config)
+
+            puts "The '#{cluster}' cluster has been successfully initialised and"\
+                 " is now the active cluster"
+          end
+        end
+
+        private
+
+        def create_cluster_directory
+          FileUtils.mkdir(File.join(Config.root_dir, 'var/store', @argv))
+        end
+      end
+    end
+  end
 end

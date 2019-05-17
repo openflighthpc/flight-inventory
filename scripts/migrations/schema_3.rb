@@ -26,37 +26,33 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
-# Schema 0 is an edge case.
-# While it designates data files from before the introduction of schemas as a
-# notion, it is what is returned when any file that doesn't have a given schema
-# number (nil => 0). Due to this we must detect if the file in question is a
-# valid file from inventoryware version 1.2.0 or before OR if it is a file in
-# an unknown state.
-# We will detect this by checking the presence of a single primary key with a
-# 'name' subkey. If this is the state of the file we will treat
-# it as a "true" schema 0 file and proceed. Otherwise we will error.
-def migrate_to_schema_1(asset)
-  p "Attempting to update asset '#{asset.name}' from no schema to schema 1"
-  unless true_schema_0?(asset)
-    raise "Asset '#{asset.name}' is in an unknown state - aborting"
+require 'fileutils'
+
+def migrate_to_schema_3(asset)
+  create_default_directory_if_necessary
+
+  if File.dirname(asset.path) == store_dir
+    move_asset_to_default_dir(asset)
   end
-
-  new_data = asset.data.values[0]
-
-  new_data['mutable'] ||= {}
-  unless new_data['type']
-    p "Setting asset '#{asset.name}' to type 'server'"
-    new_data['type'] ||= 'server'
-  end
-
-  asset.data = new_data
-  asset.save
 end
 
-def true_schema_0?(asset)
-  #check for a primary key
-  return false unless asset.data.keys.length == 1
-  #check that the nested hash is valid & hash a name
-  return false unless asset.data.values[0]['name']
-  return true
+private
+
+def create_default_directory_if_necessary
+  unless Dir.exist? default_dir
+    FileUtils.mkdir(default_dir)
+  end
+end
+
+def move_asset_to_default_dir(asset)
+  filename = File.basename(asset.path)
+  asset.move(File.join(default_dir, filename))
+end
+
+def default_dir
+  File.join(store_dir, 'default')
+end
+
+def store_dir
+  File.join(Inventoryware::Config.root_dir, 'var/store')
 end

@@ -161,5 +161,29 @@ module Inventoryware
       c.description = "Create a new asset"
       c.action Commands, :create
     end
+
+    command :'init-cluster' do |c|
+      cli_syntax(c, 'CLUSTER')
+      c.description = "Initialise a new cluster"
+      c.action Commands, :'cluster-init'
+    end
+
+    command :'delete-cluster' do |c|
+      cli_syntax(c, 'CLUSTER')
+      c.description = "Deletes the specified cluster and associated assets"
+      c.action Commands, :'cluster-delete'
+    end
+
+    command :'list-cluster' do |c|
+      cli_syntax(c)
+      c.description = "List the current and available clusters"
+      c.action Commands, :'cluster-list'
+    end
+
+    command :'switch-cluster' do |c|
+      cli_syntax(c, 'CLUSTER')
+      c.description = "Change the current cluster"
+      c.action Commands, :'cluster-switch'
+    end
   end
 end

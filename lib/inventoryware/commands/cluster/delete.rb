@@ -24,8 +24,35 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
+
+require 'inventoryware/config'
+
+require 'fileutils'
+
 module Inventoryware
-  VERSION = '1.3.0-dev'
-  SCHEMA_NUM = 3
-  REQ_SCHEMA_NUM = 3
+  module Commands
+    module Cluster
+      class Delete < Command
+        def run
+          cluster = @argv.first
+
+          prompt = TTY::Prompt.new
+          unless prompt.no?("Are you sure you want to delete '#{cluster}'?")
+            unless cluster == Config.active_cluster
+              puts "Cluster '#{cluster}' has been deleted" if delete_cluster(cluster)
+            else
+              puts "Can't delete the current cluster, please switch cluster first"
+            end
+          end
+        end
+
+        private
+
+        def delete_cluster(cluster)
+          cluster_path = File.join(Config.root_dir, 'var/store', cluster)
+          FileUtils.rm_rf(cluster_path, secure: true)
+        end
+      end
+    end
+  end
 end

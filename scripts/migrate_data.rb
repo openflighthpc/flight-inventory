@@ -48,6 +48,7 @@ def migrate_asset_schema(asset)
 
   if asset_schema < target_schema
     for i in (asset_schema + 1)..target_schema do
+      # Method to call within corresponding migration file
       method_name = "migrate_to_schema_#{i}"
 
       unless respond_to?(method_name, true)
@@ -62,25 +63,30 @@ def migrate_asset_schema(asset)
       # Call schema migration script
       send(method_name, asset)
 
+      # Update asset schema version number
       asset.data['schema'] = i
-      puts "Successful in updating asset '#{asset.name}' to schema #{i}"
+      puts "Successful in updating asset '#{asset.name}' to schema #{i}" if asset.save
     end
   else
     puts "No changes needed for asset '#{asset.name}' - at schema #{asset_schema}"
   end
-
-  asset.save
 end
 
 # To process all files
 if ARGV.empty?
-  Dir.glob(File.join(Inventoryware::Config.yaml_dir, '*.yaml')).each do |p|
-    migrate_asset_schema(Inventoryware::Node.new(p))
+  Dir.glob(File.join(Inventoryware::Config.root_dir, 'var/store/*')).each do |f|
+    if File.directory?(f)
+      Dir.glob(File.join(f, '*.yaml')).each do |p|
+        migrate_asset_schema(Inventoryware::Node.new(p))
+      end
+    else
+      migrate_asset_schema(Inventoryware::Node.new(f))
+    end
   end
 # To process a specific file
 else
   path = if File.file?(ARGV.first)
-          ARGV.first
+           ARGV.first
          else
            File.join(Inventoryware::Config.yaml_dir, ARGV.first + ".yaml")
          end

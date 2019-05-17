@@ -24,8 +24,41 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
+
+require 'inventoryware/config'
+
 module Inventoryware
-  VERSION = '1.3.0-dev'
-  SCHEMA_NUM = 3
-  REQ_SCHEMA_NUM = 3
+  module Commands
+    module Cluster
+      class List < Command
+        def run
+          clusters = get_list_of_clusters
+
+          clusters.each do |cluster|
+            if cluster.start_with?('*')
+              puts cluster
+            else
+              puts "  #{cluster}"
+            end
+          end
+        end
+
+        private
+
+        def get_list_of_clusters
+          Dir.glob(File.join(Config.root_dir, 'var/store/*')).select { |e|
+            File.directory? e
+          }.map { |dir|
+            File.basename(dir)
+          }.map { |cluster|
+            if cluster == Config.active_cluster
+              "* #{cluster}"
+            else
+              cluster
+            end
+          }.sort
+        end
+      end
+    end
+  end
 end
