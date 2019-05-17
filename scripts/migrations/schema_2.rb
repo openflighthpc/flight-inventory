@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # =============================================================================
 # Copyright (C) 2019-present Alces Flight Ltd.
 #
@@ -24,15 +25,25 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-def network_devices
-  def create_net(net_hash)
-    OpenStruct.new(net_hash).tap do |o|
-      o.speed = format_bits_value((net_hash['capacity'] || net_hash['size'] || 0).to_i)
+
+def migrate_to_schema_2(asset)
+  mutable = asset.data['mutable']
+
+  if mutable['map']
+    migrate_existing_map(mutable)
+  end
+end
+
+def migrate_existing_map(mutable)
+  if mutable['map']
+    maps = mutable.fetch('maps') { mutable['maps'] = {} }
+    migrated_map = {}
+
+    ['map_height', 'map_width', 'map_layout', 'map'].each do |key|
+      migrated_map[key] = mutable[key]
+      mutable.delete(key)
     end
+
+    maps['migrated'] = migrated_map
   end
-  network_devices = []
-  find_hashes_with_key_value(@asset_hash, 'class', 'network')&.each do |net|
-    network_devices << create_net(net)
-  end
-  network_devices.sort_by {|hsh| hsh[:logicalname] || ''}
 end

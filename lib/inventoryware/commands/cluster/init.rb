@@ -24,47 +24,34 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-require 'inventoryware/commands/single_node_command'
+
+require 'inventoryware/config'
+require 'inventoryware/utils'
+
+require 'fileutils'
 
 module Inventoryware
   module Commands
-    class ListMap < SingleNodeCommand
-      def action(node)
-        map_name = @argv[1]
-        index = @argv.last
+    module Cluster
+      class Init < Command
+        def run
+          cluster_config_path = Config.cluster_config_path
+          cluster_config = Utils.load_yaml(cluster_config_path)
+          cluster = @argv.first
 
-        unless index.to_i.to_s == index
-          raise ArgumentError, <<-ERROR.chomp
-Please provide an integer index
-            ERROR
+          if create_cluster_directory
+            cluster_config['active_cluster'] = cluster
+            Utils.save_yaml(cluster_config_path, cluster_config)
+
+            puts "The '#{cluster}' cluster has been successfully initialised and"\
+                 " is now the active cluster"
+          end
         end
 
-        index = index.to_i
+        private
 
-        unless node.data.dig('mutable', 'maps', map_name)
-          raise InventorywareError, <<-ERROR.chomp
-Asset '#{node.name}' does not have map data for '#{map_name}'
-            ERROR
-        end
-
-        unless node.data.dig('mutable', 'maps', map_name, 'map', index)
-          raise InventorywareError, <<-ERROR.chomp
-The '#{map_name}' map for asset '#{node.name}' does not have index #{index}
-            ERROR
-        end
-
-        line = node.data['mutable']['maps'][map_name]['map'][index]
-
-        asset_names = Dir[File.join(Config.yaml_dir, '*')].map do |p|
-          p = File.basename(p, File.extname(p))
-        end
-
-        asset_names.select! { |name| line.include?(name) }
-
-        if asset_names.empty?
-          puts "No assets found under that index"
-        else
-          puts asset_names
+        def create_cluster_directory
+          FileUtils.mkdir(File.join(Config.root_dir, 'var/store', @argv))
         end
       end
     end

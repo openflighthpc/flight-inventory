@@ -94,7 +94,7 @@ module Inventoryware
     end
 
     command :'edit-map' do |c|
-      cli_syntax(c, '[ASSET_SPEC]')
+      cli_syntax(c, 'MAP_NAME [ASSET_SPEC]')
       c.description = "Edit mapping data for one or more assets"
       add_multi_node_options(c)
       add_create_option(c)
@@ -112,9 +112,10 @@ module Inventoryware
     command :list do |c|
       cli_syntax(c)
       c.description = "List all assets that have stored data"
-      add_group_option(c)
-      c.option '-t', '--type TYPE',
-        "Select assets in TYPE, specify comma-separated list for multiple types"
+      c.option '-g', '--group [GROUP]',
+        "Optionally select assets in GROUP, specify comma-separated list for multiple groups"
+      c.option '-t', '--type [TYPE]',
+        "Optionally select assets in TYPE, specify comma-separated list for multiple types"
       c.action Commands, :list
     end
 
@@ -126,7 +127,7 @@ module Inventoryware
     end
 
     command :'list-map' do |c|
-      cli_syntax(c, 'ASSET INDEX')
+      cli_syntax(c, 'ASSET MAP_NAME INDEX')
       c.summary = "List assets stored within mapping data"
       c.description = "View asset names stored for ASSET at the specified map INDEX."
       c.action Commands, :list_map
@@ -159,6 +160,30 @@ module Inventoryware
       cli_syntax(c, 'ASSET')
       c.description = "Create a new asset"
       c.action Commands, :create
+    end
+
+    command :'init-cluster' do |c|
+      cli_syntax(c, 'CLUSTER')
+      c.description = "Initialise a new cluster"
+      c.action Commands, :'cluster-init'
+    end
+
+    command :'delete-cluster' do |c|
+      cli_syntax(c, 'CLUSTER')
+      c.description = "Deletes the specified cluster and associated assets"
+      c.action Commands, :'cluster-delete'
+    end
+
+    command :'list-cluster' do |c|
+      cli_syntax(c)
+      c.description = "List the current and available clusters"
+      c.action Commands, :'cluster-list'
+    end
+
+    command :'switch-cluster' do |c|
+      cli_syntax(c, 'CLUSTER')
+      c.description = "Change the current cluster"
+      c.action Commands, :'cluster-switch'
     end
   end
 end

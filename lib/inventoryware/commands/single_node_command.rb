@@ -60,6 +60,8 @@ Please refine your search
           node = Node.new(found[0])
         end
 
+        node.check_schema
+
         action(node)
       end
 

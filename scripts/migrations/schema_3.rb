@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # =============================================================================
 # Copyright (C) 2019-present Alces Flight Ltd.
 #
@@ -24,15 +25,34 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-def network_devices
-  def create_net(net_hash)
-    OpenStruct.new(net_hash).tap do |o|
-      o.speed = format_bits_value((net_hash['capacity'] || net_hash['size'] || 0).to_i)
-    end
+
+require 'fileutils'
+
+def migrate_to_schema_3(asset)
+  create_default_directory_if_necessary
+
+  if File.dirname(asset.path) == store_dir
+    move_asset_to_default_dir(asset)
   end
-  network_devices = []
-  find_hashes_with_key_value(@asset_hash, 'class', 'network')&.each do |net|
-    network_devices << create_net(net)
+end
+
+private
+
+def create_default_directory_if_necessary
+  unless Dir.exist? default_dir
+    FileUtils.mkdir(default_dir)
   end
-  network_devices.sort_by {|hsh| hsh[:logicalname] || ''}
+end
+
+def move_asset_to_default_dir(asset)
+  filename = File.basename(asset.path)
+  asset.move(File.join(default_dir, filename))
+end
+
+def default_dir
+  File.join(store_dir, 'default')
+end
+
+def store_dir
+  File.join(Inventoryware::Config.root_dir, 'var/store')
 end

@@ -171,6 +171,7 @@ No .zip files found at #{data_source}
 
         node_data = {
           'name' => node_name,
+          'schema' => SCHEMA_NUM,
           'type' => 'server',
           'mutable' => {},
           # extract data from lshw

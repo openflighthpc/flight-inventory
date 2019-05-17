@@ -24,47 +24,39 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-require 'inventoryware/commands/single_node_command'
+
+require 'inventoryware/config'
 
 module Inventoryware
   module Commands
-    class ListMap < SingleNodeCommand
-      def action(node)
-        map_name = @argv[1]
-        index = @argv.last
+    module Cluster
+      class List < Command
+        def run
+          clusters = get_list_of_clusters
 
-        unless index.to_i.to_s == index
-          raise ArgumentError, <<-ERROR.chomp
-Please provide an integer index
-            ERROR
+          clusters.each do |cluster|
+            if cluster.start_with?('*')
+              puts cluster
+            else
+              puts "  #{cluster}"
+            end
+          end
         end
 
-        index = index.to_i
+        private
 
-        unless node.data.dig('mutable', 'maps', map_name)
-          raise InventorywareError, <<-ERROR.chomp
-Asset '#{node.name}' does not have map data for '#{map_name}'
-            ERROR
-        end
-
-        unless node.data.dig('mutable', 'maps', map_name, 'map', index)
-          raise InventorywareError, <<-ERROR.chomp
-The '#{map_name}' map for asset '#{node.name}' does not have index #{index}
-            ERROR
-        end
-
-        line = node.data['mutable']['maps'][map_name]['map'][index]
-
-        asset_names = Dir[File.join(Config.yaml_dir, '*')].map do |p|
-          p = File.basename(p, File.extname(p))
-        end
-
-        asset_names.select! { |name| line.include?(name) }
-
-        if asset_names.empty?
-          puts "No assets found under that index"
-        else
-          puts asset_names
+        def get_list_of_clusters
+          Dir.glob(File.join(Config.root_dir, 'var/store/*')).select { |e|
+            File.directory? e
+          }.map { |dir|
+            File.basename(dir)
+          }.map { |cluster|
+            if cluster == Config.active_cluster
+              "* #{cluster}"
+            else
+              cluster
+            end
+          }.sort
         end
       end
     end

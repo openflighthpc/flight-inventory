@@ -37,25 +37,24 @@ module Inventoryware
           $stderr.puts "No asset data found "\
             "in #{File.expand_path(Config.yaml_dir)}"
         end
-        return node_paths.map { |p| Node.new(p) }
+        nodes = node_paths.map { |p| Node.new(p) }
+        nodes.each { |n| n.check_schema }
+        return nodes
       end
 
       # retreives all nodes in the given groups
       # note: if speed becomes an issue this should be reverted back to the old
       # method of converting the yaml to a string and searching with regex
-      def find_nodes_in_groups(groups, node_list = find_all_nodes())
-        groups = *groups unless groups.is_a?(Array)
+      def find_nodes_in_groups(target_groups, node_list = find_all_nodes())
+        target_groups = *target_groups unless target_groups.is_a?(Array)
         nodes = []
         node_list.each do |node|
-          found = []
-          found = found << node.primary_group if node.primary_group
-          found = found + node.secondary_groups if node.secondary_groups
-          unless (found & groups).empty?
+          unless (node.all_groups & target_groups).empty?
             nodes.append(node)
           end
         end
         if nodes.empty?
-          $stderr.puts "No assets found in #{groups.join(' or ')}."
+          $stderr.puts "No assets found in #{target_groups.join(' or ')}."
         end
         return nodes
       end
@@ -64,7 +63,6 @@ module Inventoryware
       # This cannot easily be done by converting the yaml to a string and
       # searching with regex as the `lshw` hash has keys called 'type'
       def find_nodes_with_types(target_types, node_list = find_all_nodes())
-        key = ['type']
         target_types = *target_types unless target_types.is_a?(Array)
         target_types.map! { |t| t.downcase }
         nodes = []
@@ -140,51 +138,56 @@ module Inventoryware
     end
 
     def type
-      # hack-y method to save time - rather than load the node's data into mem
-      #   as a hash if the data isn't going to be used for anything, just grep.
-      #   This time saving add up if listing 100s of nodes
-      # TODO UPDATE THIS WHEN THE YAML FORMAT IS CHANGED (issue #119)
-      #   this will alter the amount of whitespace prepending 'type' and as such
-      #   the regex will need to be changed
-      if @data
-        type = @data['type']
-      else
-        type = nil
-        IO.foreach(@path) do | line|
-          if m = line.match(/^  type: (.*)$/)
-            type = m[1]
-            break
-          end
-        end
-      end
+      type = if @data
+               @data['type']
+             else
+               quick_search_file('type')
+             end
       type = 'server' unless type
       return type
     end
 
-    #TODO as with `.type`
-    def primary_group
-      return @data.dig('mutable','primary_group') if @data
-      pri_group = nil
-      IO.foreach(@path) do | line|
-        if m = line.match(/^    primary_group: (.*)$/)
-          pri_group = m[1]
-          break
-        end
-      end
-      return pri_group
+    def schema
+      schema = if @data
+                 @data['schema']
+               else
+                 quick_search_file('schema')
+               end
+      schema = 0 unless schema
+      return schema
     end
 
-    #TODO as with `.type`
+
+    def primary_group
+      return @data.dig('mutable','primary_group') if @data
+
+      # Note the two spaces
+      return quick_search_file('  primary_group') || 'orphan'
+    end
+
     def secondary_groups
-      return @data.dig('mutable','secondary_groups') if @data
-      sec_groups = nil
-      IO.foreach(@path) do | line|
-        if m = line.match(/^    secondary_groups: (.*)$/)
-          sec_groups = m[1].split(',')
-          break
+      groups = if @data
+                 @data.dig('mutable','secondary_groups')
+               else
+                 # Note the two spaces
+                 groups = quick_search_file('  secondary_groups')
+               end
+      groups.nil? ? [] : groups.split(',')
+    end
+
+    # Time saving method - functionally executes `primary_group` and
+    # `secondary_groups` in sequence, while only iterating over the file once
+    def all_groups
+      return secondary_groups << primary_group if @data
+      found = ['orphan']
+      quick_search_file do |line|
+        if pri_m = line.match(/^  primary_group: (.*)$/)
+          found[0] = pri_m[1]
+        elsif sec_m = line.match(/^  secondary_groups: (.*)$/)
+          found = found + sec_m[1].split(',')
         end
       end
-      return sec_groups
+      return found
     end
 
     def data=(value)
@@ -199,18 +202,32 @@ module Inventoryware
 Yaml in #{@path} is empty - aborting
         ERROR
       end
-      @data = node_data.values[0]
+      @data = node_data
       return @data
     end
 
     def save
+      # this `.data` call is necessary to prevent attempting to write nothing
+      # to the file
+      self.data
       unless Utils.check_file_writable?(@path)
         raise FileSysError, <<-ERROR.chomp
 Output file #{@path} not accessible - aborting
         ERROR
       end
-      yaml_hash = {data['name'] => data}
-      File.open(@path, 'w') { |file| file.write(yaml_hash.to_yaml) }
+
+      output_yaml = order_hash(data).to_yaml
+      File.open(@path, 'w') { |file| file.write(output_yaml) }
+    end
+
+    # Moves the asset file. This was created to assist with moving existing assets
+    # to the new format that supports clusters. Use with caution as this has a
+    # fairly significant impact on system functionality.
+    def move(new_path)
+      original_path = self.path
+
+      set_path(new_path)
+      FileUtils.mv(original_path, new_path)
     end
 
     def create_if_non_existent(type = '')
@@ -219,11 +236,53 @@ Output file #{@path} not accessible - aborting
           'name' => @name,
           'mutable' => {},
           'type' => type,
+          'schema' => SCHEMA_NUM,
         }
         save
       end
     end
 
+    def check_schema
+      unless schema.to_f >= REQ_SCHEMA_NUM
+        raise FileSysError, <<-ERROR.chomp
+Asset '#{name}' has data in the wrong schema
+Please update it before continuing
+See migrate_data.rb in the scripts directory
+(Has #{schema}; minimum required is #{REQ_SCHEMA_NUM})
+        ERROR
+      end
+    end
+
     attr_reader :path, :name
+
+    private
+    def quick_search_file(target_str_prefix = nil)
+      # hack-y method to save time - rather than load the node's data into mem
+      #   as a hash if the data isn't going to be used for anything, just grep.
+      #   This time saving adds up if listing 100s of nodes
+      return_value = nil
+      IO.foreach(@path) do |line|
+        if block_given?
+          return_value = yield(line)
+        elsif m = line.match(/^#{target_str_prefix}: (.*)$/)
+          return_value = m[1]
+        end
+        break if return_value
+      end
+      return return_value
+    end
+
+    # Another hack-y method to keep short values near the top of the hash
+    # This is to speed up quick_search_file above (a move to using a db may be
+    # in order shortly)
+    def order_hash(hash)
+      Hash[hash.sort_by { |k, _| Config.req_keys.include?(k) ? 0 : 1 }]
+    end
+
+    # Like with the move method this might not see any practical use outside
+    # of moving existing assets to the format supporting clusters
+    def set_path(path)
+      @path = path
+    end
   end
 end

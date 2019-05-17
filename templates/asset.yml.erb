@@ -1,2 +1,2 @@
 <%= @asset_data.name %>:
-  <%= @asset_data.to_hash.to_yaml.split("\n").tap {|a| a.shift}.join("\n  ") %>
+  <%= @asset_hash.to_yaml.split("\n").tap {|a| a.shift}.join("\n  ") %>

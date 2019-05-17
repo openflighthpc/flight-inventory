@@ -35,18 +35,21 @@ module Inventoryware
         def run
           nodes = fetch_nodes()
           node = nodes.first
+          map_name = @argv.first
+
+          initialise_map_hashes(nodes, map_name)
 
           prompt = TTY::Prompt.new
           unless prompt.no?('Would you like to add map metadata? (Default: No)')
-            get_map_metadata_from_user(nodes, prompt)
+            get_map_metadata_from_user(map_name, nodes, prompt)
           end
 
-          map = map_to_string(node.data['mutable']['map'])
+          map = map_to_string(node.data['mutable']['maps'][map_name]['map'])
           map = string_to_map(Utils.edit_with_tmp_file(map,
                                                        :"rvim +'set number'"))
 
           nodes.each do |node|
-            node.data['mutable']['map'] = map
+            node.data['mutable']['maps'][map_name]['map'] = map
             node.save
           end
         end
@@ -82,7 +85,7 @@ Error parsing map - Non-integer keys
           return map
         end
 
-        def get_map_metadata_from_user(nodes, prompt)
+        def get_map_metadata_from_user(map_name, nodes, prompt)
           prompt.say('Enter integer values for the dimensions of the map:')
 
           x = prompt.ask('Width:') do |q|
@@ -102,9 +105,21 @@ Error parsing map - Non-integer keys
           layout = prompt.select('Choose the pattern for the map:', choices)
 
           nodes.each do |node|
-            node.data['mutable']['map_height'] = y
-            node.data['mutable']['map_width'] = x
-            node.data['mutable']['map_layout'] = layout
+            map = node.data['mutable']['maps'][map_name]
+
+            map['map_height'] = y
+            map['map_width'] = x
+            map['map_layout'] = layout
+          end
+        end
+
+        # This method ensures the program doesn't run into problems with nil
+        # values when no map exists along with the nested hashes.
+        def initialise_map_hashes(nodes, map_name)
+          nodes.each do |node|
+            mutable = node.data['mutable']
+            maps = mutable.fetch('maps') { mutable['maps'] = {} }
+            maps.fetch(map_name) { maps[map_name] = {} }
           end
         end
       end

@@ -49,7 +49,7 @@ module Inventoryware
       def load
         unless File.readable?(Config.templates_config_path)
           raise FileSysError, <<-ERROR.chomp
-Template config at #{@path} is inaccessible
+Template config at #{Config.templates_config_path} is inaccessible
         ERROR
         end
         template_data = {}

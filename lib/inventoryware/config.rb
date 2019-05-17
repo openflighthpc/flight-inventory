@@ -25,6 +25,8 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
+require 'inventoryware/utils'
+
 module Inventoryware
   class Config
     class << self
@@ -46,20 +48,27 @@ module Inventoryware
     end
 
     attr_reader :root_dir, :yaml_dir, :templates_dir, :helpers_dir, :req_files,
-      :other_files, :all_files, :templates_config_path, :plugins_dir
+      :other_files, :all_files, :templates_config_path, :plugins_dir, :req_keys,
+      :cluster_config_path, :active_cluster
 
     def initialize
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
-      @yaml_dir = File.join(@root_dir, 'var/store')
+
+      @cluster_config_path = File.join(@root_dir, 'etc/cluster.yml')
+      @templates_config_path = File.join(@root_dir, 'etc/templates.yml')
+
+      @active_cluster = Utils.load_yaml(cluster_config_path)['active_cluster']
+
+      @yaml_dir = File.join(@root_dir, 'var/store', active_cluster)
       @templates_dir = File.join(@root_dir, 'templates')
       @helpers_dir = File.join(@root_dir, 'helpers')
       @plugins_dir = File.join(@root_dir, 'plugins')
 
-      @templates_config_path = File.join(@root_dir, 'etc/templates.yml')
-
       @req_files = ["lshw-xml", "lsblk-a-P"]
       @other_files = ["groups"]
       @all_files = @req_files + @other_files
+
+      @req_keys = ['name', 'schema', 'mutable', 'type']
     end
   end
 end
