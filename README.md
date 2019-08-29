@@ -34,6 +34,8 @@ The commands' syntax is as follows:
 ```
 import DATA_LOCATION
 
+import-hunter DATA_LOCATION
+
 delete [ASSET SPEC]
 
 create ASSET
@@ -62,6 +64,9 @@ If the location is a directory all '.zips' in it will be processed. Each of thes
 and any nested zips are processed. Only bottom level .zips are processed so don't allow any asset's
 data to be sibling to a .zip. Each zip must contain a `lshw-xml` and a `lsblk-a-P` file. A `groups`
 file will be processed if it exists.
+
+The `import-hunter` command processes a list of nodes saved as a YAML which has been created via the
+data collection tool Flight Hunter.
 
 `create` opens an editor allowing for the creation of a new asset.
 
