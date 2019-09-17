@@ -75,6 +75,12 @@ module Inventoryware
       c.action Commands, :import
     end
 
+    command :'import-hunter' do |c|
+      cli_syntax(c, 'FILE')
+      c.description = 'Parse and store inventory information from a Hunter-sourced YAML'
+      c.action Commands, :'import_hunter'
+    end
+
     command :'modify-other' do |c|
       cli_syntax(c, 'KEY=VALUE [ASSET_SPEC]')
       c.description = "Modify arbitrary data for one or more assets"
