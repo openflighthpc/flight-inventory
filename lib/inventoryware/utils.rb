@@ -108,7 +108,8 @@ Error parsing yaml in #{path} - aborting
     end
 
     def self.save_yaml(path, data)
-      File.open(path, 'w') { |f| f.write data.to_yaml }
+      yaml = data.to_yaml
+      File.open(path, 'w') { |f| f.write yaml }
     end
 
     def self.edit_with_tmp_file(text, command)
