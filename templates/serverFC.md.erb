@@ -59,6 +59,15 @@
     | <%= disk %> | <%= values['SIZE'] %> |
     <% end %>
 
+    # GPU(s)
+
+    <% gpus.each_with_index do |gpu, idx| %>
+    ## GPU <%= idx %>
+
+    Model: <%= gpu.model %>
+    Slot: <%= gpu.handle %>
+
+    <% end %>
 <% end %>
     <% if @asset_data.mutable.notes -%>
     # Notes <a name="notes"></a>
