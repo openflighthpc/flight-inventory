@@ -24,15 +24,15 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-def cpus
-  def create_cpu(cpu_hash)
-    OpenStruct.new(cpu_hash).tap do |o|
-      o.model = cpu_hash['model'] || cpu_hash['version'] || 'No model found'
+def gpus
+  def create_gpu(gpu_hash)
+    OpenStruct.new(gpu_hash).tap do |o|
+      o.model = gpu_hash['product'] || 'No model found'
     end
   end
-  cpus = []
-  find_hashes_with_key_value(@asset_hash, 'description', 'CPU').each do |cpu_hash|
-    cpus << create_cpu(cpu_hash)
+  gpus = []
+  find_hashes_with_key_value(@asset_hash, 'class', 'display').each do |gpu_hash|
+    gpus << create_gpu(gpu_hash)
   end
-  cpus
+  gpus
 end
