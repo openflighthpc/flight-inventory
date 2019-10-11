@@ -70,7 +70,7 @@ Zip file at #{file_path} inaccessible.
 
         begin
           top_dir = Dir.mktmpdir('inv_ware_')
-          top_dir2 = Dir.mktmpdir('inv_ware_2')
+          top_dir2 = Dir.mktmpdir('inv_ware_')
           nodelist = Utils.load_yaml(file_path)
           nodelist.each do |key,value|            
             # convert payload to zip file, put in /tmp
