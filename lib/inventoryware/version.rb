@@ -24,8 +24,9 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
+
 module Inventoryware
-  VERSION = '1.4.0'
+  VERSION = '2.0.0.alpha'
   SCHEMA_NUM = 4
   REQ_SCHEMA_NUM = 4
 end
