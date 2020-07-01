@@ -60,6 +60,12 @@ module Inventoryware
       end
     end
 
+    command :create do |c|
+      cli_syntax(c, 'ASSET')
+      c.description = "Create a new asset"
+      c.action Commands, :create
+    end
+
     command :import do |c|
       cli_syntax(c, 'FILE')
       c.description = 'Parse and store inventory information'
