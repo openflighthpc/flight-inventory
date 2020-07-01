@@ -50,14 +50,10 @@ module Inventoryware
     attr_reader :yaml_dir, :templates_dir, :helpers_dir, :req_files,
                 :all_files, :templates_config_path, :plugins_dir, :req_keys
 
-    def root_dir
-      @root_dir ||= File.expand_path('../..', __dir__)
-    end
-
     def initialize
       @templates_config_path = File.join(root_dir, 'etc/templates.yml')
 
-      @yaml_dir = File.join(root_dir, 'var/store', active_cluster)
+      @yaml_dir = File.join(storage_dir, active_cluster)
       @templates_dir = File.join(root_dir, 'templates')
       @helpers_dir = File.join(root_dir, 'helpers')
       @plugins_dir = File.join(root_dir, 'plugins')
@@ -66,12 +62,28 @@ module Inventoryware
       @all_files = @req_files + ['groups']
 
       @req_keys = ['name', 'schema', 'mutable', 'type']
+    end
 
-      # @deprecated There is only ever going to be a single cluster
-      # Returns 'default' for temporary fix
-      def active_cluster
-        'default'
-      end
+    # @deprecated There is only ever going to be a single cluster
+    # Returns 'default' for temporary fix
+    def active_cluster
+      'default'
+    end
+
+    # @return [String] The path to the source code root directory
+    def root_dir
+      @root_dir ||= File.expand_path('../..', __dir__)
+    end
+
+    # TODO: Implement with XDG
+    # @return [String] The directory path where data can be stored
+    def storage_dir
+      @storage_dir ||= File.join(root_dir, 'var/store')
+    end
+
+    # @return [String] The path to the "binary" used by the generate command
+    def generate_binary_path
+      @generate_binary_path ||= File.join(storage_path, 'bin/generate')
     end
   end
 end
