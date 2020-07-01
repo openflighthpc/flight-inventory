@@ -61,7 +61,7 @@ module Inventoryware
     end
 
     command :generate do |c|
-      cli_syntax(c, 'HOST_NAME [PASSWORD]')
+      cli_syntax(c, 'HOSTNAME_OR_IP')
       c.summary = 'Collect information about a new host via ssh'
       c.action Commands, :generate
     end
