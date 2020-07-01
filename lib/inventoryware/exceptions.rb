@@ -26,9 +26,10 @@
 # ==============================================================================
 
 module Inventoryware
-  InventorywareError = Class.new(RuntimeError)
+  Error = Class.new(RuntimeError)
 
-  FileSysError = Class.new(InventorywareError)
-  ParseError = Class.new(InventorywareError)
-  ArgumentError = Class.new(InventorywareError)
+  InternalError = Class.new(Error)
+  FileSysError = Class.new(Error)
+  ParseError = Class.new(Error)
+  ArgumentError = Class.new(Error)
 end

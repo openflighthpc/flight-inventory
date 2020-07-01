@@ -24,42 +24,20 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-require 'inventoryware/commands/delete'
-require 'inventoryware/commands/edit'
-require 'inventoryware/commands/list'
-require 'inventoryware/commands/list_map'
-require 'inventoryware/commands/modifys/map'
-require 'inventoryware/commands/modifys/other'
-require 'inventoryware/commands/modifys/notes'
-require 'inventoryware/commands/import'
-require 'inventoryware/commands/import_hunter'
-require 'inventoryware/commands/show'
-require 'inventoryware/commands/generate'
 
 module Inventoryware
   module Commands
-    class << self
-      def method_missing(s, *a, &b)
-        if clazz = to_class(s)
-          clazz.new(*a).run!
-        else
-          raise 'command not defined'
+    class Generate < Command
+      def run
+        # Confirm the generate binary exists
+        unless File.exists? Config.generate_binary_path
+          raise InternalError, <<~ERROR.chomp
+            Could not locate the generate binary. Please contact your system administrator for further assistance.
+            Expected Path: #{Config.generate_binary_path}
+          ERROR
         end
-      end
-
-      def respond_to_missing?(s)
-        !!to_class(s)
-      end
-
-      private
-      def to_class(s)
-        s.to_s.split('-').reduce(self) do |clazz, p|
-          p.gsub!(/_(.)/) {|a| a[1].upcase}
-          clazz.const_get(p[0].upcase + p[1..-1])
-        end
-      rescue NameError
-        nil
       end
     end
   end
 end
+

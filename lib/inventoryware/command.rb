@@ -27,6 +27,8 @@
 
 module Inventoryware
   class Command
+    attr_reader :argv
+
     def initialize(argv, options, command_name = nil)
       @argv = argv.freeze
       @options = OpenStruct.new(options.__hash__)

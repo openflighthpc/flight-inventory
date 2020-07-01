@@ -83,7 +83,7 @@ module Inventoryware
 
     # @return [String] The path to the "binary" used by the generate command
     def generate_binary_path
-      @generate_binary_path ||= File.join(storage_path, 'bin/generate')
+      @generate_binary_path ||= File.join(storage_dir, 'bin/generate')
     end
   end
 end

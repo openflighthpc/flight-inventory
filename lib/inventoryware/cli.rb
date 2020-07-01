@@ -60,6 +60,12 @@ module Inventoryware
       end
     end
 
+    command :generate do |c|
+      cli_syntax(c, 'HOST_NAME [PASSWORD]')
+      c.summary = 'Collect information about a new host via ssh'
+      c.action Commands, :generate
+    end
+
     command :import do |c|
       cli_syntax(c, 'FILE')
       c.description = 'Parse and store inventory information'
