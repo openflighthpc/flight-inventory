@@ -59,13 +59,13 @@ module Inventoryware
 
     # raise an error if given path isn't a directory
     def self.exit_unless_dir(path)
-      unless File.directory?(path)
-        raise FileSysError, <<-ERROR.chomp
-Directory #{File.expand_path(path)} not found.
-Please create it before continuing"
-        ERROR
+      if File.directory?(path)
+        true
+      elsif File.exists?(path)
+        raise FileSysError, 'Expected a directory but received a file: #{File.expand_path(path)}'
+      else
+        FileUtils.mkdir_p path
       end
-      return true
     end
 
     # return a single file from glob, print error if >/< than 1 found

@@ -25,75 +25,24 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
-require 'net/ssh'
-require 'net/scp'
+require 'inventoryware/generator'
+require 'tmpdir'
 
 module Inventoryware
   module Commands
     class Generate < Command
       def run
-        # Confirm the generate binary exists
-        unless File.exists? Config.generate_binary_path
-          raise InternalError, <<~ERROR.chomp
-            Could not locate the generate binary. Please contact your system administrator for further assistance.
-            Expected Path: #{Config.generate_binary_path}
-          ERROR
+        dir = Dir.mktmpdir
+        tmp = nil
+
+        Generator.open(argv.first) do |g|
+          tmp = File.join(dir, File.basename(g.remote_zip_path))
+          g.download_zip(tmp)
         end
 
-        with_connection do |ssh|
-          with_scp_binary(ssh) do |path|
-            zip_path =  created_zip(ssh) { ssh.exec! "bash #{path}" }
-            begin
-              # noop
-            ensure
-              ssh.exec! "rm -f #{zip_path}"
-            end
-          end
-        end
-      end
-
-      def with_connection
-        Net::SSH.start(hostname, 'root') do |ssh|
-          yield ssh if block_given?
-        end
-      end
-
-      # Extracts the hostname from argv
-      def hostname
-        argv.first
-      end
-
-      private
-
-      def with_scp_binary(ssh)
-        # Copies the generate binary to a tmp file
-        tmp_path = (ssh.exec! 'mktemp /tmp/generate.XXXXXXXX').chomp
-        Net::SCP.new(ssh).upload!(Config.generate_binary_path, tmp_path)
-        yield tmp_path if block_given?
+        Import.new([tmp], OpenStruct.new(__hash__: {}), 'generate').run!
       ensure
-        ssh.exec! "rm -f #{tmp_path}" if tmp_path
-      end
-
-      def created_zip(ssh)
-        start_zips = ssh.exec!('ls /tmp/*\.zip 2>/dev/null').chomp.split("\n")
-        yield if block_given?
-        end_zips = ssh.exec!('ls /tmp/*\.zip 2>/dev/null').chomp.split("\n")
-        new_zips = end_zips - start_zips
-        if new_zips.length == 0 && start_zips.length > 0
-          raise InternalError, <<~ERROR.chomp
-            Failed to detect the inventory for '#{hostname}'. Please remove the following remote file(s) and try again:
-            #{start_zips.join("\n")}
-          ERROR
-        elsif new_zips.length == 0
-          raise InternalError, "Failed to generate the inventory for '#{hostname}'"
-        elsif new_zips.length == 1
-          new_zips.first
-        else
-          raise InternalError, <<~ERROR.chomp
-            Multiple new zip files have been detected! This is likely due to other jobs running on the machine. Please remove the following files and try again later:
-            #{end_zips.join("\n")}
-          ERROR
-        end
+        FileUtils.rm_rf dir
       end
     end
   end
