@@ -60,6 +60,12 @@ module Inventoryware
       end
     end
 
+    command :create do |c|
+      cli_syntax(c, 'ASSET')
+      c.description = "Create a new asset"
+      c.action Commands, :create
+    end
+
     command :generate do |c|
       cli_syntax(c, 'HOSTNAME_OR_IP')
       c.summary = 'Collect information about a new host via ssh'
