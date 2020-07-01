@@ -38,7 +38,7 @@ module Inventoryware
     extend Commander::Delegates
     program :application, "Flight Inventory"
     program :name, PROGRAM_NAME
-    program :version, "Release 2019.1 (v#{Inventoryware::VERSION})"
+    program :version, "v#{Inventoryware::VERSION}"
     program :description, 'Parser of hardware information into unified formats.'
     program :help_paging, false
     default_command :help
@@ -55,15 +55,6 @@ module Inventoryware
 
       def add_multi_node_options(command)
         command.option '--all', "Select all assets"
-        add_group_option(command)
-      end
-
-      def add_create_option(command)
-        command.option '-c', '--create',
-          "Create specified asset(s) if they don't exist"
-      end
-
-      def add_group_option(command)
         command.option '-g', '--group GROUP',
           "Select assets in GROUP, specify comma-separated list for multiple groups"
       end
@@ -85,25 +76,13 @@ module Inventoryware
       cli_syntax(c, 'KEY=VALUE [ASSET_SPEC]')
       c.description = "Modify arbitrary data for one or more assets"
       add_multi_node_options(c)
-      add_create_option(c)
       c.action Commands, :'modifys-other'
-    end
-
-    command :'modify-groups' do |c|
-      cli_syntax(c, 'GROUP [ASSET_SPEC]')
-      c.description = "Modify group data for one or more assets"
-      add_multi_node_options(c)
-      add_create_option(c)
-      c.option '-p', '--primary', "Modify the primary group of one or more assets"
-      c.option '-r', '--remove', "Remove one or more assets from this group"
-      c.action Commands, :'modifys-groups'
     end
 
     command :'edit-map' do |c|
       cli_syntax(c, 'MAP_NAME [ASSET_SPEC]')
       c.description = "Edit mapping data for one or more assets"
       add_multi_node_options(c)
-      add_create_option(c)
       c.action Commands, :'modifys-map'
     end
 
@@ -111,7 +90,6 @@ module Inventoryware
       cli_syntax(c, '[ASSET_SPEC]')
       c.description = "Edit miscellaneous notes for one or more assets"
       add_multi_node_options(c)
-      add_create_option(c)
       c.action Commands, :'modifys-notes'
     end
 
@@ -128,7 +106,6 @@ module Inventoryware
     command :edit do |c|
       cli_syntax(c, 'ASSET')
       c.description = "Edit stored data for an asset"
-      add_create_option(c)
       c.action Commands, :edit
     end
 
@@ -160,36 +137,6 @@ module Inventoryware
       c.description = "Delete the stored data for one or more assets"
       add_multi_node_options(c)
       c.action Commands, :delete
-    end
-
-    command :create do |c|
-      cli_syntax(c, 'ASSET')
-      c.description = "Create a new asset"
-      c.action Commands, :create
-    end
-
-    command :'init-cluster' do |c|
-      cli_syntax(c, 'CLUSTER')
-      c.description = "Initialise a new cluster"
-      c.action Commands, :'cluster-init'
-    end
-
-    command :'delete-cluster' do |c|
-      cli_syntax(c, 'CLUSTER')
-      c.description = "Deletes the specified cluster and associated assets"
-      c.action Commands, :'cluster-delete'
-    end
-
-    command :'list-cluster' do |c|
-      cli_syntax(c)
-      c.description = "List the current and available clusters"
-      c.action Commands, :'cluster-list'
-    end
-
-    command :'switch-cluster' do |c|
-      cli_syntax(c, 'CLUSTER')
-      c.description = "Change the current cluster"
-      c.action Commands, :'cluster-switch'
     end
   end
 end

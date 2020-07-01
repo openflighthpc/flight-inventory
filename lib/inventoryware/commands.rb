@@ -26,20 +26,14 @@
 # ==============================================================================
 require 'inventoryware/commands/delete'
 require 'inventoryware/commands/edit'
-require 'inventoryware/commands/create'
 require 'inventoryware/commands/list'
 require 'inventoryware/commands/list_map'
 require 'inventoryware/commands/modifys/map'
 require 'inventoryware/commands/modifys/other'
 require 'inventoryware/commands/modifys/notes'
-require 'inventoryware/commands/modifys/groups'
 require 'inventoryware/commands/import'
 require 'inventoryware/commands/import_hunter'
 require 'inventoryware/commands/show'
-require 'inventoryware/commands/cluster/init'
-require 'inventoryware/commands/cluster/delete'
-require 'inventoryware/commands/cluster/list'
-require 'inventoryware/commands/cluster/switch'
 
 module Inventoryware
   module Commands
