@@ -66,12 +66,12 @@ module Inventoryware
       @all_files = @req_files + ['groups']
 
       @req_keys = ['name', 'schema', 'mutable', 'type']
+    end
 
-      # @deprecated There is only ever going to be a single cluster
-      # Returns 'default' for temporary fix
-      def active_cluster
-        'default'
-      end
+    # @deprecated There is only ever going to be a single cluster
+    # Returns 'default' for temporary fix
+    def active_cluster
+      'default'
     end
   end
 end
