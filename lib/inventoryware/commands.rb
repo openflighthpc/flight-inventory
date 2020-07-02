@@ -26,6 +26,7 @@
 # ==============================================================================
 require 'inventoryware/commands/delete'
 require 'inventoryware/commands/edit'
+require 'inventoryware/commands/create'
 require 'inventoryware/commands/list'
 require 'inventoryware/commands/list_map'
 require 'inventoryware/commands/modifys/map'
