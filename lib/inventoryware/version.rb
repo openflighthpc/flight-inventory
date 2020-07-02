@@ -26,7 +26,7 @@
 # ==============================================================================
 
 module Inventoryware
-  VERSION = '2.0.0.alpha'
+  VERSION = '2.0.0.rc0'
   SCHEMA_NUM = 4
   REQ_SCHEMA_NUM = 4
 end
