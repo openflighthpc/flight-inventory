@@ -53,6 +53,11 @@ module Inventoryware
         ].compact.join(' ')
       end
 
+      def add_create_option(command)
+        command.option '-c', '--create',
+          "Create specified asset(s) if they don't exist"
+      end
+
       def add_multi_node_options(command)
         command.option '--all', "Select all assets"
         command.option '-g', '--group GROUP',
@@ -82,13 +87,25 @@ module Inventoryware
       cli_syntax(c, 'KEY=VALUE [ASSET_SPEC]')
       c.description = "Modify arbitrary data for one or more assets"
       add_multi_node_options(c)
+      add_create_option(c)
       c.action Commands, :'modifys-other'
+    end
+
+    command :'modify-groups' do |c|
+      cli_syntax(c, 'GROUP [ASSET_SPEC]')
+      c.description = "Modify group data for one or more assets"
+      add_multi_node_options(c)
+      add_create_option(c)
+      c.option '-p', '--primary', "Modify the primary group of one or more assets"
+      c.option '-r', '--remove', "Remove one or more assets from this group"
+      c.action Commands, :'modifys-groups'
     end
 
     command :'edit-map' do |c|
       cli_syntax(c, 'MAP_NAME [ASSET_SPEC]')
       c.description = "Edit mapping data for one or more assets"
       add_multi_node_options(c)
+      add_create_option(c)
       c.action Commands, :'modifys-map'
     end
 
@@ -96,6 +113,7 @@ module Inventoryware
       cli_syntax(c, '[ASSET_SPEC]')
       c.description = "Edit miscellaneous notes for one or more assets"
       add_multi_node_options(c)
+      add_create_option(c)
       c.action Commands, :'modifys-notes'
     end
 
@@ -112,6 +130,7 @@ module Inventoryware
     command :edit do |c|
       cli_syntax(c, 'ASSET')
       c.description = "Edit stored data for an asset"
+      add_create_option(c)
       c.action Commands, :edit
     end
 
