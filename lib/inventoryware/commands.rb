@@ -36,10 +36,6 @@ require 'inventoryware/commands/modifys/groups'
 require 'inventoryware/commands/import'
 require 'inventoryware/commands/import_hunter'
 require 'inventoryware/commands/show'
-require 'inventoryware/commands/cluster/init'
-require 'inventoryware/commands/cluster/delete'
-require 'inventoryware/commands/cluster/list'
-require 'inventoryware/commands/cluster/switch'
 
 module Inventoryware
   module Commands

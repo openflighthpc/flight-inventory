@@ -47,28 +47,33 @@ module Inventoryware
       end
     end
 
-    attr_reader :root_dir, :yaml_dir, :templates_dir, :helpers_dir, :req_files,
-      :other_files, :all_files, :templates_config_path, :plugins_dir, :req_keys,
-      :cluster_config_path, :active_cluster
+    attr_reader :yaml_dir, :templates_dir, :helpers_dir, :req_files,
+                :all_files, :templates_config_path, :plugins_dir, :req_keys
+
+    def root_dir
+      @root_dir ||= File.expand_path('../..', __dir__)
+    end
 
     def initialize
-      @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
+      @templates_config_path = File.join(root_dir, 'etc/templates.yml')
 
-      @cluster_config_path = File.join(@root_dir, 'etc/cluster.yml')
-      @templates_config_path = File.join(@root_dir, 'etc/templates.yml')
-
-      @active_cluster = Utils.load_yaml(cluster_config_path)['active_cluster']
-
-      @yaml_dir = File.join(@root_dir, 'var/store', active_cluster)
-      @templates_dir = File.join(@root_dir, 'templates')
-      @helpers_dir = File.join(@root_dir, 'helpers')
-      @plugins_dir = File.join(@root_dir, 'plugins')
+      @yaml_dir = File.join(root_dir, 'var/store', active_cluster).tap do |dir|
+        FileUtils.mkdir_p dir
+      end
+      @templates_dir = File.join(root_dir, 'templates')
+      @helpers_dir = File.join(root_dir, 'helpers')
+      @plugins_dir = File.join(root_dir, 'plugins')
 
       @req_files = ["lshw-xml", "lsblk-a-P"]
-      @other_files = ["groups"]
-      @all_files = @req_files + @other_files
+      @all_files = @req_files + ['groups']
 
       @req_keys = ['name', 'schema', 'mutable', 'type']
+    end
+
+    # @deprecated There is only ever going to be a single cluster
+    # Returns 'default' for temporary fix
+    def active_cluster
+      'default'
     end
   end
 end

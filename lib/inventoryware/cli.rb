@@ -38,7 +38,7 @@ module Inventoryware
     extend Commander::Delegates
     program :application, "Flight Inventory"
     program :name, PROGRAM_NAME
-    program :version, "Release 2019.1 (v#{Inventoryware::VERSION})"
+    program :version, "v#{Inventoryware::VERSION}"
     program :description, 'Parser of hardware information into unified formats.'
     program :help_paging, false
     default_command :help
@@ -53,20 +53,22 @@ module Inventoryware
         ].compact.join(' ')
       end
 
-      def add_multi_node_options(command)
-        command.option '--all', "Select all assets"
-        add_group_option(command)
-      end
-
       def add_create_option(command)
         command.option '-c', '--create',
           "Create specified asset(s) if they don't exist"
       end
 
-      def add_group_option(command)
+      def add_multi_node_options(command)
+        command.option '--all', "Select all assets"
         command.option '-g', '--group GROUP',
           "Select assets in GROUP, specify comma-separated list for multiple groups"
       end
+    end
+
+    command :create do |c|
+      cli_syntax(c, 'ASSET')
+      c.description = "Create a new asset"
+      c.action Commands, :create
     end
 
     command :import do |c|
@@ -160,36 +162,6 @@ module Inventoryware
       c.description = "Delete the stored data for one or more assets"
       add_multi_node_options(c)
       c.action Commands, :delete
-    end
-
-    command :create do |c|
-      cli_syntax(c, 'ASSET')
-      c.description = "Create a new asset"
-      c.action Commands, :create
-    end
-
-    command :'init-cluster' do |c|
-      cli_syntax(c, 'CLUSTER')
-      c.description = "Initialise a new cluster"
-      c.action Commands, :'cluster-init'
-    end
-
-    command :'delete-cluster' do |c|
-      cli_syntax(c, 'CLUSTER')
-      c.description = "Deletes the specified cluster and associated assets"
-      c.action Commands, :'cluster-delete'
-    end
-
-    command :'list-cluster' do |c|
-      cli_syntax(c)
-      c.description = "List the current and available clusters"
-      c.action Commands, :'cluster-list'
-    end
-
-    command :'switch-cluster' do |c|
-      cli_syntax(c, 'CLUSTER')
-      c.description = "Change the current cluster"
-      c.action Commands, :'cluster-switch'
     end
   end
 end

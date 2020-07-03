@@ -57,17 +57,6 @@ module Inventoryware
       return true
     end
 
-    # raise an error if given path isn't a directory
-    def self.exit_unless_dir(path)
-      unless File.directory?(path)
-        raise FileSysError, <<-ERROR.chomp
-Directory #{File.expand_path(path)} not found.
-Please create it before continuing"
-        ERROR
-      end
-      return true
-    end
-
     # return a single file from glob, print error if >/< than 1 found
     def self.find_file(search_val, dir)
       results = Dir.glob(File.join(dir, "#{search_val}*"))
