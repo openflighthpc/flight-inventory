@@ -200,7 +200,6 @@ No .zip files found at #{data_source}
           node_data['mutable'] = YAML.load(File.read(file_locations['groups']))
         end
 
-        Utils.exit_unless_dir(Config.yaml_dir)
         yaml_out_name = "#{node_name}.yaml"
         out_file = File.join(Config.yaml_dir, yaml_out_name)
 

@@ -57,7 +57,9 @@ module Inventoryware
     def initialize
       @templates_config_path = File.join(root_dir, 'etc/templates.yml')
 
-      @yaml_dir = File.join(root_dir, 'var/store', active_cluster)
+      @yaml_dir = File.join(root_dir, 'var/store', active_cluster).tap do |dir|
+        FileUtils.mkdir_p dir
+      end
       @templates_dir = File.join(root_dir, 'templates')
       @helpers_dir = File.join(root_dir, 'helpers')
       @plugins_dir = File.join(root_dir, 'plugins')
