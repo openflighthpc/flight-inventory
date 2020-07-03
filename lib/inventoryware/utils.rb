@@ -59,10 +59,7 @@ module Inventoryware
 
     # raise an error if given path isn't a directory
     def self.exit_unless_dir(path)
-      unless File.directory?(path)
-        Dir.mkdir(path)
-        puts "The directory #{File.expand_path(path)} did not exist, but it has been created."
-      end
+      Dir.mkdir_p(path) unless File.directory?(path)
       return true
     end
 
