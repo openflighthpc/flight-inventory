@@ -26,6 +26,7 @@
 # ==============================================================================
 require 'inventoryware/commands/multi_node_command'
 require 'fileutils'
+require 'tty-prompt'
 
 module Inventoryware
   module Commands
@@ -36,11 +37,11 @@ module Inventoryware
         prefix = "You are about to delete"
         node_paths = nodes.map { |n| File.expand_path(n.path) }
         if node_paths.length > 1
-          node_msg = "#{prefix}:\n#{node_paths.join("\n")}\nProceed? (y/n)"
+          node_msg = "#{prefix}:\n#{node_paths.join("\n")}\nProceed?"
         else
-          node_msg = "#{prefix} #{node_paths[0]} - proceed? (y/n)"
+          node_msg = "#{prefix} #{node_paths[0]} - proceed?"
         end
-        if $terminal.agree(node_msg)
+        if TTY::Prompt.new.yes?(node_msg, default: false)
           node_paths.each { |path| FileUtils.rm path }
         end
       end
