@@ -25,6 +25,7 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 require 'inventoryware/exceptions'
+require 'tty-prompt'
 
 module Inventoryware
   module Utils
@@ -77,7 +78,7 @@ module Inventoryware
     def self.get_new_asset_type
       type = ''
       while type.empty?
-        type = $terminal.ask('Enter the type of the new assets being created')
+        type = TTY::Prompt.new.ask('Enter the type of the new assets being created')
       end
       return type
     end
