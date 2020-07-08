@@ -60,8 +60,6 @@ module Inventoryware
 
       def add_multi_node_options(command)
         command.option '--all', "Select all assets"
-        command.option '-g', '--group GROUP',
-          "Select assets in GROUP, specify comma-separated list for multiple groups"
       end
     end
 
@@ -91,16 +89,6 @@ module Inventoryware
       c.action Commands, :'modifys-other'
     end
 
-    command :'modify-groups' do |c|
-      cli_syntax(c, 'GROUP [ASSET_SPEC]')
-      c.description = "Modify group data for one or more assets"
-      add_multi_node_options(c)
-      add_create_option(c)
-      c.option '-p', '--primary', "Modify the primary group of one or more assets"
-      c.option '-r', '--remove', "Remove one or more assets from this group"
-      c.action Commands, :'modifys-groups'
-    end
-
     command :'edit-map' do |c|
       cli_syntax(c, 'MAP_NAME [ASSET_SPEC]')
       c.description = "Edit mapping data for one or more assets"
@@ -120,8 +108,6 @@ module Inventoryware
     command :list do |c|
       cli_syntax(c)
       c.description = "List all assets that have stored data"
-      c.option '-g', '--group [GROUP]',
-        "Optionally select assets in GROUP, specify comma-separated list for multiple groups"
       c.option '-t', '--type [TYPE]',
         "Optionally select assets in TYPE, specify comma-separated list for multiple types"
       c.action Commands, :list
