@@ -75,12 +75,16 @@ module Inventoryware
       return results
     end
 
+    def self.prompt
+      @prompt ||= TTY::Prompt.new
+    end
+
     def self.get_new_asset_type
-      type = ''
-      while type.empty?
-        type = TTY::Prompt.new.ask('Enter the type of the new assets being created')
+      prompt.select('Select an asset type?') do |menu|
+        menu.choice 'server'
+        menu.choice 'switch'
+        menu.choice 'other'
       end
-      return type
     end
 
     def self.load_yaml(path)
