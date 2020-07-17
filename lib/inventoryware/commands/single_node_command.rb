@@ -53,9 +53,7 @@ Issue with argument name, please only provide a single asset
         else
           found = Utils.find_file(name, Config.yaml_dir)
           unless found.length == 1
-            raise ArgumentError, <<-ERROR.chomp
-Please refine your search
-            ERROR
+            raise ArgumentError, "Could not locate asset: #{name}"
           end
           node = Node.new(found[0])
         end

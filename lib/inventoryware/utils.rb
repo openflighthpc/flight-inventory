@@ -62,7 +62,8 @@ module Inventoryware
     def self.find_file(search_val, dir)
       results = Dir.glob(File.join(dir, "#{search_val}*"))
         if results.empty?
-          $stderr.puts "No files found for '#{search_val}' in #{File.expand_path(dir)}"
+          # noop
+          nil
         elsif results.length > 1
           file_names = results.map { |p| File.basename(p, File.extname(p)) }
           # if the results include just the search val, return that path

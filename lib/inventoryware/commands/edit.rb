@@ -31,7 +31,6 @@ module Inventoryware
   module Commands
     class Edit < SingleNodeCommand
       def create
-        @options.create = true
         run!
       end
 
