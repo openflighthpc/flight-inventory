@@ -36,7 +36,7 @@ module Inventoryware
           node = nodes.first
 
           notes = node.data['mutable'].fetch('notes', '')
-          notes = Utils.edit_with_tmp_file(notes, :rvim).strip
+          notes = Utils.edit_with_tmp_file(notes).strip
 
           nodes.each do |node|
             node.data['mutable']['notes'] = notes

@@ -45,8 +45,7 @@ module Inventoryware
           end
 
           map = map_to_string(node.data['mutable']['maps'][map_name]['map'])
-          map = string_to_map(Utils.edit_with_tmp_file(map,
-                                                       :"rvim +'set number'"))
+          map = string_to_map(Utils.edit_with_tmp_file(map))
 
           nodes.each do |node|
             node.data['mutable']['maps'][map_name]['map'] = map

@@ -102,12 +102,10 @@ Error parsing yaml in #{path} - aborting
       File.open(path, 'w') { |f| f.write yaml }
     end
 
-    def self.edit_with_tmp_file(text, command)
+    def self.edit_with_tmp_file(text)
       tmp_file = Tempfile.new('inv_ware_file_')
       begin
-        TTY::Editor.open(tmp_file.path,
-                         content: text,
-                         command: command)
+        TTY::Editor.open(tmp_file.path, content: text)
         edited = tmp_file.open.read
       ensure
         tmp_file.close
