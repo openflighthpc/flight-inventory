@@ -81,7 +81,7 @@ module Inventoryware
     end
 
     def self.get_new_asset_type
-      prompt.select('Select an asset type?') do |menu|
+      prompt.select('Select an asset type.') do |menu|
         menu.choice 'server'
         menu.choice 'switch'
         menu.choice 'other'
