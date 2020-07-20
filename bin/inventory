@@ -25,15 +25,26 @@
 # For more information on Flight Inventory, please visit:
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
-lib_dir = File.join(__FILE__, '../../lib')
-$LOAD_PATH << lib_dir
-ENV['BUNDLE_GEMFILE'] ||= File.join(__FILE__, '../../Gemfile')
 
-require 'rubygems'
-require 'bundler'
+begin
+  lib_dir = File.join(__FILE__, '../../lib')
+  $LOAD_PATH << lib_dir
+  ENV['BUNDLE_GEMFILE'] ||= File.join(__FILE__, '../../Gemfile')
 
-Bundler.setup(:default)
+  require 'rubygems'
+  require 'bundler'
 
-require 'inventoryware/cli'
-Dir.chdir(ENV.fetch('FLIGHT_CWD','.'))
-Inventoryware::CLI.run!
+  Bundler.setup(:default)
+
+  require 'inventoryware/cli'
+  Dir.chdir(ENV.fetch('FLIGHT_CWD','.'))
+  Inventoryware::CLI.run!
+rescue Interrupt
+  if Kernel.const_defined?(:Paint)
+    $stderr.puts "\n#{Paint['WARNING', :underline, :yellow]}: Cancelled by user"
+  else
+    $stderr.puts "\nWARNING: Cancelled by user"
+  end
+  exit(130)
+end
+
