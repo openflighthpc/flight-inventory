@@ -62,7 +62,8 @@ module Inventoryware
     def self.find_file(search_val, dir)
       results = Dir.glob(File.join(dir, "#{search_val}*"))
         if results.empty?
-          $stderr.puts "No files found for '#{search_val}' in #{File.expand_path(dir)}"
+          # noop
+          nil
         elsif results.length > 1
           file_names = results.map { |p| File.basename(p, File.extname(p)) }
           # if the results include just the search val, return that path
@@ -75,12 +76,16 @@ module Inventoryware
       return results
     end
 
+    def self.prompt
+      @prompt ||= TTY::Prompt.new
+    end
+
     def self.get_new_asset_type
-      type = ''
-      while type.empty?
-        type = TTY::Prompt.new.ask('Enter the type of the new assets being created')
+      prompt.select('Select an asset type.') do |menu|
+        menu.choice 'server'
+        menu.choice 'switch'
+        menu.choice 'other'
       end
-      return type
     end
 
     def self.load_yaml(path)
@@ -102,12 +107,10 @@ Error parsing yaml in #{path} - aborting
       File.open(path, 'w') { |f| f.write yaml }
     end
 
-    def self.edit_with_tmp_file(text, command)
+    def self.edit_with_tmp_file(text)
       tmp_file = Tempfile.new('inv_ware_file_')
       begin
-        TTY::Editor.open(tmp_file.path,
-                         content: text,
-                         command: command)
+        TTY::Editor.open(tmp_file.path, content: text)
         edited = tmp_file.open.read
       ensure
         tmp_file.close

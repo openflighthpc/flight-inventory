@@ -46,18 +46,20 @@ Issue with argument name, please only provide a single asset
           ERROR
         end
 
-        if @options.create
+        # Find possible candidates
+        found = Utils.find_file(name, Config.yaml_dir)
+
+        node = if @options.create && found.length > 0
+          raise ArgumentError, "'#{name}' already exists!"
+        elsif @options.create
           location = File.join(Config.yaml_dir, "#{name}.yaml")
-          node = Node.new(location)
-          node.create_if_non_existent(Utils.get_new_asset_type)
-        else
-          found = Utils.find_file(name, Config.yaml_dir)
-          unless found.length == 1
-            raise ArgumentError, <<-ERROR.chomp
-Please refine your search
-            ERROR
+          Node.new(location).tap do |n|
+            n.create_if_non_existent(Utils.get_new_asset_type)
           end
-          node = Node.new(found[0])
+        elsif found.length > 0
+          Node.new(found.first)
+        else
+          raise ArgumentError, "Could not locate '#{name}'"
         end
 
         node.check_schema

@@ -72,12 +72,14 @@ module Inventoryware
     command :import do |c|
       cli_syntax(c, 'FILE')
       c.description = 'Parse and store inventory information'
+      c.hidden = true
       c.action Commands, :import
     end
 
     command :'import-hunter' do |c|
       cli_syntax(c, 'FILE')
       c.description = 'Parse and store inventory information from a Hunter-sourced YAML'
+      c.hidden = true
       c.action Commands, :'import_hunter'
     end
 
