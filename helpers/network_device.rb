@@ -32,8 +32,8 @@ def network_devices
   end
   network_devices = []
   find_hashes_with_key_value(@asset_hash, 'class', 'network')&.each do |net|
-    # Ignore virtual bridge devices
-    unless net['logicalname'].include? "virbr"
+    # Ignore virtual interfaces (bridges, tunnels and bonds)
+    unless find_hashes_with_key_value(net['configuration']['setting'], 'id', 'driver$')[0]['value'].match? /bridge|tun|bonding/
       network_devices << create_net(net)
     end
   end
