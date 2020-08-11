@@ -1,0 +1,36 @@
+#!/bin/bash
+
+<% cmd_base="flight fact set" %>
+<% cmd_end="--asset #{@asset_data.name}" %>
+
+# General System Information
+<%= cmd_base %> 'Model' '<%= @asset_data.lshw.list.node.product %>' <%= cmd_end %>
+<%= cmd_base %> 'BIOS Version' '<%= find_hashes_with_key_value(@asset_hash, 'id', 'firmware')&.first['version'] %>' <%= cmd_end %>
+<%= cmd_base %> 'Serial Number' '<%= @asset_data.lshw.list.node.serial %>' <%= cmd_end %>
+
+# CPUs
+<% cpus.each do |cpu| %>
+<%= cmd_base %> '<%= cpu.id.upcase %> Model' '<%= cpu.model %>' <%= cmd_end %>
+<%= cmd_base %> '<%= cpu.id.upcase %> Slot' '<%= cpu.slot %>' <%= cmd_end %>
+<% end %>
+
+# Memory
+<%= cmd_base %> 'Total Memory' '<%= format_bytes_value(find_total_memory) %>' <%= cmd_end %>
+
+# Network Devices
+<% network_devices.each do |net| %>
+<%= cmd_base %> '<%= net.logicalname %> Product' '<%= net.product %> (<%= net.vendor %>)' <%= cmd_end %>
+<% if net.speed == '0 bit/s' and net.logicalname.match? /ib/  %>
+<%= cmd_base %> '<%= net.logicalname %> Speed' 'Infiniband' <%= cmd_end %>
+<% elsif net.speed == '0 bit/s' %>
+<%= cmd_base %> '<%= net.logicalname %> Speed' 'Virtual' <%= cmd_end %>
+<% else %>
+<%= cmd_base %> '<%= net.logicalname %> Speed' '<%= net.speed %>' <%= cmd_end %>
+<% end %>
+<%= cmd_base %> '<%= net.logicalname %> MAC' '<%= net.serial %>' <%= cmd_end %>
+<% end %>
+
+# Storage Devices
+<% @asset_data.lsblk.disk&.each_pair do |disk, values| %>
+<%= cmd_base %> '<%= disk %> Size' '<%= values['SIZE'] %>' <%= cmd_end %>
+<% end %>
