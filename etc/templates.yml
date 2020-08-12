@@ -10,3 +10,5 @@ flightcenter:
   default: serverFC.md.erb
   server: serverFC.md.erb
   switch: switchFC.md.erb
+flightfact:
+  default: flightfact.cmds.erb
