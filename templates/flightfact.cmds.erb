@@ -4,32 +4,32 @@
 
 # General System Information
 <%= cmd_base %> 'Model' '<%= @asset_data.lshw.list.node.product %>'
-<%= cmd_base %> 'BIOS Version' '<%= find_hashes_with_key_value(@asset_hash, 'id', 'firmware')&.first['version'] %>'
-<%= cmd_base %> 'Serial Number' '<%= @asset_data.lshw.list.node.serial %>'
+<%= cmd_base %> 'BIOS_Version' '<%= find_hashes_with_key_value(@asset_hash, 'id', 'firmware')&.first['version'] %>'
+<%= cmd_base %> 'Serial_Number' '<%= @asset_data.lshw.list.node.serial %>'
 
 # CPUs
 <% cpus.each do |cpu| %>
-<%= cmd_base %> '<%= cpu.id.upcase %> Model' '<%= cpu.model %>'
-<%= cmd_base %> '<%= cpu.id.upcase %> Slot' '<%= cpu.slot %>'
+<%= cmd_base %> '<%= cpu.id.upcase %>_Model' '<%= cpu.model %>'
+<%= cmd_base %> '<%= cpu.id.upcase %>_Slot' '<%= cpu.slot %>'
 <% end %>
 
 # Memory
-<%= cmd_base %> 'Total Memory' '<%= format_bytes_value(find_total_memory) %>'
+<%= cmd_base %> 'Total_Memory' '<%= format_bytes_value(find_total_memory) %>'
 
 # Network Devices
 <% network_devices.each do |net| %>
-<%= cmd_base %> '<%= net.logicalname %> Product' '<%= net.product %> (<%= net.vendor %>)'
+<%= cmd_base %> '<%= net.logicalname %>_Product' '<%= net.product %> (<%= net.vendor %>)'
 <% if net.speed == '0 bit/s' and net.logicalname.match? /ib/  %>
-<%= cmd_base %> '<%= net.logicalname %> Speed' 'Infiniband'
+<%= cmd_base %> '<%= net.logicalname %>_Speed' 'Infiniband'
 <% elsif net.speed == '0 bit/s' %>
-<%= cmd_base %> '<%= net.logicalname %> Speed' 'Virtual'
+<%= cmd_base %> '<%= net.logicalname %>_Speed' 'Virtual'
 <% else %>
-<%= cmd_base %> '<%= net.logicalname %> Speed' '<%= net.speed %>'
+<%= cmd_base %> '<%= net.logicalname %>_Speed' '<%= net.speed %>'
 <% end %>
-<%= cmd_base %> '<%= net.logicalname %> MAC' '<%= net.serial %>'
+<%= cmd_base %> '<%= net.logicalname %>_MAC' '<%= net.serial %>'
 <% end %>
 
 # Storage Devices
 <% @asset_data.lsblk.disk&.each_pair do |disk, values| %>
-<%= cmd_base %> '<%= disk %> Size' '<%= values['SIZE'] %>'
+<%= cmd_base %> '<%= disk %>_Size' '<%= values['SIZE'] %>'
 <% end %>
