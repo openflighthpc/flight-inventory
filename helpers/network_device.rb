@@ -28,6 +28,15 @@ def network_devices
   def create_net(net_hash)
     OpenStruct.new(net_hash).tap do |o|
       o.speed = format_bits_value((net_hash['capacity'] || net_hash['size'] || 0).to_i)
+      # Handle logicalname for virtio devices (as information is buried in 'node' hash)
+      if o.logicalname.nil?
+        o.logicalname = o.node['logicalname']
+      end
+
+      # Handle mac address for virtio devices
+      if o.serial.nil?
+        o.serial = o.node['serial']
+      end
     end
   end
   network_devices = []
