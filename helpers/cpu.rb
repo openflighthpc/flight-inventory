@@ -27,7 +27,7 @@
 def cpus
   def create_cpu(cpu_hash)
     OpenStruct.new(cpu_hash).tap do |o|
-      o.model = cpu_hash['model'] || cpu_hash['version'] || 'No model found'
+      o.model = cpu_hash['model'] || cpu_hash['version'] || cpu_hash['product'] || 'No model found'
     end
   end
   cpus = []
