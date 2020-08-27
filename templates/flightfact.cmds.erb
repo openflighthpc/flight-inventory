@@ -8,28 +8,37 @@
 <%= cmd_base %> 'Serial_Number' '<%= @asset_data.lshw.list.node.serial %>'
 
 # CPUs
-<% cpus.each do |cpu| %>
-<%= cmd_base %> '<%= cpu.id.upcase %>_Model' '<%= cpu.model %>'
-<%= cmd_base %> '<%= cpu.id.upcase %>_Slot' '<%= cpu.slot %>'
-<% end %>
+<% models = cpus.map(&:model) %>
+<%= cmd_base %> 'CPU_Model' '<%= models.uniq[0] %>'
+<% slots = cpus.map(&:slot) %>
+<%= cmd_base %> 'CPU_Slots' '<%= slots.count %>'
+<% cores = cpus.map { |cpu| cpu.cores } %>
+<%= cmd_base %> 'CPU_Cores_Total' '<%= cores.sum %>'
 
 # Memory
 <%= cmd_base %> 'Total_Memory' '<%= format_bytes_value(find_total_memory) %>'
 
 # Network Devices
+<% count = 1 %>
 <% network_devices.each do |net| %>
-<%= cmd_base %> '<%= net.logicalname %>_Product' '<%= net.product %> (<%= net.vendor %>)'
+<%= cmd_base %> 'Interface<%= count %>_Name' '<%= net.logicalname %>'
+<%= cmd_base %> 'Interface<%= count %>_Product' '<%= net.product %> (<%= net.vendor %>)'
 <% if net.speed == '0 bit/s' and net.logicalname.match? /ib/  %>
-<%= cmd_base %> '<%= net.logicalname %>_Speed' 'Infiniband'
+<%= cmd_base %> 'Interface<%= count %>_Speed' 'Infiniband'
 <% elsif net.speed == '0 bit/s' %>
-<%= cmd_base %> '<%= net.logicalname %>_Speed' 'Virtual'
+<%= cmd_base %> 'Interface<%= count %>_Speed' 'Virtual'
 <% else %>
-<%= cmd_base %> '<%= net.logicalname %>_Speed' '<%= net.speed %>'
+<%= cmd_base %> 'Interface<%= count %>_Speed' '<%= net.speed %>'
 <% end %>
-<%= cmd_base %> '<%= net.logicalname %>_MAC' '<%= net.serial %>'
+<%= cmd_base %> 'Interface<%= count %>_MAC' '<%= net.serial %>'
+<% count += 1 %>
 <% end %>
 
 # Storage Devices
+<% count = 1 %>
 <% @asset_data.lsblk.disk&.each_pair do |disk, values| %>
-<%= cmd_base %> '<%= disk %>_Size' '<%= values['SIZE'] %>'
+<%= cmd_base %> 'Disk<%= count %>_Name' '<%= disk %>'
+<%= cmd_base %> 'Disk<%= count %>_Size' '<%= values['SIZE'] %>'
+<% count += 1 %>
 <% end %>
+
