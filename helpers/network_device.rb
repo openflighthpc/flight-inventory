@@ -28,6 +28,14 @@ def network_devices
   def create_net(net_hash)
     OpenStruct.new(net_hash).tap do |o|
       o.speed = format_bits_value((net_hash['capacity'] || net_hash['size'] || 0).to_i)
+
+      # Set speed for Virtual & Infiniband interfaces
+      if o.speed == '0 bit/s' and o.logicalname&.match? /ib/
+        o.speed = 'Infiniband'
+      elsif o.speed == '0 bit/s'
+        o.speed = 'Virtual'
+      end
+
       # Handle logicalname for virtio devices (as information is buried in 'node' hash)
       if o.logicalname.nil?
         o.logicalname = o.node['logicalname']

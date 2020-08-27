@@ -23,13 +23,7 @@
 <% network_devices.each do |net| %>
 <%= cmd_base %> 'Interface<%= count %>_Name' '<%= net.logicalname %>'
 <%= cmd_base %> 'Interface<%= count %>_Product' '<%= net.product %> (<%= net.vendor %>)'
-<% if net.speed == '0 bit/s' and net.logicalname.match? /ib/  %>
-<%= cmd_base %> 'Interface<%= count %>_Speed' 'Infiniband'
-<% elsif net.speed == '0 bit/s' %>
-<%= cmd_base %> 'Interface<%= count %>_Speed' 'Virtual'
-<% else %>
 <%= cmd_base %> 'Interface<%= count %>_Speed' '<%= net.speed %>'
-<% end %>
 <%= cmd_base %> 'Interface<%= count %>_MAC' '<%= net.serial %>'
 <% count += 1 %>
 <% end %>
