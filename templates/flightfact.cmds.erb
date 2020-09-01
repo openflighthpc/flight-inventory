@@ -4,7 +4,7 @@
 
 # General System Information
 <%= cmd_base %> 'Model' '<%= @asset_data.lshw.list.node.product %>'
-<%= cmd_base %> 'BIOS_Version' '<%= find_hashes_with_key_value(@asset_hash, 'id', 'firmware')&.first['version'] %>'
+<%= cmd_base %> 'BIOS_Version' '<%= find_hashes_with_key_value(@asset_hash, 'id', 'firmware')&.first&.fetch('version', 'UNKNOWN') %>'
 <%= cmd_base %> 'Serial_Number' '<%= @asset_data.lshw.list.node.serial %>'
 
 # CPUs
