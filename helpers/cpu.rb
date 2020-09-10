@@ -27,7 +27,16 @@
 def cpus
   def create_cpu(cpu_hash)
     OpenStruct.new(cpu_hash).tap do |o|
-      o.model = cpu_hash['model'] || cpu_hash['version'] || 'No model found'
+      o.model = cpu_hash['model'] || cpu_hash['version'] || cpu_hash['product'] || 'No model found'
+
+      # Determine total number of cores
+      ## For metal systems: Uses the "enabledcores" value from lscpu
+      ## For VMs: Each CPU is 1 core (and no enabledcores setting exists)
+      unless o['configuration'].nil?
+        o.cores = find_hashes_with_key_value(o['configuration']['setting'], 'id', 'enabledcores')[0]['value'].to_i
+      else
+        o.cores = 1
+      end
     end
   end
   cpus = []

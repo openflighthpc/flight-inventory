@@ -28,8 +28,12 @@
 def find_total_memory
   total = 0
   find_hashes_with_key_value(@asset_hash, 'class', 'memory').each do |mem|
-    find_hashes_with_key_value(mem, 'id', '^(bank:).*').each do |bank|
-      total += bank['size'].to_i
+    if find_hashes_with_key_value(mem, 'id', '^(bank:).*').empty?
+      total += mem['size'].to_i
+    else
+      find_hashes_with_key_value(mem, 'id', '^(bank:).*').each do |bank|
+        total += bank['size'].to_i
+      end
     end
   end
   total
