@@ -78,7 +78,7 @@ module Inventoryware
     #       the req_files method. Assumable "groups" can be special
     #       cased in the required place
     def all_files
-      @all_files ||= [*@req_files, 'groups']
+      @all_files ||= [*req_files, 'groups']
     end
 
     ##
