@@ -33,12 +33,11 @@ require 'yaml'
 
 module Inventoryware
   module CLI
-    PROGRAM_NAME = ENV.fetch('FLIGHT_PROGRAM_NAME','inventory')
-
     extend Commander::Delegates
+
     program :application, "Flight Inventory"
-    program :name, PROGRAM_NAME
-    program :version, "v#{Inventoryware::VERSION}"
+    program :name,    Config.program_name
+    program :version, "v#{Config.program_version}"
     program :description, 'Parser of hardware information into unified formats.'
     program :help_paging, false
     default_command :help
@@ -47,7 +46,7 @@ module Inventoryware
     class << self
       def cli_syntax(command, args_str = nil)
         command.syntax = [
-          PROGRAM_NAME,
+          program(:name),
           command.name,
           args_str
         ].compact.join(' ')

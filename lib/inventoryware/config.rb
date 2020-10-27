@@ -50,6 +50,7 @@ module Inventoryware
     end
 
     attr_reader :yaml_dir, :templates_dir, :all_files, :templates_config_path, :plugins_dir
+    attr_reader :program_version, :program_name
 
     def initialize
       ETC_FILES.each do |conf|
