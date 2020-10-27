@@ -25,6 +25,7 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
+require 'xdg'
 require 'inventoryware/utils'
 
 module Inventoryware
@@ -58,10 +59,6 @@ module Inventoryware
       end
 
       FileUtils.mkdir_p yaml_dir
-    end
-
-    def xdg
-      @xdg ||= XDG::Environment.new
     end
 
     ##
