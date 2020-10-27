@@ -59,6 +59,10 @@ module Inventoryware
       FileUtils.mkdir_p yaml_dir
     end
 
+    def xdg
+      @xdg ||= XDG::Environment.new
+    end
+
     ##
     # NOTE: The helpers directory contains ruby code for various actions.
     #       This code can not be easily substituted and seems out of
