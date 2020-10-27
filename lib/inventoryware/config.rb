@@ -50,11 +50,8 @@ module Inventoryware
     attr_reader :yaml_dir, :templates_dir, :helpers_dir, :req_files,
                 :all_files, :templates_config_path, :plugins_dir, :req_keys
 
-    def root_dir
-      @root_dir ||= File.expand_path('../..', __dir__)
-    end
-
     def initialize
+      root_dir = File.expand_path('../..', __dir__)
       @templates_config_path = File.join(root_dir, 'etc/templates.yml')
 
       @yaml_dir = File.join(root_dir, 'var/store', active_cluster).tap do |dir|
