@@ -1,5 +1,5 @@
 # =============================================================================
-# Copyright (C) 2019-present Alces Flight Ltd.
+# Copyright (C) 2020-present Alces Flight Ltd.
 #
 # This file is part of Flight Inventory.
 #
@@ -29,6 +29,8 @@ require 'inventoryware/utils'
 
 module Inventoryware
   class Config
+    ETC_FILES = Dir.glob(File.expand_path('../../etc/*\.conf', __dir__)).sort
+
     class << self
       def instance
         @instance ||= Config.new
@@ -47,24 +49,52 @@ module Inventoryware
       end
     end
 
-    attr_reader :yaml_dir, :templates_dir, :helpers_dir, :req_files,
-                :all_files, :templates_config_path, :plugins_dir, :req_keys
+    attr_reader :yaml_dir, :templates_dir, :all_files, :templates_config_path, :plugins_dir
 
     def initialize
-      root_dir = File.expand_path('../..', __dir__)
-      @templates_config_path = File.join(root_dir, 'etc/templates.yml')
-
-      @yaml_dir = File.join(root_dir, 'var/store', active_cluster).tap do |dir|
-        FileUtils.mkdir_p dir
+      ETC_FILES.each do |conf|
+        self.instance_eval(File.read(conf), conf)
       end
-      @templates_dir = File.join(root_dir, 'templates')
-      @helpers_dir = File.join(root_dir, 'helpers')
-      @plugins_dir = File.join(root_dir, 'plugins')
 
-      @req_files = ["lshw-xml", "lsblk-a-P"]
-      @all_files = @req_files + ['groups']
+      FileUtils.mkdir_p yaml_dir
+    end
 
-      @req_keys = ['name', 'schema', 'mutable', 'type']
+    ##
+    # NOTE: The helpers directory contains ruby code for various actions.
+    #       This code can not be easily substituted and seems out of
+    #       place within a "config helpers dir"
+    #
+    #       Consider refactoring within "lib/inventoryware/utils"
+    def helpers_dir
+      @helpers_dir ||= File.expand_path('../../helpers', __dir__)
+    end
+
+    ##
+    # NOTE: I'm not sure if this method brings any more value then
+    #       the req_files method. Assumable "groups" can be special
+    #       cased in the required place
+    def all_files
+      @all_files ||= [*@req_files, 'groups']
+    end
+
+    ##
+    # NOTE: It is a bit odd having req_files are a "Config" option.
+    #       The `import[_hunter]` commands hard code references to
+    #       these files, which implies they are not configurable
+    #
+    #       Consider refactoring onto the import command
+    def req_files
+      @req_files ||= ["lshw-xml", "lsblk-a-P"]
+    end
+
+    ##
+    # NOTE Similar to req_files, this does not look like a configurable
+    #      option. They types defined within this key are used through
+    #      out the code base
+    #
+    #      Consider refactoring into a constant or schema object
+    def req_keys
+      @req_keys ||= ['name', 'schema', 'mutable', 'type']
     end
 
     # @deprecated There is only ever going to be a single cluster
