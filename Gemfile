@@ -13,3 +13,8 @@ gem 'tty-prompt'
 gem 'xmlhasher'
 gem 'paint'
 gem 'xdg'
+
+group :development do
+  gem 'pry'
+  gem 'pry-byebug'
+end
