@@ -51,7 +51,7 @@ module Inventoryware
     attr_reader :yaml_dir, :templates_dir, :templates_config_path, :plugins_dir
 
     def initialize
-      @yaml_dir = XDG::Environment.new.cache_home.join("flight/inventory")
+      @yaml_dir = XDG::Environment.new.data_home.join("flight/inventory")
       @templates_dir = File.expand_path('../templates', __dir__)
       @templates_config_path = File.expand_path('templates.yml', __dir__)
       @plugins_dir = File.expand_path('../plugins', __dir__)
