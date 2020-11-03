@@ -52,9 +52,9 @@ module Inventoryware
 
     def initialize
       @yaml_dir = XDG::Environment.new.data_home.join("flight/inventory")
-      @templates_dir = File.expand_path('../templates', __dir__)
-      @templates_config_path = File.expand_path('templates.yml', __dir__)
-      @plugins_dir = File.expand_path('../plugins', __dir__)
+      @templates_dir = File.expand_path('../../templates', __dir__)
+      @templates_config_path = File.expand_path('../../etc/templates.yml', __dir__)
+      @plugins_dir = File.expand_path('../../plugins', __dir__)
 
       FileUtils.mkdir_p yaml_dir
     end
