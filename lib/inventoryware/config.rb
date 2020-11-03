@@ -30,8 +30,6 @@ require 'inventoryware/utils'
 
 module Inventoryware
   class Config
-    ETC_FILES = Dir.glob(File.expand_path('../../etc/*\.conf', __dir__)).sort
-
     class << self
       def instance
         @instance ||= Config.new
@@ -50,12 +48,13 @@ module Inventoryware
       end
     end
 
-    attr_reader :yaml_dir, :templates_dir, :all_files, :templates_config_path, :plugins_dir
+    attr_reader :yaml_dir, :templates_dir, :templates_config_path, :plugins_dir
 
     def initialize
-      ETC_FILES.each do |conf|
-        self.instance_eval(File.read(conf), conf)
-      end
+      @yaml_dir = File.expand_path('../var/store/default', __dir__)
+      @templates_dir = File.expand_path('../templates', __dir__)
+      @templates_config_path = File.expand_path('templates.yml', __dir__)
+      @plugins_dir = File.expand_path('../plugins', __dir__)
 
       FileUtils.mkdir_p yaml_dir
     end
@@ -79,18 +78,18 @@ module Inventoryware
     end
 
     ##
-    # NOTE: It is a bit odd having req_files are a "Config" option.
+    # NOTE: It is a bit odd having req_files as a "Config" option.
     #       The `import[_hunter]` commands hard code references to
     #       these files, which implies they are not configurable
     #
-    #       Consider refactoring onto the import command
+    #       Consider refactoring into the import command
     def req_files
       @req_files ||= ["lshw-xml", "lsblk-a-P"]
     end
 
     ##
     # NOTE Similar to req_files, this does not look like a configurable
-    #      option. They types defined within this key are used through
+    #      option. The types defined within this key are used through
     #      out the code base
     #
     #      Consider refactoring into a constant or schema object
