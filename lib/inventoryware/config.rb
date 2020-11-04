@@ -59,12 +59,6 @@ module Inventoryware
       FileUtils.mkdir_p yaml_dir
     end
 
-    ##
-    # NOTE: The helpers directory contains ruby code for various actions.
-    #       This code can not be easily substituted and seems out of
-    #       place within a "config helpers dir"
-    #
-    #       Consider refactoring within "lib/inventoryware/utils"
     def helpers_dir
       @helpers_dir ||= File.expand_path('../../helpers', __dir__)
     end
