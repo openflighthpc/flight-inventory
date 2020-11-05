@@ -121,15 +121,6 @@ To support changes in data structure every asset file has a 'schema number'. The
 minimum accepted schema number can be found in `inventoryware/version.rb`. If an asset's schema number is
 less than the minimum accepted execution will halt and the asset's file will need to be migrated.
 
-Call the script with no arguments to process the entire store directory, migrating every old file.
-Alternatively, pass an asset name or asset path to migrate just that file.
-Currently supports schema 0 (no schema) to 1, will need to be updated with any further changes to the schema.
-
-When developing a migration to move assets to a new schema please create a new file in the `scripts/migrations`
-directory with the name `schema_x`. Within this file create a method with the name `migrate_schema_to_x`. Where
-x is the schema version the file will migrate the asset to. This is the method that the central migration script
-will call when migrating any assets to that schema version.
-
 # Plugins
 
 Flight Inventory also supports plugins. To render asset data in new and interesting ways place additional
