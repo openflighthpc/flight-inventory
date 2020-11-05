@@ -1,5 +1,5 @@
 # =============================================================================
-# Copyright (C) 2019-present Alces Flight Ltd.
+# Copyright (C) 2020-present Alces Flight Ltd.
 #
 # This file is part of Flight Inventory.
 #
@@ -25,6 +25,7 @@
 # https://github.com/openflighthpc/flight-inventory
 # ==============================================================================
 
+require 'xdg'
 require 'inventoryware/utils'
 
 module Inventoryware
@@ -47,27 +48,47 @@ module Inventoryware
       end
     end
 
-    attr_reader :yaml_dir, :templates_dir, :helpers_dir, :req_files,
-                :all_files, :templates_config_path, :plugins_dir, :req_keys
-
-    def root_dir
-      @root_dir ||= File.expand_path('../..', __dir__)
-    end
+    attr_reader :yaml_dir, :templates_dir, :templates_config_path, :plugins_dir
 
     def initialize
-      @templates_config_path = File.join(root_dir, 'etc/templates.yml')
+      @yaml_dir = XDG::Environment.new.data_home.join("flight/inventory")
+      @templates_dir = File.expand_path('../../templates', __dir__)
+      @templates_config_path = File.expand_path('../../etc/templates.yml', __dir__)
+      @plugins_dir = File.expand_path('../../plugins', __dir__)
 
-      @yaml_dir = File.join(root_dir, 'var/store', active_cluster).tap do |dir|
-        FileUtils.mkdir_p dir
-      end
-      @templates_dir = File.join(root_dir, 'templates')
-      @helpers_dir = File.join(root_dir, 'helpers')
-      @plugins_dir = File.join(root_dir, 'plugins')
+      FileUtils.mkdir_p yaml_dir
+    end
 
-      @req_files = ["lshw-xml", "lsblk-a-P"]
-      @all_files = @req_files + ['groups']
+    def helpers_dir
+      @helpers_dir ||= File.expand_path('../../helpers', __dir__)
+    end
 
-      @req_keys = ['name', 'schema', 'mutable', 'type']
+    ##
+    # NOTE: I'm not sure if this method brings any more value then
+    #       the req_files method. Assumable "groups" can be special
+    #       cased in the required place
+    def all_files
+      @all_files ||= [*req_files, 'groups']
+    end
+
+    ##
+    # NOTE: It is a bit odd having req_files as a "Config" option.
+    #       The `import[_hunter]` commands hard code references to
+    #       these files, which implies they are not configurable
+    #
+    #       Consider refactoring into the import command
+    def req_files
+      @req_files ||= ["lshw-xml", "lsblk-a-P"]
+    end
+
+    ##
+    # NOTE Similar to req_files, this does not look like a configurable
+    #      option. The types defined within this key are used through
+    #      out the code base
+    #
+    #      Consider refactoring into a constant or schema object
+    def req_keys
+      @req_keys ||= ['name', 'schema', 'mutable', 'type']
     end
 
     # @deprecated There is only ever going to be a single cluster
